@@ -33,8 +33,8 @@ const char* taskpath4 = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\
 const char* taskpath5 = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\\Tasks20\\clusters_task5.csv";
 const char* taskpath0 = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\\Tasks20\\ex_task.csv";
 
-const char* flagspath = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\\WorkspaceCSVs\\flags.csv"; // this will need to be changed at some point
-const char* setuppath = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\\WorkspaceCSVs\\workspace.csv"; // this will need to be changed at some point
+const char* flagspath = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\\WorkspaceCSVs\\flags.csv"; // flags_example.csv
+const char* setuppath = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\\WorkspaceCSVs\\workspace.csv"; // workspace_example.csv
 
 //const char* tablepath = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\\Textures\\wood_table.png"; // old table
 const char* tablepath = "C:\\Users\\labmu\\Desktop\\PTHMS\\DowntownGames-Biodex\\Textures\\wood_2.png";
