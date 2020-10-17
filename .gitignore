@@ -1,0 +1,12 @@
+*.txt
+*~
+*.pyc
+*.exe
+*.obj
+*.o
+*.json
+Output*.csv
+VisualStudio/
+Ball-in-bowl-Project/
+SubjectData/
+WorkspaceCSVs/
