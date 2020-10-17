@@ -32,6 +32,9 @@ Commonly altered parameters are located in `parameters.hpp`
 ### Downloading content
 If the contents of `OpenGL/stb` are missing when cloning this repo, try `git submodule update --init --recursive --remote`
 
+### Output files
+Before running the games, a safe workspace has to be defined. Two files: `flags.csv` and `workspace.csv` are expected in a WorkspaceCSVs folder. All output files from the workspace setup and the games are saved to a folder called SubjectData. 
+
 ## Other useful information
 
 ### HapticMaster Workspace (approximate)
