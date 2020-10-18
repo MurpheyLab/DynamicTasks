@@ -75,6 +75,8 @@ double z_tolerance = table_z + 0.01; // -0.16 // if lower, person can eat flags 
 #define tol_delta 0.008
 #define size_of_flag 0.008 
 
+int pb_vec[num_freqs_tested];
+
 static GLUquadricObj * q; // water object
 
 GLfloat xmin = 10.0; GLfloat xmax = 10.0; GLfloat ymin = 10.0; GLfloat ymax = 10.0;
@@ -870,6 +872,19 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 		printf("ESC pressed: exit routine starting \n");
 		logfile.close();
 
+		if (score > pb_vec[freq_num]) {
+			pb_vec[freq_num] = score;
+
+			ofstream myfile;
+			myfile.open(personalbestspath);
+			for (int i = 0; i < num_freqs_tested; i++) {
+				myfile << pb_vec[i] << ',';
+			}
+			myfile.close();
+
+			printf("Participant beat their personal best!.\n");
+		}
+
 		// Start normal shutdown routine
 		if (mode == 0) // if using HapticMASTER
 		{
@@ -1066,6 +1081,19 @@ void TimerCB(int iTimer)
 	{
 		logfile.close();
 
+		if (score > pb_vec[freq_num]) {
+			pb_vec[freq_num] = score;
+
+			ofstream myfile;
+			myfile.open(personalbestspath);
+			for (int i = 0; i < num_freqs_tested; i++) {
+				myfile << pb_vec[i] << ',';
+			}
+			myfile.close();
+
+			printf("----------------- Participant beat their personal best! ------------------\n");
+		}
+
 		if (mode == 0) // if using HapticMASTER
 		{
 			// Move the person back to their home position by enabling springs
@@ -1121,6 +1149,11 @@ int main(int argc, char** argv)
 	FILE* setupfile;
 	setupfile = fopen(setuppath, "r");
 	int val2 = fscanf(setupfile, "%f,%f,%f,%f,%f,%f\n", &armWeight, &ymin, &ymax, &xmin, &xmax, &maxForce);
+
+	FILE* pbfile;
+	pbfile = fopen(personalbestspath, "r");
+	fscanf(pbfile, "%d,%d,%d,%d\n", &pb_vec[0], &pb_vec[1], &pb_vec[2], &pb_vec[3]);
+	printf("Personal best for this frequency is: %d.\n", pb_vec[freq_num]);
 
 
 	// Option to hardcode values

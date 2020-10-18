@@ -33,6 +33,7 @@ const int num_csv_flags = 20; //change according to the number of flags in csv f
 const int num_rand_flags = 5; //change according to the number of random flags to appear on table
 
 // Define possible frequency R/damping combinations -- corresponds to 0.5,1,1.5,2,2.5Hz
+const int num_freqs_tested = 4;
 double radius_options[5] = { 0.995, 0.249, 0.111, 0.062, 0.04 };
 double damping_options[5] = { 0.23838, 0.0149, 0.00294, 0.00093, 0.00038 }; // 10s settling
 //float damping_options[5] = { 0.15892, 0.00993, 0.00196, 0.00062, 0.00025 }; // 15s settling

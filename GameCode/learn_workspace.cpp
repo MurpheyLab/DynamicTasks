@@ -51,6 +51,9 @@ string setuppath2 = dirpath + "setup_S" + to_string(subject_num) + ".csv";
 string logpath = dirpath + "Workspace_Path_S" + to_string(subject_num) + "_SL" + to_string(support_num) + ".csv";
 ofstream logpathfile;
 
+// Define file for personal bests
+string personalbestspath = dirpath + "personalbests.csv";
+
 #define IPADDRESS "10.30.203.26" //"10.30.203.26"
 
 // Game variables
@@ -477,6 +480,12 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 			myfile.open(setuppath2);
 			myfile << armWeight << ',' << ymin << ',' << ymax << ',' << xmin << ',' << xmax << ',' << maxForce << '\n';
 			myfile.close();
+
+			myfile.open(personalbestspath);
+			for (int i = 0; i < num_freqs_tested; i++) {
+				myfile << 0 << ',';
+			}
+			myfile.close();
 		}
 		
 		if (mode == 0) // if using HapticMASTER
@@ -609,9 +618,7 @@ int main(int argc, char** argv)
 		haSendCommand(dev, "set mySpring maxforce", springMaxForce, response);
 		returnValue = haDeviceSendString(dev, "set mySpring enable", response);
 
-		if (support_num == max_support)
-		{
-
+		if (support_num == max_support) {
 			// Switch to super spring for measuring max force
 			printf("Press ENTER to lower position for measuring max force.\n");
 			std::cin.get();
