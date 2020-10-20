@@ -52,7 +52,7 @@ string logpath = dirpath + "Workspace_Path_S" + to_string(subject_num) + "_SL" +
 ofstream logpathfile;
 
 // Define file for personal bests
-string personalbestspath = dirpath + "personalbests.csv";
+string personalbestspath_string = dirpath + "personalbests.csv";
 
 #define IPADDRESS "10.30.203.26" //"10.30.203.26"
 
@@ -481,7 +481,11 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 			myfile << armWeight << ',' << ymin << ',' << ymax << ',' << xmin << ',' << xmax << ',' << maxForce << '\n';
 			myfile.close();
 
-			myfile.open(personalbestspath);
+			myfile.open(personalbestspath_string);
+			for (int i = 0; i < num_freqs_tested; i++) {
+				myfile << 0 << ',';
+			}
+			myfile << '\n';
 			for (int i = 0; i < num_freqs_tested; i++) {
 				myfile << 0 << ',';
 			}
@@ -635,7 +639,7 @@ int main(int argc, char** argv)
 			printf("Press ENTER to turn on large bias force.\n");
 			std::cin.get();
 			returnValue = haDeviceSendString(dev, "create biasforce myBiasForce0", response);
-			returnValue = haSendCommand(dev, "set myBiasForce0 force", 0.0, 0.0, -200.0, response); // tested using -100.0
+			returnValue = haSendCommand(dev, "set myBiasForce0 force", 0.0, 0.0, -500.0, response); // tested using -100.0
 			haDeviceSendString(dev, "set myBiasForce0 enable", response);
 
 			// Take 3 measurements for max force

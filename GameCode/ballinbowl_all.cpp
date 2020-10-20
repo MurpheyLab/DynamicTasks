@@ -39,7 +39,7 @@ static Renderer* renderer; //this is a static pointer to a Renderer used in the 
 //using namespace std;
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 4000;
+const int SCREEN_WIDTH = 3500;
 const int SCREEN_HEIGHT = 2000;
 
 // Define possible support levels
@@ -50,7 +50,7 @@ const char* tasklist[6] = { taskpath0, taskpath1, taskpath2, taskpath3, taskpath
 
 // Define file for logging data - this is assuming game version 'f'
 const char* taskpath = tasklist[task_num];
-string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL" + to_string(support_num) + ".csv";
+string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL" + to_string(support_num) + "_F" + to_string(feedback_forces) + ".csv";
 
 // Define file for logging data - this is assuming game version 'i'
 //string logpath = "OutputData_S" + to_string(subject_num) + "_Freq" + to_string(freq) + "_SL" + to_string(support_num) + "_Trial" + to_string(trial_num) + ".csv";
@@ -75,7 +75,7 @@ double z_tolerance = table_z + 0.01; // -0.16 // if lower, person can eat flags 
 #define tol_delta 0.008
 #define size_of_flag 0.008 
 
-int pb_vec[num_freqs_tested];
+int pb_vec[num_freqs_tested][2];
 
 static GLUquadricObj * q; // water object
 
@@ -619,17 +619,17 @@ void DrawText(GLfloat x, GLfloat y, const char* text)
 void DrawLabels(void) {
 
 	string score_string = to_string(score);
-	char *cscore = const_cast<char*>(score_string.c_str());
+	char* cscore = const_cast<char*>(score_string.c_str());
 
 	int time_current_rounded = round(TF - sys_time);
 	string time_current_string = to_string(time_current_rounded);
-	char *ctime = const_cast<char*>(time_current_string.c_str());
+	char* ctime = const_cast<char*>(time_current_string.c_str());
 
-    //glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+	//glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
 	// thicken the text
-	for( float i = 0.0; i <= 0.002; i = i + 0.0001) {
+	for (float i = 0.0; i <= 0.002; i = i + 0.0001) {
 		for (float j = 0.0; j <= 0.002; j = j + 0.0001) {
 			glColor3f(0.0f, 0.7f, 1.0f);
 			DrawText(-0.44 + i, 0.19 - j, "SCORE");
@@ -655,8 +655,74 @@ void DrawLabels(void) {
 				DrawText(0.345 + i, 0.14 - j, ctime);
 			}
 		}
+	}
+}
+
+//----------------------------------------------------------------------------------
+//               D R A W   P E R S O N A L   B E S T
+//
+// This Function Is Called To Draw A Score Board With Participant's Personal Bests
+//----------------------------------------------------------------------------------
+void DrawPersonalBestBoard(void) {
+
+	int i, j;
+	GLfloat v[4][3];
+	GLfloat bottom = 0.07, width = 0.9, height = 0.04;
+
+	for (i = 0; i < 4; ++i)
+	{ // parallel with x-y plane
+		v[i][0] = 0.25;
+	}
+
+	v[0][2] = -0.1;
+	v[0][1] = -width / 2;
+	v[1][2] = height;
+	v[1][1] = -width / 2;
+	v[2][2] = -0.1;
+	v[2][1] = width / 2;
+	v[3][2] = height;
+	v[3][1] = width / 2;
+
+	glColor3f(1.0f, 1.0f, 1.0f); // white
+	//glColor3f(0.0f, 0.0f, 0.0f); // black
+	glBegin(GL_QUADS);
+	glVertex3fv(v[0]);
+	glVertex3fv(v[1]);
+	glVertex3fv(v[2]);
+	glVertex3fv(v[3]);
+	glEnd();
+}
+
+void DrawText3D(GLfloat x, GLfloat y, GLfloat z, const char* text)
+{
+	glPushMatrix();
+	glTranslatef(x, y, z);
+	glScalef(1 / 8050.0, 1 / 8050.0, 1 / 8050.0);
+	for (const char* p = text; *p; p++)
+	{
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
+	}
+	glPopMatrix();
+}
+
+void DrawPersonalBestLabel(void) {
+	string score_string = to_string(pb_vec[freq_num][feedback_forces]);
+	char* cscore = const_cast<char*>(score_string.c_str());
+
+    glLoadIdentity();
+
+	// thicken the text
+	for( float i = 0.0; i <= 0.0012; i = i + 0.0001) {
+		for (float j = 0.0; j <= 0.0012; j = j + 0.0001) {
+			glColor3f(0.0f, 0.0f, 0.0f);
+			DrawText3D(-0.085 + i, -0.08 - j, -0.36, "PERSONAL BEST:");
+
+			DrawText3D(0.07 + i, -0.08 - j, -0.36, cscore);
+
+		}
     }
 }
+
 
 //---------------------------------------------------------------------
 //                     D R A W   T I M E R   B A R
@@ -766,6 +832,7 @@ void Display(void)
 	DrawBall();
 	DrawBowl();
 	DrawTimerBar();
+	if (trial_flag == 0.0) { DrawPersonalBestBoard(); }
 	DrawBowlBottom();
 	if (game_version == 'f')
 	{
@@ -777,6 +844,7 @@ void Display(void)
 	}
 	DrawWater();
 	DrawLabels();
+	if (trial_flag == 0.0) { DrawPersonalBestLabel(); }
 	// water drop flag is true if timer is reset
 	if (reset_drop_timer)
 	{
@@ -806,9 +874,11 @@ void Display(void)
 	DrawBowl();
 	DrawBowlBottom();
 	DrawTimerBar();
+	if (trial_flag == 0.0) { DrawPersonalBestBoard(); }
 	DrawFlags();
 	DrawWater();
 	DrawLabels();
+	if (trial_flag == 0.0) { DrawPersonalBestLabel(); }
 	#endif 
 
 
@@ -872,18 +942,35 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 		printf("ESC pressed: exit routine starting \n");
 		logfile.close();
 
-		if (score > pb_vec[freq_num]) {
-			pb_vec[freq_num] = score;
+		if (score > pb_vec[freq_num][feedback_forces]) {
+			pb_vec[freq_num][feedback_forces] = score;
 
 			ofstream myfile;
 			myfile.open(personalbestspath);
 			for (int i = 0; i < num_freqs_tested; i++) {
-				myfile << pb_vec[i] << ',';
+				myfile << pb_vec[i][0] << ',';
+			}
+			myfile << '\n';
+			for (int i = 0; i < num_freqs_tested; i++) {
+				myfile << pb_vec[i][1] << ',';
 			}
 			myfile.close();
 
-			printf("Participant beat their personal best!.\n");
+			printf("-------------Participant beat their personal best!----------------\n");
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glPushMatrix();
+			glutPostRedisplay();
+			renderer->DrawTrophy();
+			DrawPersonalBestBoard;
+			DrawPersonalBestLabel;
+			glPopMatrix();
+			glutSwapBuffers();
+			double curr_time = clock() / (float)CLOCKS_PER_SEC;
+			while (clock() / (float)CLOCKS_PER_SEC - curr_time < 2.0) {}
 		}
+
+
 
 		// Start normal shutdown routine
 		if (mode == 0) // if using HapticMASTER
@@ -1081,17 +1168,32 @@ void TimerCB(int iTimer)
 	{
 		logfile.close();
 
-		if (score > pb_vec[freq_num]) {
-			pb_vec[freq_num] = score;
+		if (score > pb_vec[freq_num][feedback_forces]) {
+			pb_vec[freq_num][feedback_forces] = score;
 
 			ofstream myfile;
 			myfile.open(personalbestspath);
 			for (int i = 0; i < num_freqs_tested; i++) {
-				myfile << pb_vec[i] << ',';
+				myfile << pb_vec[i][0] << ',';
+			}
+			myfile << '\n';
+			for (int i = 0; i < num_freqs_tested; i++) {
+				myfile << pb_vec[i][1] << ',';
 			}
 			myfile.close();
 
-			printf("----------------- Participant beat their personal best! ------------------\n");
+			printf("-------------Participant beat their personal best!----------------\n");
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glPushMatrix();
+			glutPostRedisplay();
+			renderer->DrawTrophy();
+			DrawPersonalBestBoard;
+			DrawPersonalBestLabel;
+			glPopMatrix();
+			glutSwapBuffers();
+			double curr_time = clock() / (float)CLOCKS_PER_SEC;
+			while (clock() / (float)CLOCKS_PER_SEC - curr_time < 2.0) {}
 		}
 
 		if (mode == 0) // if using HapticMASTER
@@ -1152,8 +1254,8 @@ int main(int argc, char** argv)
 
 	FILE* pbfile;
 	pbfile = fopen(personalbestspath, "r");
-	fscanf(pbfile, "%d,%d,%d,%d\n", &pb_vec[0], &pb_vec[1], &pb_vec[2], &pb_vec[3]);
-	printf("Personal best for this frequency is: %d.\n", pb_vec[freq_num]);
+	fscanf(pbfile, "%d,%d,%d,%d\n,%d,%d,%d,%d\n", &pb_vec[0][0], &pb_vec[1][0], &pb_vec[2][0], &pb_vec[3][0], &pb_vec[0][1], &pb_vec[1][1], &pb_vec[2][1], &pb_vec[3][1]);
+	printf("Personal best for this frequency is: %d.\n", pb_vec[freq_num][feedback_forces]);
 
 
 	// Option to hardcode values

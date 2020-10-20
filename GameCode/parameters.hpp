@@ -7,16 +7,16 @@
 //---------------------------------------------------------------------
 
 // Trial parameters (update every iteration)
-int trial_num = 1;
+int trial_num = 48;
 int support_num = 0; // 0: 0%, 1: 30%
-int freq_num = 1; // 0: 0.5Hz 1: 1Hz 2: 1.5Hz 3:2Hz 4:2.5Hz
-int feedback_forces = 1; // 0: off, 1: on
+int freq_num = 0; // 0: 0.5Hz 1: 1Hz 2: 1.5Hz 3:2Hz 4:2.5Hz
+const int feedback_forces = 0; // 0: off, 1: on
 
 // Subject parameters (update once at the beginning)
-int subject_num = 3;
+int subject_num = 8;
 
 // Input mode
-const int mode = 2; // 0: HapticMASTER control 1: joystick control 2: no input
+const int mode = 0; // 0: HapticMASTER control 1: joystick control 2: no input
 
 // Visualization mode
 #define TEXTURES_ON // uncomment this line to use textures

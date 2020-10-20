@@ -28,7 +28,7 @@ class Renderer {
 public:
   float t, drop_size; // 0.015
 private:
-  GLuint texID_table, texID_flag, texID_easyL, texID_easyR, texID_mediumL, texID_mediumR, texID_intenseL, texID_intenseR;
+  GLuint texID_table, texID_flag, texID_easyL, texID_easyR, texID_mediumL, texID_mediumR, texID_intenseL, texID_intenseR, texID_trophy;
 
 public:
   // constructor
@@ -62,7 +62,8 @@ public:
     texID_mediumL = loadTexture(mediumLpath);
     texID_mediumR = loadTexture(mediumRpath);
     texID_intenseL = loadTexture(intenseLpath);
-    texID_intenseR = loadTexture(intenseRpath);
+	texID_intenseR = loadTexture(intenseRpath);
+	texID_trophy = loadTexture(trophypath);
   }
 
   void DrawTable() 
@@ -215,6 +216,30 @@ public:
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
   } 
+
+void DrawTrophy()
+{
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	// set camera
+	gluLookAt(0.0, 0.0, -2.0, -0.3, 0.0, 0.0, 0.0, -1.0, 0.0); // for top down view 
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glBindTexture(GL_TEXTURE_2D, texID_trophy);
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.85f, 0.3f, 0.0f);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(0.3f, 0.3f, 0.0f);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(0.3f, -0.3f, 0.0f);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.85f, -0.3f, 0.0f);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+}
 
 
 private:

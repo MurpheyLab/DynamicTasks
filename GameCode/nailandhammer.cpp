@@ -22,15 +22,15 @@
 using namespace std;
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 4000;
-const int SCREEN_HEIGHT = 2000;
+const int SCREEN_WIDTH = 2500;
+const int SCREEN_HEIGHT = 1200;
 
 //---------------------------------------------------------------------
 //    Variables for adjustment during experiments
 //---------------------------------------------------------------------
 
 // at the beginning only
-int subject_num = 2;
+int subject_num = 8;
 float maxForce = 71.465; //input value from isometric protocol (Fx)
 #define TF 20.0 // length of trial
 
@@ -40,7 +40,7 @@ char game_version = 'i'; // 2 different game versions: 'a' for nails on an arc, 
 const int nail_forces = 1; // option to enable wall feedback: '0' if off, '1' if on
 const int rightleft = 0; // '0' for nails to appear on the right and '1' for nails to appear on the left and '2' for nails to appear all around
 
-int trial_num = 102;
+int trial_num = 12;
 int support_num = 0; // 0: 0%, 1: 30%
 
 //---------------------------------------------------------------------
@@ -50,7 +50,8 @@ int support_num = 0; // 0: 0%, 1: 30%
 float support_level[3] = { -0.0, -0.3 }; // fraction of max shoulder abduction loading (0-1)
 
 // Files paths for defining task, reading in arm weight and workspace, and logging data
-string logpath = dirpath + "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + ".csv";
+//string logpath = dirpath + "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + ".csv";
+string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + ".csv";
 ofstream logfile;
 
 #define IPADDRESS "10.30.203.26" //"10.30.203.26"
