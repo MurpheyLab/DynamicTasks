@@ -114,14 +114,15 @@ int top_flag = 0;
 // define ball
 #define radius 0.01
 #define RR_vis (R_vis - radius) // radius of bowl-ball for visualization purposes
-#define RR (R - radius) 
+//#define RR R //(R - radius) 
 
 // ball energy
-float ball_energy = 0.0;
-float max_height = percent_height * RR_vis;
-float mid_height = percent_height * RR_vis / 2.0;
-float max_energy = mass * gravity * percent_height * R;
-float mid_energy = mass * gravity * percent_height * R / 2.0;
+double ball_energy = 0.0;
+double max_energy = mass * gravity * percent_height * R;
+double mid_energy = mass * gravity * percent_height * R / 2.0;
+//
+//float max_energy = mass * gravity * percent_height * RR_vis;
+//float mid_energy = mass * gravity * percent_height * RR_vis / 2.0;
 
 // water
 clock_t drop_timer;
@@ -231,14 +232,16 @@ void DrawBall(void)
 	BallPosition[PosX] = CurrentPosition[PosX] + RR_vis * sin(sys.Xcurr[0]) * cos(sys.Xcurr[2]);
 	BallPosition[PosY] = CurrentPosition[PosY] + RR_vis * sin(sys.Xcurr[2]) * cos(sys.Xcurr[0]);
 	BallPosition[PosZ] = RR_vis - RR_vis * cos(sys.Xcurr[0]) * cos(sys.Xcurr[2]); 
+	//BallPosition[PosZ] = RR_vis - cos(asin(sqrt(pow(sin(sys.Xcurr[0]),2) + pow(sin(sys.Xcurr[2]),2))))*RR_vis;
 
 	//ball_energy = (mass * gravity * BallPosition[PosZ]) + (0.5 * mass * (pow(RR_vis * sys.Xcurr[1], 2) + pow(RR_vis * sys.Xcurr[3], 2)));
 	ball_energy = (mass * gravity * BallPosition[PosZ] * R/RR_vis) + (0.5 * mass * (pow(R*sys.Xcurr[1], 2) + pow(R * sys.Xcurr[3],2)));
-	
+
 	// New Protocol - based on ball energy
 	if (ball_energy > mid_energy && ball_energy <= max_energy)
 	{
 		glColor3f(1.0f, 0.5f, 0.0f); // orange
+		printf("ball height: %f \n", BallPosition[PosZ]);
 		ball_intensity = 1; // DON'T CHANGE   ball_intensity is on a range from 0 - 2
 	}
 	else if (ball_energy > max_energy)
@@ -249,6 +252,7 @@ void DrawBall(void)
 	else
 	{
 		glColor3f(1.0f, 1.0f, 0.0f); // yellow
+		printf("ball height: %f \n", BallPosition[PosZ]);
 		ball_intensity = 0; // DON'T CHANGE
 	}
 
@@ -561,6 +565,19 @@ void CheckFlags(void)
 				goals_rand[i][PosY] = flag_pos[rand_int][PosY];
 				goals_rand[i][PosZ] = flag_pos[rand_int][PosZ];
 				score++;
+
+				float rand_num = get_random() - 0.5;
+				float sign = rand_num / abs(rand_num);
+				float x_ang = sign * get_random() * angle_disturbance; // change to be both positive and negative
+				rand_num = get_random() - 0.5;
+				sign = rand_num / abs(rand_num);
+				float y_ang = sign * asin(sqrt(pow(sin(angle_disturbance), 2) - pow(sin(x_ang), 2)));
+				//float y_ang = sign*sqrt(pow(angle_disturbance, 2) - pow(x_ang, 2));
+				printf("sign: %f x_angle: %f y_angle: %f", sign, x_ang, y_ang);
+
+				sys.Xcurr = { x_ang,0.0,y_ang,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 }; // M_PI / 3.0
+
+				//sys.Xcurr = { M_PI / 3.0,0.0,M_PI / 3.0,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 };
 			}
 		}
 	}
@@ -1061,6 +1078,13 @@ void TimerCB(int iTimer)
 	yprev[0] = yprev[1]; yprev[1] = yprev[2]; yprev[2] = CurrentPosition[PosY];
 	yacc = -(2.0 * yprev[1] - yprev[2] - yprev[0]) / (deltaTvec[1] * deltaTvec[2]);
 	sys.Ucurr = { xacc * factor,yacc * factor };  
+	sys.simulate();
+	double Z_potential = RR_vis - RR_vis * cos(sys.Xpotential[0]) * cos(sys.Xpotential[2]);
+	if ((BallPosition[PosZ] > RR_vis) && (Z_potential>BallPosition[PosZ])) { 
+		printf("ball z position: %f\n", BallPosition[PosZ]);
+		sys.Xcurr[1] = 0.0* sys.Xcurr[1]; //0.1
+		sys.Xcurr[3] = 0.0* sys.Xcurr[3]; //0.1
+	}
 	if (trial_flag == 1.0) {
 		sys.dt = deltaT;
 		sys.step();
@@ -1125,6 +1149,8 @@ void TimerCB(int iTimer)
 
 	//double feedback_cap = 4.0; double feedback_scaling_x = 0.4 * pow(R / R_vis, 1); double feedback_scaling_y = 0.6 * pow(R / R_vis, 1); //0.5
 	double feedback_cap = 4.0; double feedback_scaling_x = 0.3 * pow(R/ R_vis,0.8); double feedback_scaling_y = 0.5 * pow(R/R_vis,0.8); //0.5
+
+
 	ballXaccF = -ballXaccF * feedback_scaling_x; ballYaccF = ballYaccF * feedback_scaling_y;
 
 	//if (ballXacc > feedback_cap) { ballXacc = feedback_cap; }
@@ -1138,27 +1164,40 @@ void TimerCB(int iTimer)
 	else if (ballYaccF < -feedback_cap) { ballYaccF = -feedback_cap; }
 
 	//if ((abs(sys.Xcurr[0]) >= M_PI / 2.0) &&  (abs(sys.Xcurr[2]) >= M_PI/2.0) && (mode==0)) { //max_height
-	double ballXaccFactual = -ballXaccF;
-	double ballYaccFactual = ballYaccF;
-	if ((BallPosition[PosZ] >= 1.3*RR_vis) && (mode == 0)) { //max_height
+	double ballXaccFactual;
+	double ballYaccFactual;
+	if ((ballXacc != 0) && (ballYacc != 0)) {
+		float ball_mag = sqrt(pow(ballXacc, 2) + pow(ballYacc, 2));
+
+		ballXaccFactual = -2 * ballXacc / ball_mag;
+		ballYaccFactual = 2 * ballYacc / ball_mag;
+
+		ball_mag = sqrt(pow(ballXaccFactual, 2) + pow(ballYaccFactual, 2));
+		//printf("ball_mag %f \n", ball_mag);
+
+	} else {
+		ballXaccFactual = 0.0;
+		ballYaccFactual = 0.0;
+	}
+
+	if ((ball_energy < 1.5* mid_energy) && (mode == 0)) { //max_height //|| (ball_energy > max_energy*4)) 
 		ballXaccFactual = 0.0;
 		ballYaccFactual = 0.0;
 		//sys.B = - damping * 10.0;
 		//top_flag = 1;
-	} else if ((BallPosition[PosZ] < 1.3 * RR_vis) && (mode == 0) && (top_flag == 1)) {
-		//sys.B = - damping;
-	}
+	} 
 	
 	if ((mode == 0) && (feedback_forces == 1)) // if using HapticMASTER
 	{
-		haSendCommand(dev, "set BallFeedbackForce force", ballXaccF, ballYaccF, 0.0, response);
+		//printf("forces %f %f \n", ballXaccFactual, ballYaccFactual);
+		haSendCommand(dev, "set BallFeedbackForce force", ballXaccFactual, ballYaccFactual, 0.0, response);
 	}
 
 	// Write data to .txt file
 	if (trial_flag == 1.0) {
 		logfile << sys_time << "," << CurrentPosition[PosX] << "," << CurrentPosition[PosY] << "," << CurrentPosition[PosZ] << ",";
-		logfile << CurrentPosition[PosX] + RR_vis * sin(sys.Xcurr[0]) * cos(sys.Xcurr[2]) << "," << CurrentPosition[PosY] + RR_vis * sin(sys.Xcurr[2]) * cos(sys.Xcurr[0]) << ",";
-		logfile << R_vis - R_vis * cos(sys.Xcurr[0]) * cos(sys.Xcurr[2]) << "," << score << ",";
+		logfile << BallPosition[PosX] << "," << BallPosition[PosY] << ",";
+		logfile << BallPosition[PosZ] << "," << score << ",";
 		logfile << CurrentForce[PosX] << "," << CurrentForce[PosY] << "," << CurrentForce[PosZ] << "," << scoring_enabled << "," << ballXacc << "," << ballYacc << ",";
 		logfile << ballXaccFactual << "," << ballYaccFactual << "," << ball_energy << "\n";
 	}
@@ -1358,7 +1397,18 @@ int main(int argc, char** argv)
 		CurrentPosition[PosX] = 0; CurrentPosition[PosY] = 0; CurrentPosition[PosZ] = 0;
 	}
 
-	sys.Xcurr = { M_PI / 6.0,0.0,M_PI / 6.0,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 };
+	float rand_num = get_random() - 0.5;
+	float sign = rand_num / abs(rand_num);
+	float x_ang = sign * get_random()* angle_disturbance; // change to be both positive and negative
+	rand_num = get_random() - 0.5;
+	sign = rand_num / abs(rand_num);
+	float y_ang = sign * asin(sqrt(pow(sin(angle_disturbance), 2) - pow(sin(x_ang), 2)));
+	//float y_ang = sign*sqrt(pow(angle_disturbance, 2) - pow(x_ang, 2));
+	printf("sign: %f x_angle: %f y_angle: %f", sign, x_ang, y_ang);
+
+	sys.Xcurr = { x_ang,0.0,y_ang,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 }; // M_PI / 3.0
+
+	//sys.Xcurr = { 2* M_PI / 2.0,0.0,M_PI / 3.0,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 }; // M_PI / 3.0
 
 	printf("Visualization starting...\n");
 

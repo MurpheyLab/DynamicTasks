@@ -27,11 +27,12 @@ class BallBowl {
 		double h; // pendulum length
         double dt; //time between system updates
         double tcurr=0.0; //initilaize system time
-        Vec Xcurr, Ucurr; //current system state arranged as q1,dq1,q2,dq2
+        Vec Xcurr, Ucurr, Xpotential; //current system state arranged as q1,dq1,q2,dq2
         //class member function prototypes
         BallBowl (double, double, double,double,double);
         inline Vec f(const Vec& x, const Vec& u);
         void step(void);
+		void simulate(void);
 };
 
 BallBowl::BallBowl (double _m, double _B, double _g, double _h, double _dt){
@@ -58,6 +59,10 @@ void BallBowl::step(){ //step the system forward by dt seconds
     Xcurr = RK4_step(this,Xcurr,Ucurr,dt);
     //cout<<Xcurr[0]<<" ";
     tcurr = tcurr+dt;
+};
+
+void BallBowl::simulate() { 
+	Xpotential = RK4_step(this, Xcurr, Ucurr, dt);
 };
 
 
