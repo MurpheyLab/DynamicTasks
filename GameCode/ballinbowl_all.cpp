@@ -119,7 +119,7 @@ int top_flag = 0;
 // ball energy
 double ball_energy = 0.0;
 double max_energy = mass * gravity * percent_height * R;
-double mid_energy = mass * gravity * percent_height * R / 2.0;
+double mid_energy = mass * gravity * percent_height * R / 2;
 //
 //float max_energy = mass * gravity * percent_height * RR_vis;
 //float mid_energy = mass * gravity * percent_height * RR_vis / 2.0;
@@ -237,24 +237,53 @@ void DrawBall(void)
 	//ball_energy = (mass * gravity * BallPosition[PosZ]) + (0.5 * mass * (pow(RR_vis * sys.Xcurr[1], 2) + pow(RR_vis * sys.Xcurr[3], 2)));
 	ball_energy = (mass * gravity * BallPosition[PosZ] * R/RR_vis) + (0.5 * mass * (pow(R*sys.Xcurr[1], 2) + pow(R * sys.Xcurr[3],2)));
 
-	// New Protocol - based on ball energy
-	if (ball_energy > mid_energy && ball_energy <= max_energy)
-	{
-		glColor3f(1.0f, 0.5f, 0.0f); // orange
-		printf("ball height: %f \n", BallPosition[PosZ]);
-		ball_intensity = 1; // DON'T CHANGE   ball_intensity is on a range from 0 - 2
-	}
-	else if (ball_energy > max_energy)
-	{
+
+	if (ball_energy > max_energy * 4) {
 		glColor3f(1.0f, 0.0f, 0.0f); // red
-		ball_intensity = 2; // DON'T CHANGE
+		ball_intensity = 2; 
+		//printf("ball energy %f \n", ball_energy/ max_energy);
 	}
-	else
-	{
+	else if (ball_energy > max_energy * 3.25) {
+
+		glColor3f(1.0f, 0.25f, 0.0f); // red - orange
+		ball_intensity = 1;
+	}
+	else if (ball_energy > max_energy* 2.5) {
+		glColor3f(1.0f, 0.5f, 0.0f); // orange
+		ball_intensity = 1;
+	}
+	else if (ball_energy > max_energy * 1.75) {
+		glColor3f(1.0f, 0.75f, 0.0f); // yellow - orange
+		ball_intensity = 1;
+	}
+	else if (ball_energy > max_energy) {
 		glColor3f(1.0f, 1.0f, 0.0f); // yellow
-		printf("ball height: %f \n", BallPosition[PosZ]);
-		ball_intensity = 0; // DON'T CHANGE
+		ball_intensity = 0;
 	}
+	else {
+		glColor3f(0.0f, 1.0f, 0.0f); // green
+		ball_intensity = 0;
+	}
+
+
+	//// New Protocol - based on ball energy
+	//if (ball_energy > mid_energy && ball_energy <= max_energy)
+	//{
+	//	glColor3f(1.0f, 0.5f, 0.0f); // orange
+	//	//printf("ball height: %f \n", BallPosition[PosZ]);
+	//	ball_intensity = 1; // DON'T CHANGE   ball_intensity is on a range from 0 - 2
+	//}
+	//else if (ball_energy > max_energy)
+	//{
+	//	glColor3f(1.0f, 0.0f, 0.0f); // red
+	//	ball_intensity = 2; // DON'T CHANGE
+	//}
+	//else 
+	//{
+	//	glColor3f(1.0f, 1.0f, 0.0f); // yellow
+	//	printf("ball height: %f \n", BallPosition[PosZ]);
+	//	ball_intensity = 0; // DON'T CHANGE
+	//} 
 
 	//// Old Protocol - based on ball height
 	//if (BallPosition[PosZ] > RR_vis/5 && BallPosition[PosZ] <= 0.4*RR_vis)
@@ -573,7 +602,7 @@ void CheckFlags(void)
 				sign = rand_num / abs(rand_num);
 				float y_ang = sign * asin(sqrt(pow(sin(angle_disturbance), 2) - pow(sin(x_ang), 2)));
 				//float y_ang = sign*sqrt(pow(angle_disturbance, 2) - pow(x_ang, 2));
-				printf("sign: %f x_angle: %f y_angle: %f", sign, x_ang, y_ang);
+				//printf("sign: %f x_angle: %f y_angle: %f", sign, x_ang, y_ang);
 
 				sys.Xcurr = { x_ang,0.0,y_ang,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 }; // M_PI / 3.0
 
@@ -1080,8 +1109,8 @@ void TimerCB(int iTimer)
 	sys.Ucurr = { xacc * factor,yacc * factor };  
 	sys.simulate();
 	double Z_potential = RR_vis - RR_vis * cos(sys.Xpotential[0]) * cos(sys.Xpotential[2]);
-	if ((BallPosition[PosZ] > RR_vis) && (Z_potential>BallPosition[PosZ])) { 
-		printf("ball z position: %f\n", BallPosition[PosZ]);
+	if ((BallPosition[PosZ] > 0.8*RR_vis) && (Z_potential>BallPosition[PosZ])) { 
+		//printf("ball z position: %f\n", BallPosition[PosZ]);
 		sys.Xcurr[1] = 0.0* sys.Xcurr[1]; //0.1
 		sys.Xcurr[3] = 0.0* sys.Xcurr[3]; //0.1
 	}
@@ -1126,19 +1155,22 @@ void TimerCB(int iTimer)
 	//ballYacc = -2.0 * (deltaTvec[1] * (ballYprev[2] - ballYprev[1]) - deltaTvec[2] * (ballYprev[1] - ballYprev[0])) / (deltaTvec[1] * deltaTvec[2] * (deltaTvec[1] + deltaTvec[2]));
 
 	// Add damping in the x direction
-	float BaccX = 0.03; // 0.05; // 0.015;
-	ballXacc = ballXacc - BaccX * (ballXacc - ballXaccPREV) / deltaT;
-	float BaccY = 0.005; // 0.05; // 0.015;
-	ballYacc = ballYacc - BaccY * (ballYacc - ballYaccPREV) / deltaT;
+	//float BaccX = 0.03;//0.03; // 0.05; // 0.015;
+	//ballXacc = ballXacc - BaccX * (ballXacc - ballXaccPREV) / deltaTdefault;
+	//float BaccY = 0.005;//0.005; // 0.05; // 0.015;
+	//ballYacc = ballYacc - BaccY * (ballYacc - ballYaccPREV) / deltaTdefault;
 
-	// Add low-pass filter (option 1)
-	double ballXaccF, ballYaccF;
-	double RC = 1.0/(5.0*2*M_PI); // use cutoff freq here
-	float alpha = deltaT/(RC+deltaT);
-	ballXaccF = ballXaccPREV + alpha * (ballXacc - ballXaccPREV);
-	ballYaccF = ballYaccPREV + alpha * (ballYacc - ballYaccPREV);
-	ballXaccPREV = ballXaccF;
-	ballYaccPREV = ballYaccF;
+	//// Add low-pass filter (option 1)
+	//double ballXaccF, ballYaccF;
+	//double RC = 1.0/(5.0*2*M_PI); // use cutoff freq here
+	//float alpha = deltaT/(RC+deltaT);
+	//ballXaccF = ballXaccPREV + alpha * (ballXacc - ballXaccPREV);
+	//ballYaccF = ballYaccPREV + alpha * (ballYacc - ballYaccPREV);
+	//ballXaccPREV = ballXaccF;
+	//ballYaccPREV = ballYaccF;
+
+	ballXaccPREV = ballXacc;
+	ballYaccPREV = ballYacc;
 
 	// Add low-pass filter (option 2)
 	//double ballXaccF, ballYaccF;
@@ -1148,29 +1180,41 @@ void TimerCB(int iTimer)
 	//ballYaccF = (ballYaccVEC[0] + ballYaccVEC[1] + ballYaccVEC[2]) / 3.0;
 
 	//double feedback_cap = 4.0; double feedback_scaling_x = 0.4 * pow(R / R_vis, 1); double feedback_scaling_y = 0.6 * pow(R / R_vis, 1); //0.5
-	double feedback_cap = 4.0; double feedback_scaling_x = 0.3 * pow(R/ R_vis,0.8); double feedback_scaling_y = 0.5 * pow(R/R_vis,0.8); //0.5
+	//double feedback_cap = 4.0; double feedback_scaling_x = 0.3 * pow(R/ R_vis,0.8); double feedback_scaling_y = 0.5 * pow(R/R_vis,0.8); //0.5
 
 
-	ballXaccF = -ballXaccF * feedback_scaling_x; ballYaccF = ballYaccF * feedback_scaling_y;
+	//ballXaccF = -ballXaccF * feedback_scaling_x; ballYaccF = ballYaccF * feedback_scaling_y;
 
 	//if (ballXacc > feedback_cap) { ballXacc = feedback_cap; }
 	//else if (ballXacc < -feedback_cap) { ballXacc = -feedback_cap; }
 	//if (ballYacc > feedback_cap) { ballYacc = feedback_cap; }
 	//else if (ballYacc < -feedback_cap) { ballYacc = -feedback_cap; }
 
-	if (ballXaccF > feedback_cap) { ballXaccF = feedback_cap; }
-	else if (ballXaccF < -feedback_cap) { ballXaccF = -feedback_cap; }
-	if (ballYaccF > feedback_cap) { ballYaccF = feedback_cap; }
-	else if (ballYaccF < -feedback_cap) { ballYaccF = -feedback_cap; }
+	//if (ballXaccF > feedback_cap) { ballXaccF = feedback_cap; }
+	//else if (ballXaccF < -feedback_cap) { ballXaccF = -feedback_cap; }
+	//if (ballYaccF > feedback_cap) { ballYaccF = feedback_cap; }
+	//else if (ballYaccF < -feedback_cap) { ballYaccF = -feedback_cap; }
 
 	//if ((abs(sys.Xcurr[0]) >= M_PI / 2.0) &&  (abs(sys.Xcurr[2]) >= M_PI/2.0) && (mode==0)) { //max_height
 	double ballXaccFactual;
 	double ballYaccFactual;
-	if ((ballXacc != 0) && (ballYacc != 0)) {
-		float ball_mag = sqrt(pow(ballXacc, 2) + pow(ballYacc, 2));
+	float ball_mag = sqrt(pow(ballXacc, 2) + pow(ballYacc, 2));
+	if ((abs(ballXacc) > 0.005) && (abs(ballYacc) > 0.005)) {
 
+
+		//if (ballXacc > 3 * ballYacc) {
+		//	ballXaccFactual = -1 * ballXacc / ball_mag;
+		//	ballYaccFactual = 1 * ballYacc / ball_mag;
+		//}
+		//else {
 		ballXaccFactual = -2 * ballXacc / ball_mag;
 		ballYaccFactual = 2 * ballYacc / ball_mag;
+		//}
+
+		if (abs(ballXaccFactual) > 1.75) {
+			ballXaccFactual = -.5 * ballXacc / ball_mag;
+			ballYaccFactual = .5 * ballYacc / ball_mag;
+		}
 
 		ball_mag = sqrt(pow(ballXaccFactual, 2) + pow(ballYaccFactual, 2));
 		//printf("ball_mag %f \n", ball_mag);
@@ -1181,8 +1225,8 @@ void TimerCB(int iTimer)
 	}
 
 	if ((ball_energy < 1.5* mid_energy) && (mode == 0)) { //max_height //|| (ball_energy > max_energy*4)) 
-		ballXaccFactual = 0.0;
-		ballYaccFactual = 0.0;
+		ballXaccFactual = -.5 * ballXacc / ball_mag;
+		ballYaccFactual = .5 * ballYacc / ball_mag;
 		//sys.B = - damping * 10.0;
 		//top_flag = 1;
 	} 

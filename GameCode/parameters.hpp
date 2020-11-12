@@ -7,10 +7,10 @@
 //---------------------------------------------------------------------
 
 // Trial parameters (update every iteration)
-int trial_num = 48;
+int trial_num = 2;
 int support_num = 0; // 0: 0%, 1: 30%
-int freq_num = 0; // 0: 0.5Hz 1: 1Hz 2: 1.5Hz 3:2Hz 4:2.5Hz
-const int feedback_forces = 1; // 0: off, 1: on
+int freq_num = 6; // 0: 0.25Hz 1: 0.5Hz 2: 0.75Hz 3: 1Hz 4: 1.5Hz 5:2Hz 6:2.5Hz
+const int feedback_forces = 0; // 0: off, 1: on
 
 // Subject parameters (update once at the beginning)
 int subject_num = 8;
@@ -35,7 +35,7 @@ float angle_disturbance = 3.14 / 3.5;
 
 // Define possible frequency R/damping combinations -- corresponds to 0.5,1,1.5,2,2.5Hz
 const int num_freqs_tested = 4;
-double radius_options[5] = { 0.995, 0.249, 0.111, 0.062, 0.04 };
+double radius_options[7] = { 3.98, 0.995, 0.442, 0.249, 0.111, 0.062, 0.04 };
 //double damping_options[5] = { 0.23838, 0.0149, 0.00294, 0.00093, 0.00038 }; // 10s settling
 //double damping_options[5] = { 0.15892, 0.00993, 0.00196, 0.00062, 0.00025 }; // 15s settling
 //double damping_options[5] = { 0.15892/2, 0.00993/2, 0.00196/2, 0.00062/2, 0.00025/2 }; // 15s settling
@@ -45,7 +45,7 @@ double radius_options[5] = { 0.995, 0.249, 0.111, 0.062, 0.04 };
 double damping_options[5] = { 0.0,0.0,0.0,0.0,0.0 };
 
 double R = radius_options[freq_num];
-double damping = 0.05; // damping_options[freq_num];
+double damping = damping_options[freq_num];
 
 // Define possible support levels
 float support_level[2] = { -0.0, -0.3 }; // fraction of max shoulder abduction loading (0-1)
