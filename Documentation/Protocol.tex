@@ -1,0 +1,141 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{graphicx}
+\usepackage{gensymb}
+\begin{document}
+\title{The Effect of Variable Shoulder Abduction Loading on Performance in a Dynamic Task.}
+\author{Last Updated:}
+\date{\today}
+\maketitle
+\section{Preliminary Data Collection Organization}
+
+\	\	There will be 3-4 participants. Each participant will be tested under 3 levels of shoulder abduction loading (SABD)---$0\% Max,\ 20\%Max,\ and\ 50\%Max$. The order in which the level of SABD is tested will be randomized by changing the support level of the haptic master every five trials. Each set of five trials will consist of 5 unique tasks that will also be assigned in a random order. These tasks will be repeated until the subject has performed each task/support level combination 3 times for a total of 45 trials. Participants may rest in between trials for as often as they would like and must take at least a 1 minute break between the sets of 5 to relax their arm completely before changing SABD loading. 
+\section{Consent, Demographic, \& Payment Forms}
+\begin{enumerate}
+\item Read all relevant sections of consent form to subject, pointing out the setup that will be used during the experiment.
+\item Fill out optional elements section of the consent with regards to audio and video recording.
+\item Have the participant sign. Have the person who read the consent form to the participant sign and date the form.
+\item Ask the participant to fill out the demographic form. Their name should not appear on this form.
+\item Fill out the Participant Payment form completely.
+\item Make 2 copies of the consent form. Give one copy to the participant and attach one copy to the payment form. 
+\item Place the original consent form and demographic form in the study binder (To be submitted to Carolina after data collection is complete.)
+\item \textbf{Choose an appropriately sized orthosis from the drawer to attach to the HapticMaster.}
+\end{enumerate}
+\section{Protocol for Measuring Maximum Isometric Torque and Force}
+%measure x and y maxes
+\begin{enumerate}
+
+\item Ask participant to sit in the chair and strap them in.
+\item Determine which size semicircle cuff fits around the participant’s affected arm while leaving room for the cotton and cast.
+\item Wrap cotton around the participant’s arm until the cuff will fit snugly with the cast.
+\item Wrap casting material around the participant’s arm. NOTE: Make sure the saw is nearby and working.
+\item Wait a couple of minutes for the cast to harden.
+\item Set up data collection on the computer. 
+	\begin{enumerate}
+	\item The password is on the whiteboard: \texttt{engage[48}
+	\item All of the cords should already by connected correctly. We are using the first 6 from the top row to the left: Fx/y/z and Mx/y/z.
+	\item Turn the switch on the power cord underneath the monitor. 
+	\item Go to the folder ``Ola" and open the MATLAB file ``TargetDAQLindsayV8testing".
+	\begin{enumerate}
+	\item [\textbf{File not found error.}] Add the Desktop folder ``Kacey" to the MATLAB path.
+    \end{enumerate}
+	\item In the MATLAB command window, type \texttt{daq.getDevices()} to make sure MATLAB recognizes `Dev2'.
+	\item Run file \texttt{TargetDAQLindsayV8testing}.
+	\item In the GUI, go to Setup $\to$ JR3, and select ``45E15A-U760-A250L1125" for the load cell.
+	\item Go to Setup$\to$Subject Information to name the test for saved information. Data will be saved in the folder ``SubjectID" under the name given for the test.
+\end{enumerate}
+\item Position the participant's affected limb so that it is at $80\degree$ shoulder abduction, $90\degree$ elbow flexion, and $40\degree$ horizontal abduction by moving the chair, the angle of the JR3 arm and the linear position of the JR3 on the platform. The participant’s elbow should rest on the red foam support.
+\item Screw in the cuff.
+\item Measure arm length (shoulder to elbow) in mm and forearm length (elbow to mark on the cuff) in mm. Record this on the subject data sheet.
+\item Fill in the fields in the upper right corner of the GUI. 
+	\begin{enumerate}
+	\item [\textbf{Abduction}] $80\degree $
+	\item [\textbf{Elbow flexion}] $90\degree$
+	\item [\textbf{z-offset}] $89\ mm$
+	\item [\textbf{\# channels}]$6$
+	\item[\textbf{sampling rate}] $1000\ Hz$
+	\item [\textbf{time}] $10\ s$
+	\item [\textbf{Arm length}] Value from the subject data sheet. 
+	\item [\textbf{Forearm length}] Value from the subject data sheet.
+	\end{enumerate}
+\item Instruct the participant to relax their arm. Zero the load cell to the participant's arm weight by selecting ``Zero FM".
+\item Collect isometric data by instructing the participant according to the script below.\\
+
+	\textit{``When I tell you the test is starting, you should try to pull you arm up straight up from where it is sitting. Try to avoid pulling your arm toward your body or pushing it away. You will have 10 seconds to pull straight up as hard as you can. You don't have to hold the entire 10 seconds, and I will let you know when the test is over."}\\
+	
+At the end of the trial, the GUI will plot the data. For the torque sensor, the x-direction is up, the y-direction is in/out of the cuff, and the z-direction corresponds to elbow flexion.
+Write down the maximum force measurement in the x-direction (Fx) this is the top number printed on the top left plot.  Record the maximum shoulder abduction torque (SAA) which is the top number printed on the bottom plot.
+\item Repeat measurements 3 times and average the values.
+\end{enumerate}
+
+\section{Protocol for Primary Data Collection}
+\textbf{Note: The HapticMaster MUST be initialized before placing the subject in the experimental setup. Run Setup.exe with no load on the JR-3. The message ``Initializing HapticMaster." should appear in the terminal. Exit Setup.exe after the end-effector has moved to the home position.}
+%adjust time of practice
+%threshold x-y forces with max forces
+\begin{enumerate}
+\item Enter the value for \texttt{maxForce} based on the measurements from isometric setup into \texttt{ballinbowl.cpp} and \texttt{findmax.cpp}.
+\item Run \texttt{Setup.exe} from \texttt{setup.sln} in Visual Studio. 
+\item Measure weight of the participant's affected limb and workspace.
+	\begin{enumerate}
+	\item Position the participant's arm so that it is at $80\degree$ shoulder abduction, $90\degree$ elbow flexion, and $40\degree$ horizontal abduction by adjusting the height and position of the chair and the position of the HapticMaster.
+	\item Instruct the subject to relax their arm and measure their limb weight.
+	\item Adjust the height of the participant such that the particpant's arm is between $60\degree$ and $70\degree$ shoulder abduction. 
+	\item Position the subject's arm with a flexed elbow in front of their chest as close to their torso as is comfortable. Press enter to record the position of the end-effector.
+	\item Stand on the mark to the participant's right, so that when they reach towards you, their arm at a $45\degree$ angle with the seatback of the chair.\\
+\textit{``Reach towards me, extending your arm out as much as you can."}\\	
+	 Press enter to record the position of the end-effector.
+	\item Stand on the mark to the participant's left, so that when they reach towards you, their arm is at a $45\degree$ angle with the seatback of the chair.\\
+\textit{``Reach towards me, extending your arm out as much as you can."}\\	
+	 Press enter to record the position of the end-effector.
+	\item Ensure that \texttt{Desktop/NIH/Setup/test.csv} updated with the subject’s values.
+	\item Make a copy of \texttt{test.csv} and rename the copy as \texttt{s00\_mmddyyy\_setup.csv}.
+	\end{enumerate}
+\item Set the values of the following variables at the top of \texttt{ballinbowl.cpp}:
+\begin{enumerate}
+\item[\texttt{subject\_num:} ]Set according to assigned participant number.
+\item[\texttt{trial\_num}:]$0$
+\item[\texttt{support\_level}: ]$0.$
+\item[\texttt{task\_num}: ]$0$
+\end{enumerate}
+\item Allow the participant to practice by running the example task and reading from the script below:\\
+
+\textit{``When I start the trial, the robot will slowly move your arm towards the starting position. You may relax your arm during this time. The trial will start with your arm resting on a virtual table. When I tell you the trial is starting, you should lift your arm off the virtual table."}
+
+Start the visualization.
+
+\textit{``The position of your arm is going to control the position of the bowl, which is marked by the blue square."} 
+
+Start test task.
+
+\textit{``If you lift your arm up, the blue box will appear. The blue box marks the position of the bowl that you get to control. If your arm is resting on the table, the blue box will disappear.
+As you move the bowl, you should try to keep the ball from going up over the edge of the bowl. When you get close to the edge, the ball will turn orange. When you are over the edge, the ball will turn red.
+As you move, you are going to feel the movement of the ball. 
+Try to move the bowl around to get the ball going, then hold your arm still."}
+
+Wait for the subject to excite the ball and feel the feedback forces. Ask if they understand.
+
+\textit{``If the ball gets moving too quickly, you can try to hold the bowl still or you can move slowly to compensate for the movement of the ball."}
+
+Restart the practice task as necessary. Ask if they understand how they can try to calm the movement of the ball.
+
+\textit{``The goal of this game is to collect the green dots as quickly as possible while avoiding the ball falling out of the bowl. As you hover over the green dots with the bottom of the bowl, the green dots will disappear and you will score points. 
+You cannot collect green dots when the blue box has disappeared.
+The blue box will disappear whenever your arm is resting on the virtual table or the ball is jumping over the edge of the bowl."}
+
+Pause for them to make the blue box appear and disappear by lifting and lowering their arm and overexciting the ball.
+
+\textit{``After 20 seconds have elapsed, the game will be over and your arm will be supported. You can use the time in between trials to relax. I will ask you before we begin a new trial."}
+
+\textit{``We are going to do a total of 45 trials in sets of 5. Between each set of 5, we are going to change the weight of your arm. On the lowest setting, it will feel like you aren't holding up anything, and on the highest setting it will feel like you have a heavy weight hanging from your arm. The arrangement of the green dots will change, but the object of the game will be the same. You can try to collect them in whatever order you want."}
+
+Repeat practice and explain as necessary.
+
+\item Set the values of the variables \texttt{trial\_num, task\_num, and support\_level} in \texttt{ballinbowl.cpp} according to the precomputed test order.\label{setval}
+\item Run \texttt{ballinbowl.exe}.
+
+\item Collect data!\label{collectdata}
+\item Repeat steps \ref{setval}-\ref{collectdata} according to the pre-generated random schedule.
+
+\end{enumerate}
+
+\end{document}
