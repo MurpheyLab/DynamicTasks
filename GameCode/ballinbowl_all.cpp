@@ -239,30 +239,30 @@ void DrawBall(void)
 	ball_energy = (mass * gravity * BallPosition[PosZ] * R/RR_vis) + (0.5 * mass * (pow(R*sys.Xcurr[1], 2) + pow(R * sys.Xcurr[3],2)));
 
 
-	if (ball_energy > max_energy * 4) {
+	if (ball_energy > max_energy * 4 && ball_moving==1) {
 		glColor3f(1.0f, 0.0f, 0.0f); // red
 		ball_intensity = 2; 
 		//printf("ball energy %f \n", ball_energy/ max_energy);
 	}
-	else if (ball_energy > max_energy * 3.25) {
+	else if (ball_energy > max_energy * 3.25 && ball_moving == 1) {
 
 		glColor3f(1.0f, 0.25f, 0.0f); // red - orange
 		ball_intensity = 1;
 	}
-	else if (ball_energy > max_energy* 2.5) {
+	else if (ball_energy > max_energy* 2.5 && ball_moving == 1) {
 		glColor3f(1.0f, 0.5f, 0.0f); // orange
 		ball_intensity = 1;
 	}
-	else if (ball_energy > max_energy * 1.75) {
+	else if (ball_energy > max_energy * 1.75 && ball_moving == 1) {
 		glColor3f(1.0f, 0.75f, 0.0f); // yellow - orange
 		ball_intensity = 1;
 	}
-	else if (ball_energy > max_energy) {
+	else if (ball_energy > max_energy || ball_moving == 0) {
 		glColor3f(1.0f, 1.0f, 0.0f); // yellow
 		ball_intensity = 0;
 	}
 	else {
-		glColor3f(0.0f, 1.0f, 0.0f); // green
+		glColor3f(0.0f, 1.0f, 0.0f && ball_moving == 1); // green
 		ball_intensity = 0;
 	}
 
@@ -542,7 +542,7 @@ void CheckFlags(void)
     GLfloat rand_x, rand_y;
 
 	// here we check for: 1. ball is in bowl, 2. trial is running, 3. person is above the haptic table
-	if ((ball_energy < max_energy) && (trial_flag == 1.0) && (CurrentPosition[PosZ] > z_tolerance)) 
+	if (((ball_energy < max_energy) || (ball_moving == 0)) && (trial_flag == 1.0) && (CurrentPosition[PosZ] > z_tolerance))
 	{
 		scoring_enabled = 1.0;
 	}
@@ -875,7 +875,7 @@ void Display(void)
 	{
 		renderer->DrawRandomFlags(goals_rand, size_of_flag);
 	}
-	DrawWater();
+	if (ball_moving == 1) {	DrawWater();}
 	DrawLabels();
 	if (trial_flag == 0.0 && personalbests_flag == 1) { DrawPersonalBestLabel(); }
 	// water drop flag is true if timer is reset
@@ -895,7 +895,7 @@ void Display(void)
 			reset_drop_timer = true;
 		}
 	}
-	renderer->DrawWaterDrops(CurrentPosition, ball_direction_temp, ball_intensity_temp, drop_duration, RR_vis);
+	if (ball_moving == 1) {renderer->DrawWaterDrops(CurrentPosition, ball_direction_temp, ball_intensity_temp, drop_duration, RR_vis); }
 	#else
 	//gluLookAt(0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0); // for top down view 
 	//gluLookAt(0.5, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0); // for participant view point
@@ -909,7 +909,7 @@ void Display(void)
 	DrawTimerBar();
 	if (trial_flag == 0.0 && personalbests_flag == 1) { DrawPersonalBestBoard(); }
 	DrawFlags();
-	DrawWater();
+	if (ball_moving == 1) { DrawWater(); }
 	DrawLabels();
 	if (trial_flag == 0.0 && personalbests_flag == 1) { DrawPersonalBestLabel(); }
 	#endif 

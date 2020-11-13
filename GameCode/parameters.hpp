@@ -18,7 +18,7 @@ int ball_moving = 0; // 0: not moving, 1: moving
 int personalbests_flag = 0; // 0: off for learning, 1: on for data collection
 
 // Input mode
-const int mode = 0; // 0: HapticMASTER control 1: joystick control 2: no input
+const int mode = 1; // 0: HapticMASTER control 1: joystick control 2: no input
 
 // Visualization mode
 #define TEXTURES_ON // uncomment this line to use textures
