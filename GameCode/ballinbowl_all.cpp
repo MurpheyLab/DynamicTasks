@@ -229,11 +229,12 @@ void DrawFlags(void)
 //---------------------------------------------------------------------
 void DrawBall(void)
 {
+	
 	BallPosition[PosX] = CurrentPosition[PosX] + RR_vis * sin(sys.Xcurr[0]) * cos(sys.Xcurr[2]);
 	BallPosition[PosY] = CurrentPosition[PosY] + RR_vis * sin(sys.Xcurr[2]) * cos(sys.Xcurr[0]);
-	BallPosition[PosZ] = RR_vis - RR_vis * cos(sys.Xcurr[0]) * cos(sys.Xcurr[2]); 
+	BallPosition[PosZ] = RR_vis - RR_vis * cos(sys.Xcurr[0]) * cos(sys.Xcurr[2]);
 	//BallPosition[PosZ] = RR_vis - cos(asin(sqrt(pow(sin(sys.Xcurr[0]),2) + pow(sin(sys.Xcurr[2]),2))))*RR_vis;
-
+	
 	//ball_energy = (mass * gravity * BallPosition[PosZ]) + (0.5 * mass * (pow(RR_vis * sys.Xcurr[1], 2) + pow(RR_vis * sys.Xcurr[3], 2)));
 	ball_energy = (mass * gravity * BallPosition[PosZ] * R/RR_vis) + (0.5 * mass * (pow(R*sys.Xcurr[1], 2) + pow(R * sys.Xcurr[3],2)));
 
@@ -285,26 +286,12 @@ void DrawBall(void)
 	//	ball_intensity = 0; // DON'T CHANGE
 	//} 
 
-	//// Old Protocol - based on ball height
-	//if (BallPosition[PosZ] > RR_vis/5 && BallPosition[PosZ] <= 0.4*RR_vis)
-	//{
-	//	glColor3f(1.0f, 0.5f, 0.0f); // orange
-	//	ball_intensity = 1; // DON'T CHANGE   ball_intensity is on a range from 0 - 2
-	//} 
-	//else if (BallPosition[PosZ] > 0.4*RR_vis)
-	//{
-	//	glColor3f(1.0f, 0.0f, 0.0f); // red
-	//	ball_intensity = 2; // DON'T CHANGE
-	//	
-	//}
-	//else
-	//{
-	//	glColor3f(1.0f, 1.0f, 0.0f); // yellow
-	//	ball_intensity = 0; // DON'T CHANGE
-	//}
-
 	glPushMatrix();
-	glTranslatef(BallPosition[PosX], BallPosition[PosY], BallPosition[PosZ] + radius);
+	if (ball_moving == 1) {
+		glTranslatef(BallPosition[PosX], BallPosition[PosY], BallPosition[PosZ] + radius);
+	} else {
+		glTranslatef(CurrentPosition[PosX], CurrentPosition[PosY], radius);
+	}
 	glutSolidSphere(radius, 20, 20);
 	glPopMatrix();
 }
@@ -878,7 +865,7 @@ void Display(void)
 	DrawBall();
 	DrawBowl();
 	DrawTimerBar();
-	if (trial_flag == 0.0) { DrawPersonalBestBoard(); }
+	if (trial_flag == 0.0 && personalbests_flag==1) { DrawPersonalBestBoard(); }
 	DrawBowlBottom();
 	if (game_version == 'f')
 	{
@@ -890,7 +877,7 @@ void Display(void)
 	}
 	DrawWater();
 	DrawLabels();
-	if (trial_flag == 0.0) { DrawPersonalBestLabel(); }
+	if (trial_flag == 0.0 && personalbests_flag == 1) { DrawPersonalBestLabel(); }
 	// water drop flag is true if timer is reset
 	if (reset_drop_timer)
 	{
@@ -920,11 +907,11 @@ void Display(void)
 	DrawBowl();
 	DrawBowlBottom();
 	DrawTimerBar();
-	if (trial_flag == 0.0) { DrawPersonalBestBoard(); }
+	if (trial_flag == 0.0 && personalbests_flag == 1) { DrawPersonalBestBoard(); }
 	DrawFlags();
 	DrawWater();
 	DrawLabels();
-	if (trial_flag == 0.0) { DrawPersonalBestLabel(); }
+	if (trial_flag == 0.0 && personalbests_flag == 1) { DrawPersonalBestLabel(); }
 	#endif 
 
 
@@ -987,36 +974,6 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 	case 27: // ESC key pressed - stop motion and simulation
 		printf("ESC pressed: exit routine starting \n");
 		logfile.close();
-
-		if (score > pb_vec[freq_num][feedback_forces]) {
-			pb_vec[freq_num][feedback_forces] = score;
-
-			ofstream myfile;
-			myfile.open(personalbestspath);
-			for (int i = 0; i < num_freqs_tested; i++) {
-				myfile << pb_vec[i][0] << ',';
-			}
-			myfile << '\n';
-			for (int i = 0; i < num_freqs_tested; i++) {
-				myfile << pb_vec[i][1] << ',';
-			}
-			myfile.close();
-
-			printf("-------------Participant beat their personal best!----------------\n");
-
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glPushMatrix();
-			glutPostRedisplay();
-			renderer->DrawTrophy();
-			DrawPersonalBestBoard;
-			DrawPersonalBestLabel;
-			glPopMatrix();
-			glutSwapBuffers();
-			double curr_time = clock() / (float)CLOCKS_PER_SEC;
-			while (clock() / (float)CLOCKS_PER_SEC - curr_time < 2.0) {}
-		}
-
-
 
 		// Start normal shutdown routine
 		if (mode == 0) // if using HapticMASTER
@@ -1133,7 +1090,7 @@ void TimerCB(int iTimer)
 
 	CheckFlags();
 
-	// Update forces from ball movement (option 1)
+	//// Update forces from ball movement (option 1)
 	//double ballXacc, ballYacc;
 	//double thetaXacc, thetaYacc;
 	//thetaXprev[0] = thetaXprev[1]; thetaXprev[1] = thetaXprev[2]; thetaXprev[2] = sys.Xcurr[0];
@@ -1141,10 +1098,8 @@ void TimerCB(int iTimer)
 	//thetaYprev[0] = thetaYprev[1]; thetaYprev[1] = thetaYprev[2]; thetaYprev[2] = sys.Xcurr[2];
 	//thetaYacc = -(2.0 * thetaYprev[1] - thetaYprev[2] - thetaYprev[0]) / (deltaTvec[1] * deltaTvec[2]);
 	//ballYacc = yacc - RR_vis * sin(sys.Xcurr[2]) * (cos(sys.Xcurr[0]) * (pow(sys.Xcurr[1], 2) + pow(sys.Xcurr[3], 2)) + sin(sys.Xcurr[0]) * thetaXacc) + RR_vis * cos(sys.Xcurr[2]) * (-2 * sin(sys.Xcurr[0]) * sys.Xcurr[1] * sys.Xcurr[3] + cos(sys.Xcurr[0]) * thetaYacc);
-	////ballYacc = yacc - sys.h * sin(sys.Xcurr[2]) * (cos(sys.Xcurr[0]) * (pow(sys.Xcurr[1], 2) + pow(sys.Xcurr[3], 2)) + sin(sys.Xcurr[0]) * thetaXacc) + sys.h * cos(sys.Xcurr[2]) * (-2 * sin(sys.Xcurr[0]) * sys.Xcurr[1] * sys.Xcurr[3] + cos(sys.Xcurr[0]) * thetaYacc);
 	//ballXacc = xacc - RR_vis * cos(sys.Xcurr[0]) * (-2 * sin(sys.Xcurr[2]) * sys.Xcurr[1] * sys.Xcurr[3] + cos(sys.Xcurr[2]) * thetaXacc) - RR_vis * sin(sys.Xcurr[0]) * (cos(sys.Xcurr[2]) * (pow(sys.Xcurr[1], 2) + pow(sys.Xcurr[3], 2)) + sin(sys.Xcurr[2]) * thetaYacc);
-	////ballXacc = xacc - sys.h * cos(sys.Xcurr[0]) * (-2 * sin(sys.Xcurr[2]) * sys.Xcurr[1] * sys.Xcurr[3] + cos(sys.Xcurr[2]) * thetaXacc) - sys.h * sin(sys.Xcurr[0]) * (cos(sys.Xcurr[2]) * (pow(sys.Xcurr[1], 2) + pow(sys.Xcurr[3], 2)) + sin(sys.Xcurr[2]) * thetaYacc);
-
+	
 	// Update forces from ball movement (option 2)
 	double ballXacc, ballYacc;
 	ballXprev[0] = ballXprev[1]; ballXprev[1] = ballXprev[2]; ballXprev[2] = BallPosition[PosX];
@@ -1154,7 +1109,7 @@ void TimerCB(int iTimer)
 	//ballXacc = -2.0 * (deltaTvec[1] * (ballXprev[2] - ballXprev[1]) - deltaTvec[2] * (ballXprev[1] - ballXprev[0])) / (deltaTvec[1] * deltaTvec[2] * (deltaTvec[1] + deltaTvec[2]));
 	//ballYacc = -2.0 * (deltaTvec[1] * (ballYprev[2] - ballYprev[1]) - deltaTvec[2] * (ballYprev[1] - ballYprev[0])) / (deltaTvec[1] * deltaTvec[2] * (deltaTvec[1] + deltaTvec[2]));
 
-	// Add damping in the x direction
+	//// Add damping in the x direction
 	//float BaccX = 0.03;//0.03; // 0.05; // 0.015;
 	//ballXacc = ballXacc - BaccX * (ballXacc - ballXaccPREV) / deltaTdefault;
 	//float BaccY = 0.005;//0.005; // 0.05; // 0.015;
@@ -1168,48 +1123,39 @@ void TimerCB(int iTimer)
 	//ballYaccF = ballYaccPREV + alpha * (ballYacc - ballYaccPREV);
 	//ballXaccPREV = ballXaccF;
 	//ballYaccPREV = ballYaccF;
+	//ballXaccPREV = ballXacc;
+	//ballYaccPREV = ballYacc;
 
-	ballXaccPREV = ballXacc;
-	ballYaccPREV = ballYacc;
-
-	// Add low-pass filter (option 2)
+	//// Add low-pass filter (option 2)
 	//double ballXaccF, ballYaccF;
 	//ballXaccVEC[0] = ballXaccVEC[1]; ballXaccVEC[1] = ballXaccVEC[2]; ballXaccVEC[2] = ballXacc;
 	//ballYaccVEC[0] = ballYaccVEC[1]; ballYaccVEC[1] = ballYaccVEC[2]; ballYaccVEC[2] = ballYacc;
 	//ballXaccF = (ballXaccVEC[0] + ballXaccVEC[1] + ballXaccVEC[2]) / 3.0;
 	//ballYaccF = (ballYaccVEC[0] + ballYaccVEC[1] + ballYaccVEC[2]) / 3.0;
 
+	//// Add scaling and cap to the forces
 	//double feedback_cap = 4.0; double feedback_scaling_x = 0.4 * pow(R / R_vis, 1); double feedback_scaling_y = 0.6 * pow(R / R_vis, 1); //0.5
 	//double feedback_cap = 4.0; double feedback_scaling_x = 0.3 * pow(R/ R_vis,0.8); double feedback_scaling_y = 0.5 * pow(R/R_vis,0.8); //0.5
-
-
 	//ballXaccF = -ballXaccF * feedback_scaling_x; ballYaccF = ballYaccF * feedback_scaling_y;
-
+	//// option 1: if filtering off
 	//if (ballXacc > feedback_cap) { ballXacc = feedback_cap; }
 	//else if (ballXacc < -feedback_cap) { ballXacc = -feedback_cap; }
 	//if (ballYacc > feedback_cap) { ballYacc = feedback_cap; }
 	//else if (ballYacc < -feedback_cap) { ballYacc = -feedback_cap; }
-
+	//// option 2: if filtering on
 	//if (ballXaccF > feedback_cap) { ballXaccF = feedback_cap; }
 	//else if (ballXaccF < -feedback_cap) { ballXaccF = -feedback_cap; }
 	//if (ballYaccF > feedback_cap) { ballYaccF = feedback_cap; }
 	//else if (ballYaccF < -feedback_cap) { ballYaccF = -feedback_cap; }
 
-	//if ((abs(sys.Xcurr[0]) >= M_PI / 2.0) &&  (abs(sys.Xcurr[2]) >= M_PI/2.0) && (mode==0)) { //max_height
+	
+	// Lower forces in the x direction to avoid oscillations
 	double ballXaccFactual;
 	double ballYaccFactual;
 	float ball_mag = sqrt(pow(ballXacc, 2) + pow(ballYacc, 2));
 	if ((abs(ballXacc) > 0.005) && (abs(ballYacc) > 0.005)) {
-
-
-		//if (ballXacc > 3 * ballYacc) {
-		//	ballXaccFactual = -1 * ballXacc / ball_mag;
-		//	ballYaccFactual = 1 * ballYacc / ball_mag;
-		//}
-		//else {
 		ballXaccFactual = -2 * ballXacc / ball_mag;
 		ballYaccFactual = 2 * ballYacc / ball_mag;
-		//}
 
 		if (abs(ballXaccFactual) > 1.75) {
 			ballXaccFactual = -.5 * ballXacc / ball_mag;
@@ -1218,17 +1164,14 @@ void TimerCB(int iTimer)
 
 		ball_mag = sqrt(pow(ballXaccFactual, 2) + pow(ballYaccFactual, 2));
 		//printf("ball_mag %f \n", ball_mag);
-
 	} else {
 		ballXaccFactual = 0.0;
 		ballYaccFactual = 0.0;
 	}
 
-	if ((ball_energy < 1.5* mid_energy) && (mode == 0)) { //max_height //|| (ball_energy > max_energy*4)) 
+	if ((ball_energy < 1.5* mid_energy) && (mode == 0)) { //|| (ball_energy > max_energy*4)) 
 		ballXaccFactual = -.5 * ballXacc / ball_mag;
 		ballYaccFactual = .5 * ballYacc / ball_mag;
-		//sys.B = - damping * 10.0;
-		//top_flag = 1;
 	} 
 	
 	if ((mode == 0) && (feedback_forces == 1)) // if using HapticMASTER
@@ -1251,7 +1194,7 @@ void TimerCB(int iTimer)
 	{
 		logfile.close();
 
-		if (score > pb_vec[freq_num][feedback_forces]) {
+		if (score > pb_vec[freq_num][feedback_forces] && personalbests_flag == 1) {
 			pb_vec[freq_num][feedback_forces] = score;
 
 			ofstream myfile;
@@ -1451,8 +1394,6 @@ int main(int argc, char** argv)
 	printf("sign: %f x_angle: %f y_angle: %f", sign, x_ang, y_ang);
 
 	sys.Xcurr = { x_ang,0.0,y_ang,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 }; // M_PI / 3.0
-
-	//sys.Xcurr = { 2* M_PI / 2.0,0.0,M_PI / 3.0,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 }; // M_PI / 3.0
 
 	printf("Visualization starting...\n");
 

@@ -6,14 +6,16 @@
 // while running experiments.*
 //---------------------------------------------------------------------
 
+// Subject parameters (update once at the beginning)
+int subject_num = 8;
+
 // Trial parameters (update every iteration)
-int trial_num = 2;
+int trial_num = 0;
 int support_num = 0; // 0: 0%, 1: 30%
 int freq_num = 6; // 0: 0.25Hz 1: 0.5Hz 2: 0.75Hz 3: 1Hz 4: 1.5Hz 5:2Hz 6:2.5Hz
 const int feedback_forces = 0; // 0: off, 1: on
-
-// Subject parameters (update once at the beginning)
-int subject_num = 8;
+int ball_moving = 0; // 0: not moving, 1: moving 
+int personalbests_flag = 0; // 0: off for learning, 1: on for data collection
 
 // Input mode
 const int mode = 0; // 0: HapticMASTER control 1: joystick control 2: no input
@@ -42,7 +44,7 @@ double radius_options[7] = { 3.98, 0.995, 0.442, 0.249, 0.111, 0.062, 0.04 };
 //double damping_options[5] = { 0.137238/2, 0.008577/2, 0.001694/2, 0.000536/2, 0.000220/2 }; // 10s settling to 30 degrees
 //double damping_options[5] = { 0.03531, 0.002207, 0.000436, 0.000138, 0.000056 }; // 15s settling
 
-double damping_options[5] = { 0.0,0.0,0.0,0.0,0.0 };
+double damping_options[7] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
 double R = radius_options[freq_num];
 double damping = damping_options[freq_num];
@@ -50,37 +52,7 @@ double damping = damping_options[freq_num];
 // Define possible support levels
 float support_level[2] = { -0.0, -0.3 }; // fraction of max shoulder abduction loading (0-1)
 
-//float damping = 0.0;
-// Difficulty/frequency parameters (R represents pendulum length)
-// original (1.88 Hz)
+//// Difficulty/frequency parameters (R represents pendulum length)
+//// original (1.88 Hz)
 //float R = 0.07;
-//float damping = 0.00313; // 0.005;
-
-// 0.5 Hz
-//int freq = 0;
-//float R = 0.995;
-//float damping = 0.15892; // 0.23838;
-// 1 Hz
-//int freq = 1;
-//float R = 0.249;
-//float damping = 0.00993; // 0.0149;
-// 1.5 Hz
-//int freq = 4;
-//float R = 0.111;
-//float damping = 0.00196; // 0.00294;
-// 2 Hz
-//int freq = 2;
-//float R = 0.062;
-//float damping = 0.00062; // 0.00093;
-// 2.5 Hz
-//int freq = 5;
-//float R = 0.04;
-//float damping = 0.00025; // 0.00038;
-// 3 Hz
-//int freq = 3;
-//float R = 0.028;
-//float damping = 0.00012; // 0.00018;
-// 4 Hz
-//float R = 0.016;
-//float damping = 0.00004; // 0.00006;
-
+//float damping = 0.005;
