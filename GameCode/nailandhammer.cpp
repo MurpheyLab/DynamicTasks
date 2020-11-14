@@ -30,7 +30,7 @@ const int SCREEN_HEIGHT = 1200;
 //---------------------------------------------------------------------
 
 // at the beginning only
-int subject_num = 8;
+int subject_num = 3;
 float maxForce = 71.465; //input value from isometric protocol (Fx)
 #define TF 20.0 // length of trial
 
@@ -40,7 +40,7 @@ char game_version = 'i'; // 2 different game versions: 'a' for nails on an arc, 
 const int nail_forces = 1; // option to enable wall feedback: '0' if off, '1' if on
 const int rightleft = 0; // '0' for nails to appear on the right and '1' for nails to appear on the left and '2' for nails to appear all around
 
-int trial_num = 12;
+int trial_num = 15;
 int support_num = 0; // 0: 0%, 1: 30%
 
 //---------------------------------------------------------------------
@@ -66,7 +66,7 @@ float beg_sys_time = 0.0;
 float deltaT = 0.01;
 #define table_z -0.14 // -0.17
 double z_tolerance = table_z + 0.01; // -0.16 // if lower, person can eat flags while slacking
-float size_of_section = 0.02;
+float size_of_section = 0.018;
 float tol_delta = size_of_section * 0.6; // for "nailing in" a section
 #define angle_tol 20 // 15 // alignment of movement direction with angle of nail
 #define minvelx 0.1
@@ -88,7 +88,7 @@ double CurrentForce[3];
 double springPos[3] = { -0.05,0.05,table_z }; // x was 0.0
 
 // variables for nail task
-#define numsections 5
+#define numsections 7
 #define numnails 9
 const int numgoals = numnails * numsections; // 7 nails x 5 sections each
 GLfloat goals[numnails][numsections][5]; // x, y, z, angle, color, nail#
@@ -290,10 +290,10 @@ void DefineTask(void)
 
 	int anglemin, anglemax;
 	if (rightleft == 1) {
-		anglemin = 190; anglemax = 280;
+		anglemin = 180; anglemax = 270;
 	}
 	else if (rightleft == 0) {
-		anglemin = 90; anglemax = 180;
+		anglemin = 100; anglemax = 190;
 	}
 	else {
 		anglemin = 90; anglemax = 280;

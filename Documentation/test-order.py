@@ -3,7 +3,7 @@ import numpy as np
 import random
 
 minsub = 1
-maxsub = 2
+maxsub = 8
 
 for sub in range(minsub,maxsub+1):
     filename = "S0"+str(sub)+"_testorder.csv"
