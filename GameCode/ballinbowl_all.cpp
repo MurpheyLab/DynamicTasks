@@ -50,7 +50,8 @@ const char* tasklist[6] = { taskpath0, taskpath1, taskpath2, taskpath3, taskpath
 
 // Define file for logging data - this is assuming game version 'f'
 const char* taskpath = tasklist[task_num];
-string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL" + to_string(support_num) + "_F" + to_string(feedback_forces) + "_B" + to_string(ball_moving) + ".csv";
+//string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL" + to_string(support_num) + "_F" + to_string(feedback_forces) + "_B" + to_string(ball_moving) + ".csv";
+string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
 
 // Define file for logging data - this is assuming game version 'i'
 //string logpath = "OutputData_S" + to_string(subject_num) + "_Freq" + to_string(freq) + "_SL" + to_string(support_num) + "_Trial" + to_string(trial_num) + ".csv";
@@ -75,7 +76,7 @@ double z_tolerance = table_z + 0.01; // -0.16 // if lower, person can eat flags 
 #define tol_delta 0.008
 #define size_of_flag 0.008 
 
-int pb_vec[num_freqs_tested][3];
+int pb_vec[num_freqs_tested][2];
 
 static GLUquadricObj * q; // water object
 
@@ -542,7 +543,7 @@ void CheckFlags(void)
     GLfloat rand_x, rand_y;
 
 	// here we check for: 1. ball is in bowl, 2. trial is running, 3. person is above the haptic table
-	if (((ball_energy < max_energy) || (ball_moving == 0)) && (trial_flag == 1.0) && (CurrentPosition[PosZ] > z_tolerance))
+	if (((ball_energy < max_energy) || (ball_moving == 0)) && (trial_flag == 1.0) && ((CurrentPosition[PosZ] > z_tolerance) || support_level[support_num]<-1.0)
 	{
 		scoring_enabled = 1.0;
 	}
@@ -739,7 +740,7 @@ void DrawText3D(GLfloat x, GLfloat y, GLfloat z, const char* text)
 }
 
 void DrawPersonalBestLabel(void) {
-	string score_string = to_string(pb_vec[freq_num][condition]);
+	string score_string = to_string(pb_vec[support_num][arm]);
 	char* cscore = const_cast<char*>(score_string.c_str());
 
     glLoadIdentity();
@@ -1194,8 +1195,8 @@ void TimerCB(int iTimer)
 	{
 		logfile.close();
 
-		if (score > pb_vec[freq_num][condition] && personalbests_flag == 1) {
-			pb_vec[freq_num][condition] = score;
+		if (score > pb_vec[support_num][arm] && personalbests_flag == 1) {
+			pb_vec[support_num][arm] = score;
 
 			ofstream myfile;
 			myfile.open(personalbestspath);
@@ -1206,10 +1207,10 @@ void TimerCB(int iTimer)
 			for (int i = 0; i < num_freqs_tested; i++) {
 				myfile << pb_vec[i][1] << ',';
 			}
-			myfile << '\n';
-			for (int i = 0; i < num_freqs_tested; i++) {
-				myfile << pb_vec[i][2] << ',';
-			}
+			//myfile << '\n';
+			//for (int i = 0; i < num_freqs_tested; i++) {
+			//	myfile << pb_vec[i][2] << ',';
+			//}
 			myfile.close();
 
 			printf("-------------Participant beat their personal best!----------------\n");
@@ -1284,8 +1285,8 @@ int main(int argc, char** argv)
 
 	FILE* pbfile;
 	pbfile = fopen(personalbestspath, "r");
-	fscanf(pbfile, "%d,%d,%d,%d\n,%d,%d,%d,%d\n,%d,%d,%d,%d\n", &pb_vec[0][0], &pb_vec[1][0], &pb_vec[2][0], &pb_vec[3][0], &pb_vec[0][1], &pb_vec[1][1], &pb_vec[2][1], &pb_vec[3][1], &pb_vec[0][2], &pb_vec[1][2], &pb_vec[2][2], &pb_vec[3][2]);
-	printf("Personal best for this frequency is: %d.\n", pb_vec[freq_num][condition]);
+	fscanf(pbfile, "%d,%d,%d,%d\n,%d,%d,%d,%d\n,%d,%d,%d,%d\n", &pb_vec[0][0], &pb_vec[1][0], &pb_vec[2][0], &pb_vec[3][0], &pb_vec[0][1], &pb_vec[1][1], &pb_vec[2][1], &pb_vec[3][1]); // , & pb_vec[0][2], & pb_vec[1][2], & pb_vec[2][2], & pb_vec[3][2]);
+	printf("Personal best for this frequency is: %d.\n", pb_vec[support_num][arm]);
 
 
 	// Option to hardcode values
