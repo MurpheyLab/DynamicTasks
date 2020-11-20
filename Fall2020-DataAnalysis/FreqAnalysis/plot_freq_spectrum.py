@@ -29,13 +29,7 @@ def xy_spectrum(w,xdata,ydata,w_resonance,title,xlabel,ylabel,legend,linestyles,
         l = ax[0].plot([w_resonance[0], w_resonance[0]],[ymin, ymax_pend],linestyle=':',color='k')
         legend_lines.append(l)
     if len(xdata)>0:
-        #for i in range(0,len(xdata)):
-        for i in range(0,8):
-            print(len(xdata))
-            print(i)
-            print(xdata[i])
-            print(linestyles[i])
-            print(colors[i])
+        for i in range(0,len(xdata)):
             l = ax[0].plot(w,xdata[i],linestyle=linestyles[i],color=colors[i])
             legend_lines.append(l)
     fig.legend(legend_lines,'AutoUpdate','off',labels=legend,loc="center right", fontsize=9)
@@ -48,11 +42,9 @@ def xy_spectrum(w,xdata,ydata,w_resonance,title,xlabel,ylabel,legend,linestyles,
 
     # plot data
     if len(xdata)>0:
-        #for i in range(0,len(xdata)):
-        for i in range(0,8):
+        for i in range(0,len(xdata)):
             ax[0].plot(w,xdata[i],linestyle=linestyles[i],color=colors[i])
-        # for i in range(0,len(ydata)):
-        for i in range(0,8):
+        for i in range(0,len(ydata)):
             ax[1].plot(w,ydata[i],linestyle=linestyles[i],color=colors[i])
 
     # set plot parameters
@@ -91,7 +83,7 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
     ymax_pend - max y-value for pendulum line
     """
     # create plot
-    figure_size = (3.55,3.55) # inches
+    figure_size = (6,3.55) # inches
     plt.figure(1, figsize=figure_size, dpi=150)
     fig, ax =plt.subplots(nrows=1, ncols=1, sharey='row', squeeze=True, figsize=figure_size, dpi=150)
     fig.subplots_adjust(hspace=0.05)
@@ -103,8 +95,7 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
         l = ax.plot([w_resonance[0], w_resonance[0]],[ymin, ymax_pend],linestyle=':',color='k')
         legend_lines.append(l)
     if len(data)>0:
-        #for i in range(0,len(data)):
-        for i in range(0,8):
+        for i in range(0,len(data)):
             l = ax.plot(w,data[i],linestyle=linestyles[i],color=colors[i])
             legend_lines.append(l)
 
@@ -115,14 +106,15 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
 
     # plot data
     if len(data)>0:
-        #for i in range(0,len(data)):
-        for i in range(0,8):
+        for i in range(0,len(data)):
             ax.plot(w,data[i],linestyle=linestyles[i],color=colors[i])
 
     # set plot parameters
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_xlim((10^-1,w[len(w)-1]))
+    # ax.set_xscale('log')
+    # ax.set_yscale('log')
+    # ax.set_xlim((10^-1,w[len(w)-1]))
+    # ax.set_xlim((w[1],w[len(w)-1]))
+    ax.set_xlim((w[1],5))
     ax.set_ylim(ymin,ymax)
     ax.grid(True, color="#E0E0E0")
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
@@ -133,5 +125,5 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
     fig.text(0.5, 0.01,xlabel, ha='center', fontsize=10)
     fig.text(0.065, 0.5,ylabel, va='center', rotation='vertical', fontsize=10)
     fig.legend(legend_lines,labels=legend,loc="center right", fontsize=9)
-    fig.subplots_adjust(right=0.5)
+    fig.subplots_adjust(right=0.75)
     return [fig,ax]

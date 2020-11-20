@@ -92,7 +92,7 @@ def make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_siz
     # for label in (ax.get_xticklabels() + ax.get_yticklabels()):
     #     label.set_fontsize(8)
     for tick in ax.get_xticklabels():
-        tick.set_rotation(45)
+        tick.set_rotation(0)
     fig.subplots_adjust(bottom=0.2)
 
     numboxes = len(data)
@@ -106,7 +106,7 @@ def make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_siz
             boxX.append(box.get_xdata()[j])
             boxY.append(box.get_ydata()[j])
         box_coords = np.column_stack([boxX, boxY])
-        ax.add_patch(Polygon(box_coords, facecolor=box_colors[i], alpha=box_alpha[i]))
+        ax.add_patch(Polygon(box_coords, facecolor=box_colors[i], alpha=box_alpha[i],zorder=2))
 
     for i in range(numboxes):
         x_coordinate = i+1
@@ -114,8 +114,8 @@ def make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_siz
         y_std = np.std(data[i])/np.sqrt(data[i].shape[0])
         ax.plot([x_coordinate,x_coordinate],
                 [y_mean-y_std,y_mean+y_std]
-                ,'black',markersize=7,zorder=2)
+                ,'black',markersize=7,zorder=3)
         ax.plot(x_coordinate, y_mean, 'o',
-                     color='w', marker='o', markersize=7, markeredgecolor='black',zorder=3)#, linewidth=0)
+                     color='w', marker='o', markersize=7, markeredgecolor='black',zorder=4)#, linewidth=0)
 
     return [fig,ax]
