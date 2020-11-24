@@ -85,7 +85,7 @@ const char* mediumRpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Te
 const char* intenseLpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\intense_L.png";
 const char* intenseRpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\intense_R.png";
 
-string dirpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\";
+//string dirpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\";
 const char* personalbestspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\personalbests.csv";
 //const char* personalbestspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\personalbests_example.csv";
 const char* trophypath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\personal-best-trophy2.png"; // trophy.png";

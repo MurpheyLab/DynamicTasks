@@ -38,7 +38,7 @@ const int SCREEN_HEIGHT = 3000;
 
 // Define possible support levels
 //float support_level[3] = { -0.0, -0.1, -0.3 }; // fraction of max shoulder abduction loading (0-1)
-const int max_support = 0; // support level index that represents the most load
+
 
 // Define file for logging flag locations
 string logflags = dirpath + "Flags_S" + to_string(subject_num) + "_SL" + to_string(support_num) + ".csv"; 
@@ -372,7 +372,7 @@ void InitOpenGl(void)
 void DrawBowlBottom(void)
 {
 	// here we check for: 1. trial is running, 2. person is above the haptic table
-	if ((trial_flag == 1.0) && (CurrentPosition[PosZ] > z_tolerance))
+	if ((trial_flag == 1.0) && ((CurrentPosition[PosZ] > z_tolerance) || (support_level[support_num]>0.5)))
 	{
 		scoring_enabled = 1.0;
 		glColor3f(0.01f, 0.5f, 1.0f);
@@ -483,7 +483,7 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 
 			myfile.open(personalbestspath_string);
 			for (int i = 0; i < num_freqs_tested; i++) {
-				myfile << 0 << ',';
+myfile << 0 << ',';
 			}
 			myfile << '\n';
 			for (int i = 0; i < num_freqs_tested; i++) {
@@ -491,14 +491,14 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 			}
 			myfile.close();
 		}
-		
+
 		if (mode == 0) // if using HapticMASTER
 		{
 			haSendCommand(dev, "remove all", response);
 			printf("remove all ==> %s\n", response);
 			haSendCommand(dev, "set state stop", response);
 			printf("set state stop ==> %s\n", response);
-			if (haDeviceClose(dev)) 
+			if (haDeviceClose(dev))
 			{
 				printf("--- ERROR: closing device\n");
 			}
@@ -516,14 +516,14 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 // The Bowl and Ball Position
 //---------------------------------------------------------------------
 void TimerCB(int iTimer)
-{	
+{
 	// Get current position
 	if (mode == 0) // if using HapticMASTER
 	{
 		haSendCommand(dev, "get measpos", response);
 		ParseFloatVec(response, CurrentPosition[PosX], CurrentPosition[PosY], CurrentPosition[PosZ]);
 	}
-	else if (mode ==1) // if using a joystick
+	else if (mode == 1) // if using a joystick
 	{
 		int axesCount;
 		const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
@@ -568,8 +568,8 @@ void TimerCB(int iTimer)
 		path_count++;
 	}
 
-    // Poll for and process events
-    glfwPollEvents( );
+	// Poll for and process events
+	glfwPollEvents();
 
 	// Set The Timer For This Function Again
 	glutTimerFunc(10, TimerCB, 1);
@@ -581,9 +581,14 @@ void TimerCB(int iTimer)
 int main(int argc, char** argv)
 {
 	int returnValue; // for accepting returns from the robot
-	
+
 	// Set up the starting position for the spring
-	double springPos[3] = { -0.0,0.05, table_z }; //-.17
+	double springPos[3] = { -0.0,0.05, 0.0 };;
+	if (support_num == 0.0) {
+		springPos[2] = table_z+0.045; //-.17
+	} else {
+		springPos[2] =  table_z ; //-.17
+	}
 	double springStiffness = 4000.0, springDamping = 10.0, springMaxForce = 100.0; // this spring is for the home position
 	double superSpringStiffness = 4000.0, superSpringDamping = 10.0, superSpringMaxForce = 100.0; // this spring is for measuring maxForce
 
@@ -623,6 +628,33 @@ int main(int argc, char** argv)
 		returnValue = haDeviceSendString(dev, "set mySpring enable", response);
 
 		if (support_num == max_support) {
+
+			// Weigh arm
+			printf("Press 'f' then ENTER to weigh arm.\n");
+			printf("Press 's' then ENTER to skip max force measurement.\n");
+			//char key;
+			float meas_weight;
+			char key;
+			for (int j = 0; j < 4; j++) {
+				std::cin >> key;
+				std::cin.get();
+				if (key == 'f') {
+					haSendCommand(dev, "get measforce", response);
+					ParseFloatVec(response, CurrentForce[PosX], CurrentForce[PosY], CurrentForce[PosZ]);
+					meas_weight = -CurrentForce[PosZ];
+					printf("Arm Weight is %f Newtons.\n", meas_weight);
+				}
+				else {
+					printf("Skipping arm weight measurement.\n");
+					break;
+				}
+			}
+			printf("Please calculate average arm weight.\n");
+			printf("Enter the average arm weight measurement, then press ENTER.\n");
+			std::cin >> armWeight;
+			std::cin.get();
+			printf("Setting the arm weight to %f \n", armWeight);
+
 			// Switch to super spring for measuring max force
 			printf("Press ENTER to lower position for measuring max force.\n");
 			std::cin.get();
@@ -645,7 +677,6 @@ int main(int argc, char** argv)
 			// Take 3 measurements for max force
 			printf("Press 'f' then ENTER to take max force measurement for 5s.\n");
 			printf("Press 's' then ENTER to skip max force measurement.\n");
-			char key;
 			float max_force;
 			for (int j = 0; j < 4; j++) {
 				std::cin >> key;
@@ -657,7 +688,7 @@ int main(int argc, char** argv)
 						haSendCommand(dev, "get measforce", response);
 						ParseFloatVec(response, CurrentForce[PosX], CurrentForce[PosY], CurrentForce[PosZ]);
 						if (CurrentForce[PosZ] > max_force) {
-							max_force = CurrentForce[PosZ];
+							max_force = CurrentForce[PosZ] +armWeight;
 						}
 						Sleep(10);
 					}
@@ -682,31 +713,6 @@ int main(int argc, char** argv)
 			returnValue = haDeviceSendString(dev, "set mySuperSpring disable", response);
 			returnValue = haDeviceSendString(dev, "set mySpring enable", response);
 
-
-			// Weigh arm
-			printf("Press 'f' then ENTER to weigh arm.\n");
-			printf("Press 's' then ENTER to skip max force measurement.\n");
-			//char key;
-			float meas_weight;
-			for (int j = 0; j < 4; j++) {
-				std::cin >> key;
-				std::cin.get();
-				if (key == 'f') {
-					haSendCommand(dev, "get measforce", response);
-					ParseFloatVec(response, CurrentForce[PosX], CurrentForce[PosY], CurrentForce[PosZ]);
-					meas_weight = -CurrentForce[PosZ];
-					printf("Arm Weight is %f Newtons.\n", meas_weight);
-				}
-				else {
-					printf("Skipping arm weight measurement.\n");
-					break;
-				}
-			}
-			printf("Please calculate average arm weight.\n");
-			printf("Enter the average arm weight measurement, then press ENTER.\n");
-			std::cin >> armWeight;
-			std::cin.get();
-			printf("Setting the arm weight to %f \n", armWeight);
 
 			// Release arm
 			printf("Adjust person in seat and press ENTER to allow movement.\n ");
@@ -746,7 +752,7 @@ int main(int argc, char** argv)
 
 		// Set bias force (not enable yet)
 		printf("Setting bias force to %f of the max abduction force.\n", support_level[support_num]);
-		float bias = maxForce * support_level[support_num] + armWeight; // changed to subtract arm weight
+		float bias = - maxForce * support_level[support_num] + armWeight; 
 		returnValue = haDeviceSendString(dev, "create biasforce myBiasForce", response);
 		printf("Bias: %f \n", bias);
 		printf("Weight: %f \n", armWeight);

@@ -30,7 +30,7 @@ const int SCREEN_HEIGHT = 1200;
 //---------------------------------------------------------------------
 
 // at the beginning only
-int subject_num = 101;
+int subject_num = 7;
 int arm = 0; // 0: paretic, 1: non-paretic
 float maxForce = 71.465; //input value from isometric protocol (Fx)
 #define TF 20.0 // length of trial
@@ -39,22 +39,22 @@ float maxForce = 71.465; //input value from isometric protocol (Fx)
 const int mode = 0; // '0' connected to robot, '1' joystick
 char game_version = 'i'; // 2 different game versions: 'a' for nails on an arc, 'i' for infinite nails (two visible at a time)
 const int nail_forces = 1; // option to enable wall feedback: '0' if off, '1' if on
-const int rightleft = 0; // '0' for nails to appear on the right and '1' for nails to appear on the left and '2' for nails to appear all around
+const int rightleft = 1; // '0' for nails to appear on the right and '1' for nails to appear on the left and '2' for nails to appear all around
 
-int trial_num = 1;
-int support_num = 0; // 0: 0%, 1: 30%
+int trial_num = 16;
+int support_num = 1; // 0: 0%, 1: 30%
 
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
 // Define possible support levels
 //float support_level[3] = { -0.0, -0.3 }; // fraction of max shoulder abduction loading (0-1)
-float support_level[4] = { -2.0, -0.0, -0.2, -0.5 };
+float support_level[4] = { 0.6, 0.0, 0.2, 0.5 };
 
 // Files paths for defining task, reading in arm weight and workspace, and logging data
 //string logpath = dirpath + "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + ".csv";
-//string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + ".csv";
-string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
+string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL0.csv";
+//string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
 ofstream logfile;
 
 #define IPADDRESS "10.30.203.26" //"10.30.203.26"
@@ -378,7 +378,7 @@ void CheckNails(void)
 
 	// here we check for: 1. ball is in bowl, 2. trial is running, 3. person is above the haptic table
 	//printf("Nail angle is %f.\n", goals[currentnail][0][3]);
-	if ((trial_flag == 1.0) && ((CurrentPosition[PosZ] > z_tolerance) || (support_level[support_num]<-1.0)) {
+	if ((trial_flag == 1.0) && ((CurrentPosition[PosZ] > z_tolerance) || (support_level[support_num]>0.5))) {
 		scoring_enabled = 1.0;
 	}
 	else {
@@ -938,6 +938,12 @@ int main(int argc, char** argv)
 	actualYrange = ymax - ymin;
 	springPos[0] = xmax - 0.02;
 	springPos[1] = ymin + actualYrange / 2;
+	if (support_num == 0.0) {
+		springPos[2] = table_z + 0.045; //-.17
+	}
+	else {
+		springPos[2] = table_z; //-.17
+	}
 
 	fclose(setupfile);
 
@@ -973,7 +979,7 @@ int main(int argc, char** argv)
 
 		// Set bias force
 		printf("Setting bias force to %f of the max abduction force.\n", support_level[support_num]);
-		float bias = maxForce * support_level[support_num] + armWeight; //+ 20;
+		float bias = -maxForce * support_level[support_num] + armWeight;
 		returnValue = haDeviceSendString(dev, "create biasforce myBiasForce", response);
 		printf("bias: %f \n", bias);
 		returnValue = haSendCommand(dev, "set myBiasForce force", 0.0, 0.0, bias, response);

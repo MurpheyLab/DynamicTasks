@@ -7,17 +7,17 @@
 //---------------------------------------------------------------------
 
 // Subject parameters (update once at the beginning)
-int subject_num = 101;
+int subject_num = 7;
 
 // Trial parameters (update every iteration)
 int arm = 0; // 0: paretic; 1: non-paretic
-int trial_num = 1;
-int support_num = 0; // 0: 0%, 1: 30%
+int trial_num = 78;
+int support_num = 1; // 0: haptic table, 1: 0%, 2: 20%, 3: 50%
 int freq_num = 2; // 0: 0.5Hz 1: 1Hz 2: 1.5Hz 3: 2.5Hz
 // 0: 0.25Hz 1: 0.5Hz 2: 0.75Hz 3: 1Hz 4: 1.5Hz 5:2Hz 6:2.5Hz
 int personalbests_flag = 1; // 0: off for learning, 1: on for data collection
 
-int condition = 0;
+int condition = 2;
 const int feedback_forces_vec[4] = { 1, 1, 0, 0 }; // 0: off, 1: on
 int ball_moving_vec[4] = { 1, 0, 1, 0 }; // 0: not moving, 1: moving 
 const int feedback_forces = feedback_forces_vec[condition];
@@ -59,7 +59,8 @@ double R = radius_options[freq_num];
 double damping = 0.0; // damping_options[freq_num];
 
 // Define possible support levels
-float support_level[4] = { -2.0, -0.0, -0.2, -0.5}; // fraction of max shoulder abduction loading (0-1)
+float support_level[5] = { 0.0, 0.0, 0.3, 0.5, 0.5 }; // fraction of max shoulder abduction loading (0-1)
+const int max_support = 1; // support level index that represents the most load
 
 //// Difficulty/frequency parameters (R represents pendulum length)
 //// original (1.88 Hz)

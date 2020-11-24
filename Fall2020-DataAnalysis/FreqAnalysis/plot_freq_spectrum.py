@@ -1,5 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import butter, lfilter, freqz
+
+
+def butter_lowpass(cutoff, fs, order=5):
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq
+    b, a = butter(order, normal_cutoff, btype='low', analog=False)
+    return b, a
+
+def butter_lowpass_filter(data, cutoff, fs, order=5):
+    b, a = butter_lowpass(cutoff, fs, order=order)
+    y = lfilter(b, a, data)
+    return y
 
 def xy_spectrum(w,xdata,ydata,w_resonance,title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend):
 
@@ -51,7 +64,7 @@ def xy_spectrum(w,xdata,ydata,w_resonance,title,xlabel,ylabel,legend,linestyles,
     for plot_num in range(0,2):
         ax[plot_num].set_xscale('log')
         ax[plot_num].set_yscale('log')
-        ax[plot_num].set_xlim((10^-1,w[len(w)-1]))
+        ax[plot_num].set_xlim((w[1],w[len(w)-1]))
         ax[plot_num].set_ylim(ymin,ymax)
         ax[plot_num].grid(True, color="#E0E0E0")
         for label in (ax[plot_num].get_xticklabels() + ax[plot_num].get_yticklabels()):
@@ -110,11 +123,11 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
             ax.plot(w,data[i],linestyle=linestyles[i],color=colors[i])
 
     # set plot parameters
-    # ax.set_xscale('log')
-    # ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.set_yscale('log')
     # ax.set_xlim((10^-1,w[len(w)-1]))
-    # ax.set_xlim((w[1],w[len(w)-1]))
-    ax.set_xlim((w[1],5))
+    # ax.set_ylim(ymin,ymax)
+    ax.set_xlim((w[1],w[len(w)-1]))
     ax.set_ylim(ymin,ymax)
     ax.grid(True, color="#E0E0E0")
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):

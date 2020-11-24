@@ -17,7 +17,7 @@ def normalize_spectrum(A,dw):
     A *= np.sqrt(1/E_signal) # normalizes
     return A
 
-def calculate_amplitude(w,y,Fs,bin,interp):
+def calculate_amplitude(w,y,Fs,type='bin'):
     """
     Calculates the discrete time fourier transform and frequency amplitudes for the signal,
     places the values in frequency "bins" specified by vector w or interpolates,
@@ -26,10 +26,10 @@ def calculate_amplitude(w,y,Fs,bin,interp):
         w - frequency values for "bins", note that it must start at 0
         y - discrete values of function
         Fs - the sampling frequency of the data
-        bin - boolean: True - bin amplitudes into frequency ranges (necessary
-                when comparing participants), False - do not bin
-        interp - boolean: True - interpolates to get the amplitude for specific freuqencies
-                          False - do not interpolate
+        type - either 'bin' for placing amplitudes into frequency ranges (necessary
+                when comparing participants)
+               'interp' for interpolates to get the amplitude for specific freuqencies
+               or 'None'
     Outputs:
         A - vector of signal amplitude at each frequency in w (normalized)
         frq - the frequencies corresponding to the amplitudes (if binned,
@@ -44,13 +44,14 @@ def calculate_amplitude(w,y,Fs,bin,interp):
     # Choose the one sided frequencies of interest
     frq = frq[range(n//2)] # one side frequency range
     Y = Y[range(n//2)]
-    dw = frq[1]-frq[0]
+    # print(n,len(Y))
+    dw = w[1]-w[0]
     # print('frq:', frq)
     # print('Y:', Y)
     # Place values into prespecified frequency bins, each with range (w[w_index]-(dw/2),w[w_index]+(dw/2)]
-    if bin:
+    if type=='bin':
         w_len = len(w)
-        dw = w[1]-w[0]
+        # dw = w[1]-w[0]
         # w_index = 0
         A = np.zeros(w_len)
         num = np.zeros(w_len)
@@ -71,12 +72,13 @@ def calculate_amplitude(w,y,Fs,bin,interp):
             #     A[i] = np.interp(w[i], frq, Y)
         frq = w
 
-    elif interp:
+    elif type=='interp':
         A = np.interp(w, frq, Y)
         frq = w
 
     else:
         A = Y
+        dw = frq[1]-frq[0]
 
     A = normalize_spectrum(A,dw)
 
