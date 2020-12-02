@@ -138,5 +138,5 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
     fig.text(0.5, 0.01,xlabel, ha='center', fontsize=10)
     fig.text(0.065, 0.5,ylabel, va='center', rotation='vertical', fontsize=10)
     fig.legend(legend_lines,labels=legend,loc="center right", fontsize=9)
-    fig.subplots_adjust(right=0.75)
+    fig.subplots_adjust(right=0.7)
     return [fig,ax]

@@ -45,7 +45,7 @@ data_original = read.csv(paste(DIR,paste("freq","metrics.csv",sep="-"),sep="/"))
 ################################################################################
 ################################################################################
 
-data = subset(data_original, Force!="F0_B0" & Force!="F1_B0")
+data = subset(data_original, Force!="F0_B0" & Force!="F1_B0" & Force!="F1_B1_add")
 data[] <- lapply(data, function(x) if(is.factor(x)) factor(x) else x)
 
 # define file to save data to
@@ -53,7 +53,7 @@ sink(paste(DIR,"stattests",paste("EnergyatResonance","h2.txt",sep="-"),sep="/"))
 
 cat("\n")
 cat("########################################################################### \n")
-cat("######### Energy at Resonance for F0_B1, F1_B1_add, and F1_B1 ############# \n")
+cat("######### Energy at Resonance for F0_B1 and F1_B1 ############# \n")
 cat("########################################################################### \n")
 
 # Check assumptions

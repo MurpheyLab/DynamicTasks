@@ -25,10 +25,11 @@ import os
 save_values = 0 # 0-do not save values for statistical tests 1-do save values
 make_plots = 1 # 0-do not make plots 1-make plots
 make_plot_each_sub = 1 # 0-do not make plots 1-make plots
-haptic_forces_added = 0
+haptic_forces_added = 0 # Include adding the haptic forces as an experimental condition
+filter = 1
 window = .2
 
-number_of_subjects = 6
+number_of_subjects = 7
 min_sub = 1
 DIR = "Z:Fall2020Data-round2/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:"
 DT = 0.05
@@ -36,9 +37,13 @@ Fs = 1/DT
 freq_pendulum = [.5,1,1.5,2.5]
 
 # Label factors as strings for ezANOVA analysis
-forceconditions = ['Baseline Motion','Still Ball With Haptic Forces','Moving Ball Without Haptic Forces','Haptic Forces Added to Signal','Moving Ball With Haptic Forces']
-group_label_read = ['F0_B0','F1_B0','F0_B1','F1_B1','F1_B1']
-group_label = ['F0_B0','F1_B0','F0_B1','F1_B1_add','F1_B1']
+forceconditions = ['Baseline Motion','Still Ball With Haptic Forces','Moving Ball Without Haptic Forces','Moving Ball With Haptic Forces']
+group_label_read = ['F0_B0','F1_B0','F0_B1','F1_B1']
+group_label = ['F0_B0','F1_B0','F0_B1','F1_B1']
+if haptic_forces_added:
+    forceconditions = ['Baseline Motion','Still Ball With Haptic Forces','Moving Ball Without Haptic Forces','Haptic Forces Added to Signal','Moving Ball With Haptic Forces']
+    group_label_read = ['F0_B0','F1_B0','F0_B1','F1_B1','F1_B1']
+    group_label = ['F0_B0','F1_B0','F0_B1','F1_B1_add','F1_B1']
 frequencylabels = ['0.5Hz','1Hz','1.5Hz','2.5Hz']
 subjects = ['Subject1','Subject2','Subject3','Subject4','Subject5','Subject6','Subject7','Subject8','Subject9','Subject10','Subject11','Subject12','Subject13','Subject14','Subject15','Subject16','Subject17','Subject18']
 markerstyles = ['o','D']
@@ -77,8 +82,9 @@ if make_plot_each_sub:
 for sub_plot in range(1,1+num_sub_plots):
 
     # Iterate through all the files starting with with and without haptic forces
-    compare_groups1 = np.zeros((3,4,number_of_subjects))
+    compare_groups1 = np.zeros((2,4,number_of_subjects))
     compare_groups2 = np.zeros((2,4,number_of_subjects))
+    compare_groups3 = np.zeros((len(forceconditions),4,number_of_subjects))
     for group in range(0,len(forceconditions)):
         num_freq = np.zeros(4)
         A_Fmag = np.zeros((4,w_len))
@@ -136,15 +142,16 @@ for sub_plot in range(1,1+num_sub_plots):
                         num_freq[freq] += 1
 
                         dw = w[1]-w[0]
+                        Ax_norm = normalize_spectrum(A_Fx_i,dw)
+                        Ay_norm = normalize_spectrum(A_Fy_i,dw)
+                        Amag_norm = normalize_spectrum(A_Fmag_i,dw)
                         for freq2 in range(0,4):
-                            Ax_norm = normalize_spectrum(A_Fx[freq,:],dw)
-                            Ay_norm = normalize_spectrum(A_Fy[freq,:],dw)
-
                             freq_list = []
                             for w_i in range(0,len(w)):
                                 if (w[w_i] < freq_pendulum[freq2]+window) and (w[w_i] > freq_pendulum[freq2]-window):
-                                    freq_list.append(Ax_norm[w_i])
-                                    freq_list.append(Ay_norm[w_i])
+                                    # freq_list.append(Ax_norm[w_i])
+                                    # freq_list.append(Ay_norm[w_i])
+                                    freq_list.append(Amag_norm[w_i])
 
                             energy_mat[freq,freq2,subject_num-1] += np.sum(np.square(freq_list))*dw
                             energy_num[freq,freq2,subject_num-1] += 1
@@ -192,10 +199,11 @@ for sub_plot in range(1,1+num_sub_plots):
                         A_Fx[freq,:] /= num_freq[freq]
                         A_Fy[freq,:] /= num_freq[freq]
 
-                        cutoff = 5  # desired cutoff frequency of the filter, Hz
-                        A_Fmag[freq,:] = butter_lowpass_filter(A_Fmag[freq,:], cutoff, Fs)
-                        A_Fx[freq,:] = butter_lowpass_filter(A_Fx[freq,:], cutoff, Fs)
-                        A_Fy[freq,:] = butter_lowpass_filter(A_Fy[freq,:], cutoff, Fs)
+                        if filter:
+                            cutoff = 5  # desired cutoff frequency of the filter, Hz
+                            A_Fmag[freq,:] = butter_lowpass_filter(A_Fmag[freq,:], cutoff, Fs)
+                            A_Fx[freq,:] = butter_lowpass_filter(A_Fx[freq,:], cutoff, Fs)
+                            A_Fy[freq,:] = butter_lowpass_filter(A_Fy[freq,:], cutoff, Fs)
 
                         A_Fmag[freq,:] = normalize_spectrum(A_Fmag[freq,:],dw)
                         A_Fx[freq,:] = normalize_spectrum(A_Fx[freq,:],dw)
@@ -211,10 +219,11 @@ for sub_plot in range(1,1+num_sub_plots):
                 A_Fx[freq,:] /= num_freq[freq]
                 A_Fy[freq,:] /= num_freq[freq]
 
-                cutoff = 5  # desired cutoff frequency of the filter, Hz
-                A_Fmag[freq,:] = butter_lowpass_filter(A_Fmag[freq,:], cutoff, Fs)
-                A_Fx[freq,:] = butter_lowpass_filter(A_Fx[freq,:], cutoff, Fs)
-                A_Fy[freq,:] = butter_lowpass_filter(A_Fy[freq,:], cutoff, Fs)
+                if filter:
+                    cutoff = 5  # desired cutoff frequency of the filter, Hz
+                    A_Fmag[freq,:] = butter_lowpass_filter(A_Fmag[freq,:], cutoff, Fs)
+                    A_Fx[freq,:] = butter_lowpass_filter(A_Fx[freq,:], cutoff, Fs)
+                    A_Fy[freq,:] = butter_lowpass_filter(A_Fy[freq,:], cutoff, Fs)
 
                 A_Fmag[freq,:] = normalize_spectrum(A_Fmag[freq,:],dw)
                 A_Fx[freq,:] = normalize_spectrum(A_Fx[freq,:],dw)
@@ -302,12 +311,16 @@ for sub_plot in range(1,1+num_sub_plots):
                     box_alpha.append(1)
                     if (i // 4) == (i % 4): # if the ball and range match
                         box_colors.append('#ff7e0d')
-                        if group >= 2:
-                            compare_groups1[group-2,(i//4),:] = data[i]
-                        if group == 1:
+                        # if group >= 2:
+                        #     compare_groups1[group-2,(i//4),:] = data[i]
+                        if group_label[group] == 'F1_B0':
                             compare_groups2[0,(i//4),:] = data[i]
-                        elif group ==4:
+                        elif group_label[group] == 'F0_B1':
+                            compare_groups1[0,(i//4),:] = data[i]
+                        elif group_label[group] == 'F1_B1':
                             compare_groups2[1,(i//4),:] = data[i]
+                            compare_groups1[1,(i//4),:] = data[i]
+                        compare_groups3[group,(i//4),:] = data[i]
                     else:
                         box_colors.append('#d6caed')
 
@@ -353,18 +366,28 @@ for sub_plot in range(1,1+num_sub_plots):
         ####################################################################
         ####################################################################
         if make_plot_each_sub==0:
-            for plot in range(2):
-                figure_size = (7,3) # sets the size of the figure in inches
+            for plot in range(3):
+                figure_size = (5,3) # sets the size of the figure in inches
                 xlabel = ''
                 ylabel = 'Fraction of Total Energy'
-                title = 'Energy Content of Movement at Resonance'
 
                 if plot==0:
+                    title = 'Energy Content of Movement at Resonance\nFor Moving Ball Trials'
                     compare_groups = compare_groups1
-                    legend_cond = ['Moving Ball Without\nHaptic Forces','Haptic Forces\nAdded to Signal','Moving Ball With\nHaptic Forces']
-                else:
+                    legend_cond = ['Without Haptic Forces','With Haptic Forces']
+                    # print(colors[1])
+                    # colors = ['#601A4A','#EE442F','#63ACBE','#006400']
+                    colors = ['#601A4A','#63ACBE']
+                elif plot==1:
+                    title = 'Energy Content of Movement at Resonance\nFor Haptic Force Trials'
                     compare_groups = compare_groups2
-                    legend_cond = ['Still Ball With\nHaptic Forces','Moving Ball With\nHaptic Forces']
+                    legend_cond = ['Still Ball','Moving Ball']
+                    colors = ['#EE442F','#63ACBE']
+                else:
+                    title = 'Energy Content of Movement For All Experimental Conditions'
+                    compare_groups = compare_groups3
+                    legend_cond = group_label
+                    colors = ['#601A4A','#EE442F','#63ACBE','#006400']
                 n_group = compare_groups.shape[0]
                 data = []
                 labels = []
@@ -393,7 +416,7 @@ for sub_plot in range(1,1+num_sub_plots):
 
                 # Text Labels
                 y = ymin - ((ymax-ymin)/15)
-                text_buffer = ((ymax-ymin)/15)
+                text_buffer = ((ymax-ymin)/12)
                 name =frequencylabels
                 add_labels(ax,x1,x2,y,name,text_buffer)
                 y = ymin - ((ymax-ymin)/7.5)
@@ -402,13 +425,14 @@ for sub_plot in range(1,1+num_sub_plots):
                 x = 5
                 l1 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[0], alpha=1,zorder=1))
                 l2 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[1], alpha=1,zorder=1))
-                l3 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[2], alpha=1,zorder=1))
+                # l3 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[2], alpha=1,zorder=1))
+                # l4 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[3], alpha=1,zorder=1))
                 ax.set_ylim(ymin,ymax)
 
-
-
-                fig.subplots_adjust(right=0.72)
-                L = fig.legend([l1,l2,l3], legend_cond,ncol=1, fontsize=10,loc='center right')
+                if plot!=2:
+                    # fig.subplots_adjust(right=0.72)
+                    fig.subplots_adjust(bottom=0.28)
+                    L = fig.legend([l1,l2], legend_cond,ncol=1, fontsize=10,loc='lower center')
 
                 fig.savefig('Plots/'+'energy_comparegroups'+str(plot)+'.png')
 
@@ -420,8 +444,12 @@ for sub_plot in range(1,1+num_sub_plots):
         title = 'Frequency Spectrum Plot'
         xlabel = 'Frequency (Hz)'
         ylabel = 'Normalized Frequency Amplitude'
-        colors = ['#601A4A','#EE442F','#63ACBE','#006400','#ff7e0d']
-        linestyles = ['-','-','-','-','-']
+        colors = ['#601A4A','#EE442F','#63ACBE','#006400']
+        # colors = ['#EE442F','#63ACBE']
+        linestyles = ['-','-','-','-']
+        if haptic_forces_added:
+            colors = ['#601A4A','#EE442F','#63ACBE','#006400','#ff7e0d']
+            linestyles = ['-','-','-','-','-']
         ymin = 0.1
         ymax = 2
         ymax_pend = 1.5
@@ -429,24 +457,36 @@ for sub_plot in range(1,1+num_sub_plots):
             title = 'Frequency Spectrum Plot for ' + frequencylabels[freq]
             if make_plot_each_sub==1:
                 title = 'Sub'+str(sub_plot)+' Frequency Spectrum Plot for ' + frequencylabels[freq]
-            legend = ["Ball's resonant\nfrequency",
-                        'Baseline Motion',
-                        'Still Ball With\nHaptic Forces',
-                        'Moving Ball Without\nHaptic Forces',
-                        'Haptic Forces\nAdded to Signal',
-                        'Moving Ball With\nHaptic Forces']
+            if haptic_forces_added:
+                legend = ["Ball's resonant\nfrequency",
+                            'Baseline Motion',
+                            'Still Ball With\nHaptic Forces',
+                            'Moving Ball Without\nHaptic Forces',
+                            'Haptic Forces\nAdded to Signal',
+                            'Moving Ball With\nHaptic Forces']
+            else:
+                legend = ["Ball's resonant\nfrequency",
+                            'Baseline Motion',
+                            'Still Ball With\nHaptic Forces',
+                            'Moving Ball Without\nHaptic Forces',
+                            'Moving Ball With\nHaptic Forces']
+                # legend = ["Ball's resonant\nfrequency",
+                #             'Still Ball With\nHaptic Forces',
+                #             'Moving Ball With\nHaptic Forces']
             xdata = []
             ydata = []
             xdata.append(xy_xlist[freq])
             xdata.append(xy_xlist[freq+4])
             xdata.append(xy_xlist[freq+8])
             xdata.append(xy_xlist[freq+12])
-            xdata.append(xy_xlist[freq+16])
+            if haptic_forces_added:
+                xdata.append(xy_xlist[freq+16])
             ydata.append(xy_ylist[freq])
             ydata.append(xy_ylist[freq+4])
             ydata.append(xy_ylist[freq+8])
             ydata.append(xy_ylist[freq+12])
-            ydata.append(xy_ylist[freq+16])
+            if haptic_forces_added:
+                ydata.append(xy_ylist[freq+16])
             [fig,ax] = xy_spectrum(w,xdata,ydata,[freq_pendulum[freq]],title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend)
             savename = 'Plots/'+'xy_freq_'+frequencylabels[freq]+'.png'
             if make_plot_each_sub==1:
@@ -458,9 +498,10 @@ for sub_plot in range(1,1+num_sub_plots):
             data.append(mag_list[freq+4])
             data.append(mag_list[freq+8])
             data.append(mag_list[freq+12])
-            data.append(mag_list[freq+16])
+            if haptic_forces_added:
+                data.append(mag_list[freq+16])
             n = len(xy_xlist)
-            [fig,ax] = mag_spectrum(w,data,freq_pendulum,title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend)
+            [fig,ax] = mag_spectrum(w,data,[freq_pendulum[freq]],title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend)
             savename = 'Plots/'+'mag_freq_'+frequencylabels[freq]+'.png'
             if make_plot_each_sub==1:
                 savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_mag_freq_'+frequencylabels[freq]+'.png'
