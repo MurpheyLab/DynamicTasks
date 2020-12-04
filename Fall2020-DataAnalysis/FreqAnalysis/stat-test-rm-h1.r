@@ -37,7 +37,7 @@ DIR = 'C:/Users/numur/Documents/DowntownGames-Biodex/Fall2020-DataAnalysis/FreqA
 ################################################################################
 ################################################################################
 data = read.csv(paste(DIR,paste("freq","metrics.csv",sep="-"),sep="/"))
-data = subset(data, Force=="F0_B1") #& Subject!='Subject6')
+data = subset(data, Force=="F1_B0") #& Subject!='Subject6')
 data[] <- lapply(data, function(x) if(is.factor(x)) factor(x) else x)
 
 ################################################################################

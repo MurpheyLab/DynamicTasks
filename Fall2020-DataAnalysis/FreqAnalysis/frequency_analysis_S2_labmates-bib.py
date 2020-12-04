@@ -24,7 +24,7 @@ import os
 # Edit these variables before running
 save_values = 0 # 0-do not save values for statistical tests 1-do save values
 make_plots = 1 # 0-do not make plots 1-make plots
-make_plot_each_sub = 1 # 0-do not make plots 1-make plots
+make_plot_each_sub = 0 # 0-do not make plots 1-make plots
 haptic_forces_added = 0 # Include adding the haptic forces as an experimental condition
 filter = 1
 window = .2
@@ -145,7 +145,17 @@ for sub_plot in range(1,1+num_sub_plots):
                         Ax_norm = normalize_spectrum(A_Fx_i,dw)
                         Ay_norm = normalize_spectrum(A_Fy_i,dw)
                         Amag_norm = normalize_spectrum(A_Fmag_i,dw)
+
+                        if group==0:
+                            freq=0
                         for freq2 in range(0,4):
+
+
+
+                                # if
+                                # freq2 = 0 == 1:
+                                #     break
+
                             freq_list = []
                             for w_i in range(0,len(w)):
                                 if (w[w_i] < freq_pendulum[freq2]+window) and (w[w_i] > freq_pendulum[freq2]-window):
@@ -292,12 +302,16 @@ for sub_plot in range(1,1+num_sub_plots):
             ## Boxplot comparing frequency metrics for force-condition group ###
             ####################################################################
             ####################################################################
-            if group != 0 and make_plot_each_sub==0:
+            # if group != 0 and make_plot_each_sub==0:
+            if make_plot_each_sub==0:
                 energy_mat = np.divide(energy_mat,energy_num)
                 data = []
                 for freq2 in range(0,4):
                     for freq in range(0,4):
-                        energy = energy_mat[freq,freq2,:]
+                        if group==0:
+                            energy = energy_mat[0,freq2,:]
+                        else:
+                            energy = energy_mat[freq,freq2,:]
                         data.append(np.array(energy))
 
                 # create lists for colors, labels, ect.
