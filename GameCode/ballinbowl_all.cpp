@@ -544,7 +544,9 @@ void CheckFlags(void)
     GLfloat rand_x, rand_y;
 
 	// here we check for: 1. ball is in bowl, 2. trial is running, 3. person is above the haptic table
-	if (((ball_energy < max_energy) || (ball_moving == 0)) && (trial_flag == 1.0) && ((CurrentPosition[PosZ] > z_tolerance) || (support_level[support_num]<-0.5)))
+	//if (((ball_energy < max_energy) || (ball_moving == 0)) && (trial_flag == 1.0) && ((CurrentPosition[PosZ] > z_tolerance) || (support_level[support_num]>0.5)))
+	if (((ball_energy < max_energy) || (ball_moving == 0)) && (trial_flag == 1.0) && (CurrentPosition[PosZ] > z_tolerance))
+
 	{
 		scoring_enabled = 1.0;
 	}
@@ -925,6 +927,17 @@ void Display(void)
 
 	glPopMatrix();
 	glutSwapBuffers();
+
+	if (trial_flag == 1.0 && CurrentPosition[PosZ] < z_tolerance) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glPushMatrix();
+		glutPostRedisplay();
+		renderer->DrawTrophy();
+		DrawPersonalBestBoard;
+		DrawPersonalBestLabel;
+		glPopMatrix();
+		glutSwapBuffers();
+	}
 }
 
 //---------------------------------------------------------------------
@@ -955,12 +968,18 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 	case 's': // penalty_timer trial
 		// Allow movement and penalty_timer timer function
 		printf("S pressed: Trial and timer starting...\n");
-		trial_flag = 1.0;
+		
 		if (mode == 0) // if using HapticMASTER
 		{
 			haDeviceSendString(dev, "set myBiasForce enable", response);
 			haDeviceSendString(dev, "set mySpring disable", response);
 		}
+
+		while (CurrentPosition[PosZ] < z_tolerance) {
+			haSendCommand(dev, "get measpos", response);
+			ParseFloatVec(response, CurrentPosition[PosX], CurrentPosition[PosY], CurrentPosition[PosZ]);
+		}
+		trial_flag = 1.0;
 		beg_sys_time = clock() / (float)CLOCKS_PER_SEC;
 		break;
 	case 'b': // enable bias force
@@ -1065,7 +1084,13 @@ void TimerCB(int iTimer)
 	xacc = -(2.0 * xprev[1] - xprev[2] - xprev[0]) / (deltaTvec[1] * deltaTvec[2]);
 	yprev[0] = yprev[1]; yprev[1] = yprev[2]; yprev[2] = CurrentPosition[PosY];
 	yacc = -(2.0 * yprev[1] - yprev[2] - yprev[0]) / (deltaTvec[1] * deltaTvec[2]);
-	sys.Ucurr = { xacc * factor,yacc * factor };  
+
+	if ((CurrentPosition[PosZ] > z_tolerance) && (ball_energy >= max_energy)) { // && (ball_energy < max_energy)
+		sys.Ucurr = { xacc * factor,yacc * factor };
+	} else {
+		sys.Ucurr = { 0.0, 0.0 };
+	}
+	
 	sys.simulate();
 	double Z_potential = RR_vis - RR_vis * cos(sys.Xpotential[0]) * cos(sys.Xpotential[2]);
 	if ((BallPosition[PosZ] > 0.8*RR_vis) && (Z_potential>BallPosition[PosZ])) { 
@@ -1403,7 +1428,7 @@ int main(int argc, char** argv)
 	sign = rand_num / abs(rand_num);
 	float y_ang = sign * asin(sqrt(pow(sin(angle_disturbance), 2) - pow(sin(x_ang), 2)));
 	//float y_ang = sign*sqrt(pow(angle_disturbance, 2) - pow(x_ang, 2));
-	printf("sign: %f x_angle: %f y_angle: %f", sign, x_ang, y_ang);
+	printf("sign: %f x_angle: %f y_angle: %f \n", sign, x_ang, y_ang);
 
 	sys.Xcurr = { x_ang,0.0,y_ang,0.0,CurrentPosition[PosX],0.0,CurrentPosition[PosY],0.0 }; // M_PI / 3.0
 

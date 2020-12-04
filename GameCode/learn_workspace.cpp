@@ -100,6 +100,7 @@ float path_pos[8000][3];
 int path_total = 0;
 int path_count = 0;
 
+double springPos[3] = { -0.0,0.05, 0.0 };
 //---------------------------------------------------------------------
 //                  O P E N G L   M A T E R I A L S
 //---------------------------------------------------------------------
@@ -468,6 +469,20 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 		break;
 	case 27: // ESC key pressed - stop motion and simulation
 		printf("ESC pressed: exit routine starting \n");
+
+		// Move the person back to their home position by enabling springs
+		printf("Moving to home position\n");
+		haDeviceSendString(dev, "set mySpring enable", response);
+
+		// Disable springs when ready 
+		/*printf("Press ENTER to disable spring\n");
+		cin.get();*/
+		float pos_tol = 0.01;
+		while ((abs(CurrentPosition[PosX] - springPos[PosX]) > pos_tol) || (abs(CurrentPosition[PosY] - springPos[PosY]) > pos_tol) || (abs(CurrentPosition[PosZ] - springPos[PosZ] - 0.011) > pos_tol)) {
+			haSendCommand(dev, "get measpos", response);
+			ParseFloatVec(response, CurrentPosition[PosX], CurrentPosition[PosY], CurrentPosition[PosZ]);
+		}
+		haDeviceSendString(dev, "set mySpring disable", response);
 		
 		// Check to see if any flags are in the enclosed space again, then close file
 		CheckFlags();
@@ -583,14 +598,14 @@ int main(int argc, char** argv)
 	int returnValue; // for accepting returns from the robot
 
 	// Set up the starting position for the spring
-	double springPos[3] = { -0.0,0.05, 0.0 };;
 	if (support_num == 0.0) {
 		springPos[2] = table_z+0.045; //-.17
 	} else {
 		springPos[2] =  table_z ; //-.17
 	}
+	
 	double springStiffness = 4000.0, springDamping = 10.0, springMaxForce = 100.0; // this spring is for the home position
-	double superSpringStiffness = 4000.0, superSpringDamping = 10.0, superSpringMaxForce = 100.0; // this spring is for measuring maxForce
+	//double superSpringStiffness = 4000.0, superSpringDamping = 10.0, superSpringMaxForce = 100.0; // this spring is for measuring maxForce
 
 	// Open file to log flag data, path data, and define an array of flags
 	DefineTask();
@@ -614,20 +629,24 @@ int main(int argc, char** argv)
 			InitializeDevice(dev);
 		}
 
+		haSendCommand(dev, "remove all", response);
+		printf("remove all ==> %s\n", response);
+
 		haSendCommand(dev, "set inertia 4.0", response);
 
-		// Fix arm in place (home position) using springs 
-		//printf("Press ENTER to move to home position.\n");
-		//std::cin.get();
-		printf("Moving...\n");
-		returnValue = haDeviceSendString(dev, "create spring mySpring", response);
-		haSendCommand(dev, "set mySpring pos", springPos[PosX], springPos[PosY], springPos[PosZ] + 0.011, response);
-		haSendCommand(dev, "set mySpring stiffness", springStiffness, response);
-		haSendCommand(dev, "set mySpring dampfactor", springDamping, response);
-		haSendCommand(dev, "set mySpring maxforce", springMaxForce, response);
-		returnValue = haDeviceSendString(dev, "set mySpring enable", response);
-
 		if (support_num == max_support) {
+
+			// Fix arm in place (home position) using springs 
+			//printf("Press ENTER to move to home position.\n");
+			//std::cin.get();
+			springPos[PosZ] = -0.20778;
+			printf("Moving...\n");
+			returnValue = haDeviceSendString(dev, "create spring mySuperSpring", response);
+			haSendCommand(dev, "set mySuperSpring pos", springPos[PosX], springPos[PosY], springPos[PosZ], response);
+			haSendCommand(dev, "set mySuperSpring stiffness", springStiffness, response);
+			haSendCommand(dev, "set mySuperSpring dampfactor", springDamping, response);
+			haSendCommand(dev, "set mySuperSpring maxforce", springMaxForce, response);
+			returnValue = haDeviceSendString(dev, "set mySuperSpring enable", response);
 
 			// Weigh arm
 			printf("Press 'f' then ENTER to weigh arm.\n");
@@ -655,21 +674,21 @@ int main(int argc, char** argv)
 			std::cin.get();
 			printf("Setting the arm weight to %f \n", armWeight);
 
-			// Switch to super spring for measuring max force
-			printf("Press ENTER to lower position for measuring max force.\n");
-			std::cin.get();
-			returnValue = haDeviceSendString(dev, "create spring mySuperSpring", response);
-			haSendCommand(dev, "set mySuperSpring pos", springPos[PosX], springPos[PosY], -0.20778, response);
-			haSendCommand(dev, "set mySuperSpring stiffness", superSpringStiffness, response);
-			haSendCommand(dev, "set mySuperSpring dampfactor", superSpringDamping, response);
-			haSendCommand(dev, "set mySuperSpring maxforce", superSpringMaxForce, response);
-			printf("Moving down...\n");
-			returnValue = haDeviceSendString(dev, "set mySpring disable", response);
-			returnValue = haDeviceSendString(dev, "set mySuperSpring enable", response);
+			//// Switch to super spring for measuring max force
+			//printf("Press ENTER to lower position for measuring max force.\n");
+			//std::cin.get();
+			//returnValue = haDeviceSendString(dev, "create spring mySuperSpring", response);
+			//haSendCommand(dev, "set mySuperSpring pos", springPos[PosX], springPos[PosY], -0.20778, response);
+			//haSendCommand(dev, "set mySuperSpring stiffness", superSpringStiffness, response);
+			//haSendCommand(dev, "set mySuperSpring dampfactor", superSpringDamping, response);
+			//haSendCommand(dev, "set mySuperSpring maxforce", superSpringMaxForce, response);
+			//printf("Moving down...\n");
+			//returnValue = haDeviceSendString(dev, "set mySpring disable", response);
+			//returnValue = haDeviceSendString(dev, "set mySuperSpring enable", response);
 
 			// Turn on large bias force so that the participant cannot move the robot up
-			printf("Press ENTER to turn on large bias force.\n");
-			std::cin.get();
+			printf("Bias force has been enabled.\n");
+			//std::cin.get();
 			returnValue = haDeviceSendString(dev, "create biasforce myBiasForce0", response);
 			returnValue = haSendCommand(dev, "set myBiasForce0 force", 0.0, 0.0, -500.0, response); // tested using -100.0
 			haDeviceSendString(dev, "set myBiasForce0 enable", response);
@@ -706,21 +725,53 @@ int main(int argc, char** argv)
 			printf("Setting the max force to %f \n", maxForce);
 
 			// Return to home position
-			printf("Press ENTER to return to home position.\n");
-			std::cin.get();
+			//printf("Press ENTER to return to home position.\n");
+			//std::cin.get();
 			haDeviceSendString(dev, "set myBiasForce0 disable", response);
-			printf("Moving up...\n");
-			returnValue = haDeviceSendString(dev, "set mySuperSpring disable", response);
-			returnValue = haDeviceSendString(dev, "set mySpring enable", response);
+			//printf("Moving up...\n");
+			//returnValue = haDeviceSendString(dev, "set mySuperSpring disable", response);
+			//returnValue = haDeviceSendString(dev, "set mySpring enable", response);
 
+			printf("Press ENTER to move participant up to game-ready position (70deg abduction).\n ");
+			cin.get();
+			printf("Adjust the participant height by moving them up.\n ");
+			if (support_num == 0.0) {
+				springPos[2] = table_z + 0.045; //-.17
+			}
+			else {
+				springPos[2] = table_z; //-.17
+			}
+			returnValue = haSendCommand(dev, "set mySuperSpring pos", springPos[PosX], springPos[PosY], springPos[PosZ] + 0.011, response);
+			//printf("returnvalue: %d", returnValue);
+			returnValue = haDeviceSendString(dev, "set mySuperSpring enable", response);
+			//printf("returnvalue: %d", returnValue);
+			
+			//printf("desired -- x: %f y: %f, z: %f \n", springPos[PosX], springPos[PosY], springPos[PosZ]);
+			float pos_tol = 0.01;
+			while ((abs(CurrentPosition[PosX] - springPos[PosX]) > pos_tol) || (abs(CurrentPosition[PosY] - springPos[PosY]) > pos_tol) || (abs(CurrentPosition[PosZ] - springPos[PosZ] - 0.011) > pos_tol)) {
+				haSendCommand(dev, "get measpos", response);
+				ParseFloatVec(response, CurrentPosition[PosX], CurrentPosition[PosY], CurrentPosition[PosZ]);
+				//printf("x: %f y: %f, z: %f \n", CurrentPosition[PosX], CurrentPosition[PosY], CurrentPosition[PosZ]);
+			}
+
+
+			//Set up haptic table top for measruring the position of the haptic shield
+			haSendCommand(dev, "create block mysuperFloor", response);
+			haSendCommand(dev, "set mysuperFloor pos", springPos[PosX], springPos[PosY], springPos[PosZ], response);
+			haSendCommand(dev, "set mysuperFloor size", 0.7, 0.7, 0.01, response); //set to be a little larger than workspace
+			haSendCommand(dev, "set mysuperFloor stiffness", 80000.0, response);
+			haSendCommand(dev, "set mysuperFloor enable", response);
+			printf("Table enabled...\n");
 
 			// Release arm
-			printf("Adjust person in seat and press ENTER to allow movement.\n ");
-			cin.get();
-			returnValue = haDeviceSendString(dev, "set mySpring disable", response);
+			printf("Press ENTER to allow movement for xmax measurement.\n ");
+			std::cin.get();
+
+			returnValue = haDeviceSendString(dev, "set mySuperSpring disable", response);
+			//printf("returnvalue: %d", returnValue);
 
 			// Measure xmax (body sheild position)
-			printf("Move closest to the BODY, then press ENTER.\n");
+			printf("Press ENTER to take measurement for the personal shield.\n");
 			std::cin.get();
 			printf("Measuring BODY...\n");
 			haSendCommand(dev, "get measpos", response);
@@ -729,9 +780,17 @@ int main(int argc, char** argv)
 			printf("xmax is %f.\n", xmax);
 
 			// Move back to home
-			printf("Press ENTER to move arm back to starting place\n");
-			std::cin.get();
-			returnValue = haDeviceSendString(dev, "set mySpring enable", response);
+			//printf("Press ENTER to move arm to starting position for collecting flags\n");
+
+			//std::cin.get();
+
+			haSendCommand(dev, "set mysuperFloor disable", response);
+			//float pos_tol = 0.01;
+			//while ((abs(CurrentPosition[PosX] - springPos[PosX]) > pos_tol) || (abs(CurrentPosition[PosY] - springPos[PosY]) > pos_tol) || (abs(CurrentPosition[PosZ] - springPos[PosZ] - 0.011) > pos_tol)) {
+			//	haSendCommand(dev, "get measpos", response);
+			//	ParseFloatVec(response, CurrentPosition[PosX], CurrentPosition[PosY], CurrentPosition[PosZ]);
+			//}
+
 		}
 		else {
 			// read file to get the participants xmax for shield
@@ -747,8 +806,27 @@ int main(int argc, char** argv)
 			printf("Read csv for shield position (xmax = %f) and max force (%f) \n", xmax, maxForce);
 		}
 		
-		printf("Press ENTER once arm is in position.\n");
-		std::cin.get();
+		//printf("Press ENTER once arm is in position.\n");
+		//std::cin.get();
+
+		if (support_num == 0.0) {
+			springPos[2] = table_z + 0.045; //-.17
+		}
+		else {
+			springPos[2] = table_z; //-.17
+		}
+		returnValue = haDeviceSendString(dev, "create spring mySpring", response);
+		haSendCommand(dev, "set mySpring pos", springPos[PosX], springPos[PosY], springPos[PosZ] + 0.011, response);
+		haSendCommand(dev, "set mySpring stiffness", springStiffness, response);
+		haSendCommand(dev, "set mySpring dampfactor", springDamping, response);
+		haSendCommand(dev, "set mySpring maxforce", springMaxForce, response);
+		returnValue = haDeviceSendString(dev, "set mySpring enable", response);
+		float pos_tol = 0.01;
+		while ((abs(CurrentPosition[PosX] - springPos[PosX]) > pos_tol) || (abs(CurrentPosition[PosY] - springPos[PosY]) > pos_tol) || (abs(CurrentPosition[PosZ] - springPos[PosZ] - 0.011) > pos_tol)) {
+			haSendCommand(dev, "get measpos", response);
+			ParseFloatVec(response, CurrentPosition[PosX], CurrentPosition[PosY], CurrentPosition[PosZ]);
+			//printf("x: %f y: %f, z: %f \n", CurrentPosition[PosX], CurrentPosition[PosY], CurrentPosition[PosZ]);
+		}
 
 		// Set bias force (not enable yet)
 		printf("Setting bias force to %f of the max abduction force.\n", support_level[support_num]);
