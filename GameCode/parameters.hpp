@@ -24,7 +24,7 @@ const int feedback_forces = feedback_forces_vec[condition];
 int ball_moving = ball_moving_vec[condition];
 	
 // Input mode
-const int mode = 0; // 0: HapticMASTER control 1: joystick control 2: no input
+const int mode = 1; // 0: HapticMASTER control 1: joystick control 2: no input
 
 // Visualization mode
 #define TEXTURES_ON // uncomment this line to use textures

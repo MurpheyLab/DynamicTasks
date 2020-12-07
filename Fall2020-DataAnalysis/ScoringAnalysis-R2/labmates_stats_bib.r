@@ -17,6 +17,16 @@ freq_labels = c("Freq1","Freq2","Freq3","Freq4")
 
 attach(data)
 
+# myColors <- ifelse(levels(data$Freq)=="0" , rgb(0.1,0.1,0.7,0.5) , ifelse(levels(data$Freq)=="1", rgb(0.8,0.1,0.3,0.6),
+#               ifelse(levels(data$Freq)=="2", rgb(0.8,0.5,0.3,0.6), ifelse(levels(data$Freq)=="3", rgb(0.1,0.8,0.3,0.6),
+#               "grey90" ) ) ) )
+
+col1 = '#63ACBE'
+col2 = '#EE442F'
+col3 = '#601A4A'
+col4 = '#006400'
+myColors = c(col1, col1, col1, col1, col2, col2, col2, col2, col3, col3, col3, col3)
+
 #################################################
 cat("\n")
 cat("############ Score ############ \n")
@@ -39,8 +49,11 @@ dev.off()
 # jpeg(paste(DIR,'Score_forces&freqs&ball.jpg'))
 #     boxplot(Score~Forces*Freq*BallMov,main = type_participants,xlab = "Forces*Freq*BallMov",ylab="Score")
 # dev.off()
-jpeg(paste(DIR,'Score_forces&freqs&ball.jpg'))
-    boxplot(Score~Freq*Condition,main = type_participants,xlab = "Freq*Condition",ylab="Score")
+pdf(paste(DIR,'Score_forces&freqs&ball.pdf'))
+    boxplot(Score~Freq*Condition,main = type_participants,xlab = "Ball Frequency",ylab="Score",
+    col=myColors, names=c("0.5","1","1.5","2.5","0.5","1","1.5","2.5","0.5","1","1.5","2.5"))
+    legend("topright", legend = c("Ball moving\nwith forces","Ball still\nwith forces", "Ball moving\nwithout forces") ,
+        col = c(col1, col2, col3) , bty = "n", pch=20 , pt.cex = 3, cex = 1, horiz = FALSE, inset = c(0.03, 0.1), y.intersp=2)
 dev.off()
 
 #################################################
@@ -65,8 +78,11 @@ dev.off()
 # jpeg(paste(DIR,'TIB_forces&freqs&ball.jpg'))
 #     boxplot(TIB~Forces*Freq*BallMov,main = type_participants,xlab = "Forces*Freq*BallMov",ylab="Time Ball-in-bowl",ylim=c(5,30))
 # dev.off()
-jpeg(paste(DIR,'TIB_forces&freqs&ball.jpg'))
-    boxplot(TIB~Freq*Condition,main = type_participants,xlab = "Freq*Condition",ylab="Time Ball-in-bowl",ylim=c(5,30))
+pdf(paste(DIR,'TIB_forces&freqs&ball.pdf'))
+    boxplot(TIB~Freq*Condition,main = type_participants,xlab = "Ball Frequency",ylab="Time Ball-in-bowl",ylim=c(5,30),
+    col=myColors, names=c("0.5","1","1.5","2.5","0.5","1","1.5","2.5","0.5","1","1.5","2.5"))
+    # legend("topright", legend = c("Ball moving\nwith forces","Ball still\nwith forces", "Ball moving\nwithout forces") ,
+    #     col = c(col1, col2, col3) , bty = "n", pch=20 , pt.cex = 3, cex = 1, horiz = FALSE, inset = c(0.03, 0.1), y.intersp=2)
 dev.off()
 
 
@@ -92,6 +108,9 @@ dev.off()
 # jpeg(paste(DIR,'MeanEnergy_forces&freqs&ball.jpg'))
 #     boxplot(MeanEnergy~Forces*Freq*BallMov,main = type_participants,xlab = "Forces*Freqs*BallMov",ylab="Mean Energy",ylim=c(0,10))
 # dev.off()
-jpeg(paste(DIR,'MeanEnergy_forces&freqs&ball.jpg'))
-    boxplot(MeanEnergy2~Freq*Condition,main = type_participants,xlab = "Freq*Condition",ylab="Mean Energy")#,ylim=c(0,10))
+pdf(paste(DIR,'MeanEnergy_forces&freqs&ball.pdf'))
+    boxplot(MeanEnergy2~Freq*Condition,main = type_participants,xlab = "Ball Frequency",ylab="Mean Energy",ylim=c(0,0.5),
+    col=myColors, names=c("0.5","1","1.5","2.5","0.5","1","1.5","2.5","0.5","1","1.5","2.5"))
+    legend("topright", legend = c("Ball moving\nwith forces","Ball still\nwith forces", "Ball moving\nwithout forces") ,
+        col = c(col1, col2, col3) , bty = "n", pch=20 , pt.cex = 3, cex = 1, horiz = FALSE, inset = c(0.03, 0.02), y.intersp=2)
 dev.off()

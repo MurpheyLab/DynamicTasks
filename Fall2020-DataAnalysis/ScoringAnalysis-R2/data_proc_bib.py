@@ -13,14 +13,14 @@ import csv
 #DIR = "/media/ola/Data/Research/DowntownData/Fall2020LabData/" # linux
 DIR = "E:\\Research\\DowntownData\\Fall2020RoundTwo\\" # windows
 
-number_of_control_subjects = 3
+number_of_control_subjects = 7
 number_of_stroke_subjects = 0
 DT = 0.05
 
-list_of_participants = ["S01","S02","S03"] #,"S04","S05","S06","S07"]
-list_of_participants_num = ["1","2","3"] #,"4","5","6","7"]
-side_arm = ["R","L","R"]
-dom_arm = ["D","N","D"]
+list_of_participants = ["S01","S02","S03","S04","S05","S06","S07"]
+list_of_participants_num = ["1","2","3","4","5","6","7"]
+side_arm = ["R","L","R","L","R","L","R"] # UPDATE TO CORRECT VALUES
+dom_arm = ["D","N","D","N","D","N","D"] # UPDATE TO CORRECT VALUES
 #impairment = []
 # for i in range(0,number_of_stroke_subjects):
 #     impairment.append("Stroke")

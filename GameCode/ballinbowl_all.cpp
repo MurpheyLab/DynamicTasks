@@ -928,13 +928,14 @@ void Display(void)
 	glPopMatrix();
 	glutSwapBuffers();
 
+	// draw image when participant not lifting
 	if (trial_flag == 1.0 && CurrentPosition[PosZ] < z_tolerance) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glPushMatrix();
 		glutPostRedisplay();
-		renderer->DrawTrophy();
-		DrawPersonalBestBoard;
-		DrawPersonalBestLabel;
+		renderer->DrawLift();
+		//DrawPersonalBestBoard;
+		//DrawPersonalBestLabel;
 		glPopMatrix();
 		glutSwapBuffers();
 	}
