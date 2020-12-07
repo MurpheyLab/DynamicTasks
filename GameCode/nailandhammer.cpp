@@ -30,8 +30,8 @@ const int SCREEN_HEIGHT = 1200;
 //---------------------------------------------------------------------
 
 // at the beginning only
-int subject_num = 7;
-int arm = 0; // 0: paretic, 1: non-paretic
+int subject_num = 102;
+int arm = 1; // 0: paretic, 1: non-paretic
 float maxForce = 71.465; //input value from isometric protocol (Fx)
 #define TF 20.0 // length of trial
 
@@ -41,7 +41,7 @@ char game_version = 'i'; // 2 different game versions: 'a' for nails on an arc, 
 const int nail_forces = 1; // option to enable wall feedback: '0' if off, '1' if on
 const int rightleft = 1; // '0' for nails to appear on the right and '1' for nails to appear on the left and '2' for nails to appear all around
 
-int trial_num = 16;
+int trial_num = 12;
 int support_num = 1; // 0: 0%, 1: 30%
 
 //---------------------------------------------------------------------
@@ -53,8 +53,8 @@ float support_level[4] = { 0.6, 0.0, 0.2, 0.5 };
 
 // Files paths for defining task, reading in arm weight and workspace, and logging data
 //string logpath = dirpath + "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + ".csv";
-string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL0.csv";
-//string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
+//string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL0.csv";
+string logpath = "NailHammerData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Task" + to_string(rightleft) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
 ofstream logfile;
 
 #define IPADDRESS "10.30.203.26" //"10.30.203.26"

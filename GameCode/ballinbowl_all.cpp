@@ -50,8 +50,8 @@ const char* tasklist[6] = { taskpath0, taskpath1, taskpath2, taskpath3, taskpath
 
 // Define file for logging data - this is assuming game version 'f'
 const char* taskpath = tasklist[task_num];
-string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL0_F" + to_string(feedback_forces) + "_B" + to_string(ball_moving) + ".csv";
-//string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
+//string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL0_F" + to_string(feedback_forces) + "_B" + to_string(ball_moving) + ".csv";
+string logpath = dirpath + "OutputData_S" + to_string(subject_num) + "_Trial" + to_string(trial_num) + "_Freq" + to_string(freq_num) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
 
 // Define file for logging data - this is assuming game version 'i'
 //string logpath = "OutputData_S" + to_string(subject_num) + "_Freq" + to_string(freq) + "_SL" + to_string(support_num) + "_Trial" + to_string(trial_num) + ".csv";
