@@ -2,8 +2,8 @@ import csv
 import numpy as np
 import random
 
-minsub = 2
-maxsub = 2
+minsub = 3
+maxsub = 3
 
 for sub in range(minsub,maxsub+1):
     filename = "S0"+str(sub)+"_testorder_stroke.csv"
@@ -15,7 +15,7 @@ for sub in range(minsub,maxsub+1):
 
     # Define experiment
     num_support = 4
-    num_repetitions = 3
+    num_repetitions = 4
     num_sets = 2
     num_arms = 2
     trialnum = 1

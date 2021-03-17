@@ -85,7 +85,9 @@ for sub_plot in range(1,1+num_sub_plots):
     compare_groups1 = np.zeros((2,4,number_of_subjects))
     compare_groups2 = np.zeros((2,4,number_of_subjects))
     compare_groups3 = np.zeros((len(forceconditions),4,number_of_subjects))
-    for group in range(0,len(forceconditions)):
+    # for group in range(0,len(forceconditions)):
+    for group in range(3,len(forceconditions)):
+        print('group',group)
         num_freq = np.zeros(4)
         A_Fmag = np.zeros((4,w_len))
         A_Fx = np.zeros((4,w_len))
@@ -312,7 +314,7 @@ for sub_plot in range(1,1+num_sub_plots):
                             energy = energy_mat[0,freq2,:]
                         else:
                             energy = energy_mat[freq,freq2,:]
-                        data.append(np.array(energy))
+                        data.append(np.array(energy)*100)
 
                 # create lists for colors, labels, ect.
                 # add lists for future plots
@@ -341,19 +343,57 @@ for sub_plot in range(1,1+num_sub_plots):
 
                 figure_size = (6,3.55) # sets the size of the figure in inches
                 xlabel = ''
-                ylabel = 'Fraction of Total Energy'
+                ylabel = 'Percentage of Energy Exerted'
 
-                title = 'Energy Content of Movement at Different Frequencies:\n' + forceconditions[group]
+                # title = 'Energy Content of Movement at Different Frequencies:\n' + forceconditions[group]
+                title = 'Frequency Content of Movement During Task Completion'
                 [fig,ax]=make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_size)
 
+                # # print(ax.get_xticks())
+                # locs = ax.get_xticks()            # Get locations and labels
+                # xlabels = ax.get_xticklabels()
+                # print(xlabels)
+                # tick = 0
+                # # labels
+                # # xlabels2 = []
+                # for freq in range(0,4):
+                #     for freq2 in range(0,4):
+                #
+                #         if freq==freq2:
+                #             print(locs[tick], xlabels[tick])
+                #             xlabels[tick] = plt.text(1,0,'5',color='#ff7e0d')
+                #             print(xlabels[tick])
+                #             labels[tick] = '5'
+                #             # ax.set_xticklabels(locs[tick], xlabels[tick])
+                #             # xlabels.append('hi')
+                #             # xticks(locs[tick], labels[tick], **kwargs)  # Set locations and labels
+                #         else:
+                #             labels[tick] = '5'
+                #             # xlabels.append('')
+                #         tick += 1
+                # # print(xlabels2)
+                # # ax.set_xticks(locs[4:5],labels[4:5])#,color='#ff7e0d')
+                # # ax.set_xticks(ticks=locs,labels=labels)#,color='#ff7e0d')
+                # ax.set_xticklabels(xlabels)
+                # # ax.set_xlabels(labels2)
+                # print(locs,labels)
+                # ax.set_xticklabels(locs,labels)
+                # xticks(ticks, [labels], **kwargs)  # Set locations and labels
+                # for label in (ax.get_xticklabels()):
+                #     print(label)
+                    # label.set_fontsize(8)
                 # Add rectangles for background
+                [ymin,ymax]=ax.get_ylim()
+                ax.set_ylim(top=46)
                 [ymin,ymax]=ax.get_ylim()
                 grey_colors = ['#e3e3e3','#ffffff','#e3e3e3','#ffffff']
                 x1 = []
                 x2 = []
+                toplabel = ['at 0.5Hz','at 1Hz','at 1.5Hz','at 2Hz']
                 for i in range(4):
                     x = i*4+0.5
                     ax.add_patch(Rectangle((x,ymin), 4, ymax-ymin, facecolor=grey_colors[i], alpha=1,zorder=1))
+                    ax.text(x+2, ymax-3,toplabel[i],horizontalalignment='center', fontname="Arial", fontsize=10, fontweight='bold')
                     x1.append(x)
                     if i!=0:
                         x2.append(x)
@@ -362,14 +402,14 @@ for sub_plot in range(1,1+num_sub_plots):
                 # Text Labels
                 y = ymin - ((ymax-ymin)/8)
                 text_buffer = ((ymax-ymin)/20)
-                name = ['0.5+/-0.2','1+/-0.2','1.5+/-0.2','2.5+/-0.2']
-                add_labels(ax,x1,x2,y,name,text_buffer)
-                y = ymin - ((ymax-ymin)/6)
-                ax.text(0.5, y,'Range(Hz):',horizontalalignment='right', fontname="Arial", fontsize=10, fontweight='bold')
-                y = ymin - ((ymax-ymin)/12)
-                ax.text(0.5, y,'Ball(Hz):',horizontalalignment='right', fontname="Arial", fontsize=10, fontweight='bold')
+                # name = ['0.5+/-0.2','1+/-0.2','1.5+/-0.2','2.5+/-0.2']
                 # add_labels(ax,x1,x2,y,name,text_buffer)
-                fig.savefig('Plots/'+'energy_'+group_label[group]+'.png')
+                # y = ymin - ((ymax-ymin)/6)
+                # ax.text(0.5, y,'Range(Hz):',horizontalalignment='right', fontname="Arial", fontsize=10, fontweight='bold')
+                y = ymin - ((ymax-ymin)/12)
+                ax.text(0.5, y,'Task(Hz):',horizontalalignment='right', fontname="Arial", fontsize=10, fontweight='bold')
+                # add_labels(ax,x1,x2,y,name,text_buffer)
+                fig.savefig('Plots/'+'energy_'+group_label[group]+'.pdf')
 
 
     if make_plots:

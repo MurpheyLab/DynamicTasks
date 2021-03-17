@@ -16,7 +16,7 @@ for sub in range(minsub,maxsub+1):
     # Define experiment
     num_hapticforcelevels = 3
     num_frequencies = 4
-    num_repetitions = 3
+    num_repetitions = 4
     num_sets = 3
 
     # Arrange haptic force order

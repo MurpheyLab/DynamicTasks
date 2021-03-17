@@ -217,7 +217,8 @@ def make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_siz
     """
 
     fig, ax = plt.subplots(figsize=figure_size,dpi=300)
-    medianprops = dict(linewidth=2.5, color='black')
+    # medianprops = dict(linewidth=2.5, color='black')
+    medianprops = dict(linewidth=1.5, color='black')
     bp = ax.boxplot(data, notch=0, medianprops=medianprops, labels=labels)#, patch_artist=True,boxprops=dict(facecolor=color_combine, color=c))
     plt.setp(bp['boxes'], color='black')
     plt.setp(bp['whiskers'], color='black')
@@ -228,7 +229,7 @@ def make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_siz
                    alpha=0.5)
 
     ax.set_axisbelow(True) # Hide these grid behind plot objects
-    ax.set_title(title, fontsize=10, fontweight='bold')
+    ax.set_title(title, fontsize=10, fontweight='bold',fontname="Arial")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     # for label in (ax.get_xticklabels() + ax.get_yticklabels()):
@@ -250,14 +251,14 @@ def make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_siz
         box_coords = np.column_stack([boxX, boxY])
         ax.add_patch(Polygon(box_coords, facecolor=box_colors[i], alpha=box_alpha[i],zorder=2))
 
-    for i in range(numboxes):
-        x_coordinate = i+1
-        y_mean = np.mean(data[i])
-        y_std = np.std(data[i])/np.sqrt(data[i].shape[0])
-        ax.plot([x_coordinate,x_coordinate],
-                [y_mean-y_std,y_mean+y_std]
-                ,'black',markersize=7,zorder=3)
-        ax.plot(x_coordinate, y_mean, 'o',
-                     color='w', marker='o', markersize=7, markeredgecolor='black',zorder=4)#, linewidth=0)
+    # for i in range(numboxes):
+    #     x_coordinate = i+1
+    #     y_mean = np.mean(data[i])
+    #     y_std = np.std(data[i])/np.sqrt(data[i].shape[0])
+    #     ax.plot([x_coordinate,x_coordinate],
+    #             [y_mean-y_std,y_mean+y_std]
+    #             ,'black',markersize=7,zorder=3)
+    #     ax.plot(x_coordinate, y_mean, 'o',
+    #                  color='w', marker='o', markersize=7, markeredgecolor='black',zorder=4)#, linewidth=0)
 
     return [fig,ax]
