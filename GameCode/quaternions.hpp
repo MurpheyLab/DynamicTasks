@@ -1,6 +1,7 @@
 
-double QuaternionLookup(int euler_angle, int pos_val) {
+double QuaternionLookup(float euler_angle_fl, int pos_val) {
   double return_val=0.0;
+  int euler_angle = int(euler_angle_fl);
   //printf("euler angle: %d.\n", euler_angle);
   if (euler_angle==90) {
       double quat_list[4] = {0, 0, 0.7071068, 0.7071068};

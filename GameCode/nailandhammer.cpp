@@ -472,6 +472,7 @@ void CheckNails(void)
 						}
 						haSendCommand(dev, "set myNail pos", wallX, wallY, goals[currentnail][0][PosZ], response); //- size_of_section / 4
 						//haSendCommand(dev, "set myNail pos", goals[currentnail][current_block][0], goals[currentnail][current_block][1], goals[currentnail][current_block][2], response);
+						printf("%f,%f,%f,%f\n", QuaternionLookup(goals[currentnail][0][3], 0), QuaternionLookup(goals[currentnail][0][3], 1), QuaternionLookup(goals[currentnail][0][3], 2), QuaternionLookup(goals[currentnail][0][3], 3)); 
 						haSendCommand(dev, "set myNail att", QuaternionLookup(goals[currentnail][0][3], 0), QuaternionLookup(goals[currentnail][0][3], 1), QuaternionLookup(goals[currentnail][0][3], 2), QuaternionLookup(goals[currentnail][0][3], 3), response);
 						haSendCommand(dev, "set myNail enable", response);
 						printf("Nail wall enabled...\n");
@@ -661,10 +662,10 @@ void Display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glPushMatrix();
 	//gluLookAt(0.68, 0.0, 0.4, -0.015, 0.0, 0.0, 0.0, 0.0, 1.0);
-	//gluLookAt(0.0, 0.0, 1.5, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0); // for top down view 
+	gluLookAt(0.0, 0.0, 1.5, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0); // for top down view 
 	//gluLookAt(0.5, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0); // for participant view point
 	//gluLookAt(0.5, 0.0, 0.5, -0.2, 0.0, 0.0, 0.0, 0.0, 1.0); // for participant view point
-	gluLookAt(0.645, 0.0, 0.4, 0.05, 0.0, 0.0, 0.0, 0.0, 1.0); // works well
+	//gluLookAt(0.645, 0.0, 0.4, 0.05, 0.0, 0.0, 0.0, 0.0, 1.0); // works well
 	//gluLookAt(0.68, 0.0, 0.4, -0.015, 0.0, 0.0, 0.0, 0.0, 1.0);
 	
 	glutPostRedisplay();
@@ -740,6 +741,8 @@ case 's': // penalty_timer trial
 		haSendCommand(dev, "set myNail size", 0.045, 0.02, 0.5, response); //set to be a little larger than workspace
 		//size_of_section * (numsections - 1)
 		haSendCommand(dev, "set myNail stiffness", 20000.0, response);
+		printf("%f,%f,%f,%f\n", QuaternionLookup(goals[currentnail][0][3], 0), QuaternionLookup(goals[currentnail][0][3], 1), QuaternionLookup(goals[currentnail][0][3], 2), QuaternionLookup(goals[currentnail][0][3], 3));
+		printf("%f\n", goals[currentnail][0][3]);
 		haSendCommand(dev, "set myNail att", QuaternionLookup(goals[currentnail][0][3], 0), QuaternionLookup(goals[currentnail][0][3], 1), QuaternionLookup(goals[currentnail][0][3], 2), QuaternionLookup(goals[currentnail][0][3], 3), response);
 		//printf("quat: %f, %f, %f, %f.\n", QuaternionLookup(goals[currentnail][0][3], 0), QuaternionLookup(goals[currentnail][0][3], 1), QuaternionLookup(goals[currentnail][0][3], 2), QuaternionLookup(goals[currentnail][0][3], 3));
 		//haSendCommand(dev, "set myNail att", 0.0, 0.0, 0.0, 1.0, response);
