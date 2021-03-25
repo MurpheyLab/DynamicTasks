@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------
 // Game header files
 #include "ballinbowl.hpp"
-#include "parameters.hpp"
+// #include "parameters.hpp"
 // HapticMaster header files
 #include "HapticAPI.h"
 #include "HapticUtility.h"
@@ -25,6 +25,9 @@
 #include <sstream>
 #include <cstdlib>
 #include <ctime>
+
+// Visualization mode
+#define TEXTURES_ON // uncomment this line to use textures
 
 // Option visualization upgrade (textures)
 #ifdef TEXTURES_ON
@@ -77,7 +80,7 @@ double z_tolerance = table_z + 0.01; // -0.16 // if lower, person can eat flags 
 #define tol_delta 0.008
 #define size_of_flag 0.008 
 
-int pb_vec[num_freqs_tested][3];
+int pb_vec[num_freqs_tested][2];
 
 static GLUquadricObj * q; // water object
 
@@ -1234,10 +1237,10 @@ void TimerCB(int iTimer)
 			for (int i = 0; i < num_freqs_tested; i++) {
 				myfile << pb_vec[i][1] << ',';
 			}
-			myfile << '\n';
-			for (int i = 0; i < num_freqs_tested; i++) {
-				myfile << pb_vec[i][2] << ',';
-			}
+			// myfile << '\n';
+			// for (int i = 0; i < num_freqs_tested; i++) {
+			// 	myfile << pb_vec[i][2] << ',';
+			// }
 			myfile.close();
 
 			printf("-------------Participant beat their personal best!----------------\n");
@@ -1307,12 +1310,13 @@ int main(int argc, char** argv)
 	srand(static_cast <unsigned> (time(0))); // this is important for random number generation
 
 	FILE* setupfile;
+	printf(setuppath);
 	setupfile = fopen(setuppath, "r");
 	int val2 = fscanf(setupfile, "%f,%f,%f,%f,%f,%f\n", &armWeight, &ymin, &ymax, &xmin, &xmax, &maxForce);
 
 	FILE* pbfile;
 	pbfile = fopen(personalbestspath, "r");
-	fscanf(pbfile, "%d,%d,%d,%d\n,%d,%d,%d,%d\n,%d,%d,%d,%d\n", &pb_vec[0][0], &pb_vec[1][0], &pb_vec[2][0], &pb_vec[3][0], &pb_vec[0][1], &pb_vec[1][1], &pb_vec[2][1], &pb_vec[3][1], & pb_vec[0][2], & pb_vec[1][2], & pb_vec[2][2], & pb_vec[3][2]);
+	fscanf(pbfile, "%d,%d,%d,%d\n,%d,%d,%d,%d\n", &pb_vec[0][0], &pb_vec[1][0], &pb_vec[2][0], &pb_vec[3][0], &pb_vec[0][1], &pb_vec[1][1], &pb_vec[2][1], &pb_vec[3][1]);
 	printf("Personal best for this frequency is: %d.\n", pb_vec[freq_num][condition]);
 
 

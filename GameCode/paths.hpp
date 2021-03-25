@@ -5,6 +5,9 @@
 // or reorganizing the repo.
 //---------------------------------------------------------------------
 
+#include "parameters.hpp"
+using namespace std;
+
 ////// File paths for Ola
 //const char* taskpath1 = "E:\\Research\\DowntownGames\\DowntownGames-Biodex\\Tasks20\\spiral_task2.csv";
 //const char* taskpath2 = "E:\\Research\\DowntownGames\\DowntownGames-Biodex\\Tasks20\\bowtie_task2_20.csv";
@@ -71,10 +74,12 @@ const char* taskpath4 = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Task
 const char* taskpath5 = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Tasks20\\clusters_task5.csv";
 const char* taskpath0 = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Tasks20\\ex_task.csv";
 
-const char* flagspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\flags.csv"; // flags_example.csv
 //const char* flagspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\flags_example.csv";
-const char* setuppath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\workspace.csv"; // workspace_example.csv
-//const char* setuppath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\workspace_example.csv";
+//const char* setuppath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\setup_S205_A0.csv";
+//string flagspathstring = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\Flags_S" + to_string(subject_num) + "_SL2_A" + to_string(arm) + ".csv";
+string setuppathstring = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\setup_S" + to_string(subject_num) + "_A" + to_string(arm) + ".csv";
+const char* setuppath = setuppathstring.c_str();
+//const char* flagspath = flagspathstring.c_str();
 
 //const char* tablepath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\wood_table.png"; // old table
 const char* tablepath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\wood_2.png";
@@ -87,8 +92,9 @@ const char* intenseLpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\T
 const char* intenseRpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\intense_R.png";
 
 //string dirpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\";
-const char* personalbestspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\personalbests.csv";
-//const char* personalbestspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\personalbests_example.csv";
-const char* trophypath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\personal-best-trophy2.png"; // trophy.png";
-const char* liftpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\liftred.png"; 
+//string personalbestspathstring = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\personalbests_A" + to_string(arm) + ".csv";
+//const char* personalbestspath = personalbestspathstring.c_str();
+////const char* personalbestspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\personalbests_example.csv";
+//const char* trophypath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\personal-best-trophy2.png"; // trophy.png";
+//const char* liftpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\liftred.png"; 
 

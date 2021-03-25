@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------
 // Game header files
 #include "ballinbowl.hpp"
-#include "parameters.hpp"
+// #include "parameters.hpp"
 // HapticMaster header files
 #include "HapticAPI.h"
 #include "HapticUtility.h"
@@ -41,18 +41,18 @@ const int SCREEN_HEIGHT = 3000;
 
 
 // Define file for logging flag locations
-string logflags = dirpath + "Flags_S" + to_string(subject_num) + "_SL" + to_string(support_num) + ".csv"; 
+string logflags = dirpath + "Flags_S" + to_string(subject_num) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
 ofstream logflagfile;
 
 // Define file for logging arm weight and workspace min/max
-string setuppath2 = dirpath + "setup_S" + to_string(subject_num) + ".csv";
+string setuppath2 = dirpath + "setup_S" + to_string(subject_num) + "_A" + to_string(arm) + ".csv";
 
 // Define file for storing path of participant
-string logpath = dirpath + "Workspace_Path_S" + to_string(subject_num) + "_SL" + to_string(support_num) + ".csv";
+string logpath = dirpath + "Workspace_Path_S" + to_string(subject_num) + "_SL" + to_string(support_num) + "_A" + to_string(arm) + ".csv";
 ofstream logpathfile;
 
 // Define file for personal bests
-string personalbestspath_string = dirpath + "personalbests.csv";
+string personalbestspath_string = dirpath + "personalbests_A" + to_string(arm) + ".csv";
 
 #define IPADDRESS "10.30.203.26" //"10.30.203.26"
 
@@ -498,7 +498,7 @@ void Keyboard(unsigned char ucKey, int iX, int iY)
 
 			myfile.open(personalbestspath_string);
 			for (int i = 0; i < num_freqs_tested; i++) {
-myfile << 0 << ',';
+				myfile << 0 << ',';
 			}
 			myfile << '\n';
 			for (int i = 0; i < num_freqs_tested; i++) {
@@ -650,7 +650,7 @@ int main(int argc, char** argv)
 
 			// Weigh arm
 			printf("Press 'f' then ENTER to weigh arm.\n");
-			printf("Press 's' then ENTER to skip max force measurement.\n");
+			printf("Press 's' then ENTER to skip weighing.\n");
 			//char key;
 			float meas_weight;
 			char key;
@@ -701,7 +701,7 @@ int main(int argc, char** argv)
 				std::cin >> key;
 				std::cin.get();
 				if (key == 'f') {
-					max_force = 0;
+					max_force = -50;
 					for (int i = 0; i < 500; i++) // take measurements every 10ms for 5 seconds
 					{
 						haSendCommand(dev, "get measforce", response);

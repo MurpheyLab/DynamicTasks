@@ -29,26 +29,26 @@ const int SCREEN_HEIGHT = 1200;
 //    Variables for adjustment during experiments
 //---------------------------------------------------------------------
 
-// at the beginning only
-int subject_num = 103;
-int arm = 0; // 0: paretic, 1: non-paretic
-float maxForce = 71.465; //input value from isometric protocol (Fx)
-#define TF 20.0 // length of trial
+//// at the beginning only
+//int subject_num = 205;
+//int arm = 0; // 0: paretic, 1: non-paretic
+float maxForce; //input value from isometric protocol (Fx)
+//#define TFnah 20.0 // length of trial
 
-// define game version
-const int mode = 0; // '0' connected to robot, '1' joystick
-char game_version = 'i'; // 2 different game versions: 'a' for nails on an arc, 'i' for infinite nails (two visible at a time)
+//// define game version
+//const int mode = 0; // '0' connected to robot, '1' joystick
+//char game_version = 'i'; // 2 different game versions: 'a' for nails on an arc, 'i' for infinite nails (two visible at a time)
 const int nail_forces = 1; // option to enable wall feedback: '0' if off, '1' if on
-const int rightleft = 1; // '0' for nails to appear on the right and '1' for nails to appear on the left and '2' for nails to appear all around
-
-int trial_num = 1;
-int support_num = 1; // 0: 0%, 1: 30%
+const int rightleft = 2; // '0' for nails to appear on the right and '1' for nails to appear on the left and '2' for nails to appear all around
+//
+//int trial_num = 1;
+//int support_num = 1; // 1: 0%, 2: 35%
 
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
 // Define possible support levels
-float support_level[2] = { 0.0, 0.3 }; // fraction of max shoulder abduction loading (0-1)
+//float support_level[3] = { 0.0, 0.0, 0.35 }; // fraction of max shoulder abduction loading (0-1)
 //float support_level[4] = { 0.6, 0.0, 0.2, 0.5 };
 
 // Files paths for defining task, reading in arm weight and workspace, and logging data
@@ -76,8 +76,8 @@ float tol_delta = size_of_section * 0.6; // for "nailing in" a section
 #define minvely 0.1
 
 //GLfloat xmin = -0.08, xmax = 0.15, ymin = -0.2, ymax = 0.25;
-GLfloat xmin = 10.0; GLfloat xmax = 10.0; GLfloat ymin = 10.0; GLfloat ymax = 10.0;
-GLfloat armWeight = 10.0;
+float xmin = 10.0; float xmax = 10.0; float ymin = 10.0; float ymax = 10.0;
+float armWeight = 10.0;
 
 long dev = 0;
 char response[100];
@@ -147,7 +147,7 @@ GLfloat ShininessOff = { 0.00 };
 // This Function Is Called To Draw A Plane
 //---------------------------------------------------------------------
 void DrawTable(void) {
-	int i, j;
+	int i;
 	GLfloat v[4][3];
 	GLfloat width = 1.5, length = 0.3;
 
@@ -181,7 +181,7 @@ void DrawTable(void) {
 	} else if (rightleft == 0) {
 		startang = 90; endang = 180;
 	} else {
-		startang = 90; endang = 270;
+		startang = 130; endang = 230;
 	}
 
 	//glColor3f(1.0f, 1.1f, 0.0f); // yellow
@@ -299,7 +299,7 @@ void DefineTask(void)
 		anglemin = 100; anglemax = 190;
 	}
 	else {
-		anglemin = 90; anglemax = 280;
+		anglemin = 130; anglemax = 240;
 	}
 
 	if (game_version == 'i') {
@@ -374,7 +374,7 @@ void DefineTask(void)
 //---------------------------------------------------------------------
 void CheckNails(void)
 {
-    GLfloat rand_x, rand_y;
+    //GLfloat rand_x, rand_y;
 
 	// here we check for: 1. ball is in bowl, 2. trial is running, 3. person is above the haptic table
 	//printf("Nail angle is %f.\n", goals[currentnail][0][3]);
@@ -457,7 +457,7 @@ void CheckNails(void)
 					if ((mode == 0) && (nail_forces == 1)) {
 						haSendCommand(dev, "set myNail disable", response);
 						printf("current nail: %d, current angle: %f, current block: %d.\n", currentnail, goals[currentnail][0][3], current_block);
-						float wallX, wallY;
+						float wallX=0.0, wallY=0.0;
 						if ((current_block - 2) >= 0) {
 							wallX = (goals[currentnail][current_block - 2][0] - XCenter) * actualXrange / maxXrange + springPos[PosX];
 							wallY = (goals[currentnail][current_block - 2][1] - YCenter) * actualYrange / maxYrange + springPos[PosY];
@@ -532,7 +532,7 @@ void DrawLabels(void) {
 	string score_string = to_string(score);
 	char *cscore = const_cast<char*>(score_string.c_str());
 
-	int time_current_rounded = round(TF - sys_time);
+	int time_current_rounded = round(TFnah - sys_time);
 	string time_current_string = to_string(time_current_rounded);
 	char *ctime = const_cast<char*>(time_current_string.c_str());
 
@@ -571,9 +571,9 @@ void DrawLabels(void) {
 // This Function Is Called To Draw A Timer Bar
 //---------------------------------------------------------------------
 void DrawTimerBar(void) {
-	int i, j;
+	int i;
 	GLfloat v[4][3];
-	GLfloat bottom = 0.07, width = 0.053, x_offset = 0.3, length = 0.6 * (1 - sys_time / TF);
+	GLfloat bottom = 0.07, width = 0.053, x_offset = 0.3, length = 0.6 * (1 - sys_time / TFnah);
 
 	for (i = 0; i < 4; ++i) { // parallel with x-y plane
 		v[i][2] = 0.0;
@@ -603,7 +603,7 @@ void DrawTimerBar(void) {
 // This Function Is Called To Draw A Score Bar
 //---------------------------------------------------------------------
 void DrawScoreBar(void) {
-	int i, j;
+	int i;
 	GLfloat v[4][3];
 	GLfloat bottom = 0.07, width = 0.053, x_offset = 0.3, length = 0.89 * score; // / num_rand_flags;
 
@@ -722,7 +722,7 @@ case 's': // penalty_timer trial
 	//Set up haptic nail
 	if ((mode == 0) && (nail_forces == 1)) {
 		haSendCommand(dev, "create block myNail", response);
-		float wallX, wallY;
+		float wallX=0.0, wallY=0.0;
 		if ((current_block - 2) >= 0) {
 			wallX = (goals[currentnail][current_block - 2][0] - XCenter) * actualXrange / maxXrange + springPos[PosX];
 			wallY = (goals[currentnail][current_block - 2][1] - YCenter) * actualYrange / maxYrange + springPos[PosY];
@@ -837,8 +837,8 @@ void TimerCB(int iTimer)
 	}
 
 	// Calculate current angle
-	velx = (xprev[0] - CurrentPosition[PosX]) / (3 * deltaT);
-	vely = (yprev[0] - CurrentPosition[PosY]) / (3 * deltaT);
+	velx = (xprev[0] - CurrentPosition[PosX]) / (3.0 * deltaT);
+	vely = (yprev[0] - CurrentPosition[PosY]) / (3.0 * deltaT);
 	
 	if (((abs(velx) < minvelx) && (abs(vely) < minvely)) || velx < 0.0) {
 		velx = 0;
@@ -875,7 +875,7 @@ void TimerCB(int iTimer)
 	}
 
 	// Set time of trial 
-	if (sys_time > TF) {
+	if (sys_time > TFnah) {
 		logfile.close(); 
 		if (mode == 0) { // if using HapticMASTER
 
@@ -923,7 +923,8 @@ int main(int argc, char** argv)
 	#pragma warning (disable : 4996)
 	setupfile = fopen(setuppath, "r");
 	#pragma warning (disable : 4996)
-	int val2 = fscanf(setupfile, "%f,%f,%f,%f,%f\n", &armWeight, &ymin, &ymax, &xmin, &xmax);
+	int val2 = fscanf(setupfile, "%f,%f,%f,%f,%f,%f\n", &armWeight, &ymin, &ymax, &xmin, &xmax, &maxForce);
+	printf("%f,%f,%f,%f,%f,%f\n", armWeight, ymin, ymax, xmin, xmax, maxForce);
 
 	// Option to hardcode values
 	//armWeight = 60.0; ymin = -0.26; ymax = 0.26; xmin = -0.08; xmax = 0.15;
@@ -937,7 +938,7 @@ int main(int argc, char** argv)
 	actualXrange = xmax - xmin;
 	actualYrange = ymax - ymin;
 	springPos[0] = xmax - 0.02;
-	springPos[1] = ymin + actualYrange / 2;
+	springPos[1] = ymin + actualYrange / 2.0;
 	if (support_num == 0.0) {
 		springPos[2] = table_z + 0.045; //-.17
 	}
@@ -979,7 +980,7 @@ int main(int argc, char** argv)
 
 		// Set bias force
 		printf("Setting bias force to %f of the max abduction force.\n", support_level[support_num]);
-		float bias = -maxForce * support_level[support_num] + armWeight;
+		float bias = -(maxForce * support_level[support_num]) + armWeight;
 		returnValue = haDeviceSendString(dev, "create biasforce myBiasForce", response);
 		printf("bias: %f \n", bias);
 		returnValue = haSendCommand(dev, "set myBiasForce force", 0.0, 0.0, bias, response);

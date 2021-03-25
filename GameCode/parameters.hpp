@@ -5,32 +5,29 @@
 // number, loading level, etc.). *This should be the only file changed
 // while running experiments.*
 //---------------------------------------------------------------------
-
 // Subject parameters (update once at the beginning)
-int subject_num = 103;
+int subject_num = 205;
 
-// Trial parameters (update every iteration)
+// Trial parameters (update every iteration) 
 int arm = 0; // 0: paretic; 1: non-paretic
-int trial_num = 80;
-int support_num = 2; // 0: haptic table (always), 1: 0%, 2: 30%, 3: 50%
+int trial_num = 159;
+int support_num = 2; // 0: haptic table (always), 1: 0%, 2: 35%, 3: 50%
 int freq_num = 0; // 0: 0.5Hz 1: 1Hz 2: 1.5Hz 3: 2.5Hz
 // 0: 0.25Hz 1: 0.5Hz 2: 0.75Hz 3: 1Hz 4: 1.5Hz 5:2Hz 6:2.5Hz
-int personalbests_flag = 0; // 0: off for learning, 1: on for data collection
+int personalbests_flag = 1; // 0: off for learning, 1: on for data collection
 
-int condition = 0;
+int condition = support_num-1;
 const int feedback_forces_vec[4] = { 1, 1, 0, 0 }; // 0: off, 1: on
 int ball_moving_vec[4] = { 1, 0, 1, 0 }; // 0: not moving, 1: moving 
-const int feedback_forces = feedback_forces_vec[condition];
-int ball_moving = ball_moving_vec[condition];
+const int feedback_forces = 1; // feedback_forces_vec[condition];
+int ball_moving = 1; // ball_moving_vec[condition];
 	
 // Input mode
 const int mode = 0; // 0: HapticMASTER control 1: joystick control 2: no input
 
-// Visualization mode
-#define TEXTURES_ON // uncomment this line to use textures
-
 // Game parameters
 #define TF 30.0 // length of trial
+#define TFnah 20.0 
 double percent_height = 0.3; // Allowed ball height
 char game_version = 'i'; // 3 different game versions: 'f' for reading flag coords from csv file, 'i' for infinite flags, and 'p' for penalty for dropping the ball
 // NOTE: version 'p' is not currently supported
@@ -59,7 +56,7 @@ double R = radius_options[freq_num];
 double damping = 0.0; // damping_options[freq_num];
 
 // Define possible support levels
-float support_level[5] = { 0.5, 0.0, 0.3, 0.5, 0.5 }; // fraction of max shoulder abduction loading (0-1)
+float support_level[5] = { 0.5, 0.0, 0.35, 0.5, 0.5 }; // fraction of max shoulder abduction loading (0-1)
 const int max_support = 2; // support level index that represents the most load
 
 //// Difficulty/frequency parameters (R represents pendulum length)

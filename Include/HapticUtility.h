@@ -62,7 +62,7 @@ void InitializeDevice(long dev) {
 
 	char outputString[200] = "";
 	// set the inertia to the default value
-	if (haDeviceSendString(dev, "set inertia 3.0", outputString)) {
+	if (haDeviceSendString(dev, "set inertia 4.0", outputString)) {
   		printf("--- ERROR: set inertia: %s\n",outputString);
 	}
 
@@ -92,7 +92,6 @@ void InitializeDevice(long dev) {
       			printf("--- ERROR: get state: %s\n", outputString);
 			}
 		}
-	
 	}
 
 	printf("Setting to state Force\n");
