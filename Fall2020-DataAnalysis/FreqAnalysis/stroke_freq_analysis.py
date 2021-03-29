@@ -25,6 +25,7 @@ make_plot_each_sub = 1 # 0-do not make plots 1-make plots
 filter = 1
 window = .2
 
+# subjects = [201]
 subjects = [201,202,203,204,205,206,207]
 # subjects = [203,205]
 # number_of_subjects = 3
@@ -152,7 +153,24 @@ for sub_plot in range(0,num_sub_plots):
                             file = open(os.path.join(pathName, i), "rU")
                             data = genfromtxt(file,delimiter=',',dtype=float)
                             data = np.delete(data,0,0) # Deletes the first column of column names
+                            df = pd.DataFrame({'z':data[:,3],'fx':data[:,8],'fy':data[:,9],'ball_energy':data[:,16]})
 
+
+                            gravity = 9.81
+                            mass = 1.0
+                            percent_height = 0.3
+                            radius_options = [0.995, 0.249, 0.111, 0.04]
+                            R = radius_options[freq]
+                            max_energy = mass * gravity * percent_height * R
+                            # print('max_energy',max_energy)
+                            df = df[df['ball_energy'] > max_energy]
+
+                            table_z = -0.14
+                            z_tolerance = table_z + 0.01
+                            df = df[df['z'] > z_tolerance]
+                            # y_Fx = df['fx'].tolist()
+                            # print(hi.tolist())
+                            # aslfihaishf
                             # str_split = i.split("_")
                             # trial_num = int(str_split[2].split("Trial")[1])
                             # Use signal directly 1-x position 2- y position 8- x force 9- y force 12-x ball force 13-y ball force
@@ -160,9 +178,11 @@ for sub_plot in range(0,num_sub_plots):
 
                             # y = data[:,8]+data[:,9] # Combine the x and y direction forces
                             # A_Fmag_i,frq = calculate_amplitude(w,y,Fs)
-                            y_Fx = data[:,8]
+                            # y_Fx = data[:,8]
+                            y_Fx = df['fx'].tolist()
                             A_Fx_i,frq = calculate_amplitude(w,y_Fx,Fs)
-                            y_Fy = data[:,9]
+                            # y_Fy = data[:,9]
+                            y_Fy = df['fy'].tolist()
                             A_Fy_i,frq = calculate_amplitude(w,y_Fy,Fs)
 
                             # Normalize the spectrum so that the energy=1
@@ -251,4 +271,4 @@ for sub_plot in range(0,num_sub_plots):
                     [fig_spec,ax_spec] = mag_spectrum(w,mag_list,freq_plot,title,xlabel,ylabel,legend,linestyles_spec,colors_spec,ymin,ymax,ymax_pend)
                     fig_spec.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[subject_num])+'/'+'S'+str(subjects[subject_num])+'_'+frequencylabels[freq]+'.pdf')
 
-plt.show()
+# plt.show()
