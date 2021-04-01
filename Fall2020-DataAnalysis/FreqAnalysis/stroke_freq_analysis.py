@@ -266,7 +266,7 @@ for sub_plot in range(0,num_sub_plots):
                             A_Fmag[arm,SL,freq,:] = butter_lowpass_filter(A_Fmag[arm,SL,freq,:], cutoff, Fs)
                             A_Fmag[arm,SL,freq,:] = normalize_spectrum(A_Fmag[arm,SL,freq,:],dw)
                             mag_list.append(A_Fmag[arm,SL,freq,:])
-                    freq_plot = freq_pendulum#[freq_pendulum[freq]]
+                    freq_plot = [freq_pendulum[freq]]
                     title = 'Force Frequency Spectrum for the '+frequencylabels[freq]+' Ball'
                     [fig_spec,ax_spec] = mag_spectrum(w,mag_list,freq_plot,title,xlabel,ylabel,legend,linestyles_spec,colors_spec,ymin,ymax,ymax_pend)
                     fig_spec.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[subject_num])+'/'+'S'+str(subjects[subject_num])+'_'+frequencylabels[freq]+'.pdf')
