@@ -124,11 +124,13 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
 
     # set plot parameters
     ax.set_xscale('log')
-    ax.set_yscale('log')
+    # ax.set_yscale('log')
+    ax.set_xlim((0,w[len(w)-1]))
     # ax.set_xlim((10^-1,w[len(w)-1]))
     # ax.set_ylim(ymin,ymax)
-    ax.set_xlim((w[1],w[len(w)-1]))
-    ax.set_ylim(ymin,ymax)
+    # ax.set_xlim((w[1],w[len(w)-1]))
+    # ax.set_ylim(ymin,ymax)
+
     ax.grid(True, color="#E0E0E0")
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
         label.set_fontsize(8)

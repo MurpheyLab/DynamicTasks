@@ -123,7 +123,7 @@ def add_labels(ax,x1,x2,y,name,text_buffer):
         ax.annotate('', xy=(x1[i],y),xytext=(x2[i],y),                     #draws an arrow from one set of coordinates to the other
                     arrowprops=dict(arrowstyle='<|-|>',facecolor='black'),   #sets style of arrow and colour
                     annotation_clip=False)                               #This enables the arrow to be outside of the plot
-        ax.text(text_x, text_height,name[i],horizontalalignment='center', fontname="Arial", fontsize=10)
+        ax.text(text_x, text_height,name[i],horizontalalignment='center', fontname="sans-serif", fontsize=10)
 
     return
 
@@ -182,9 +182,9 @@ def make_stackedbar(data1,data2,title,xlabel,ylabel,labels,colors,alphas,figure_
     ax.set_axisbelow(True)
 
     # Add titles and labels
-    plt.xlabel(xlabel,fontname="Arial", fontsize=11)
-    plt.ylabel(ylabel,fontname="Arial", fontsize=11)
-    plt.title(title,fontname="Arial", fontsize=11,fontweight='bold')
+    plt.xlabel(xlabel,fontname="sans-serif", fontsize=11)
+    plt.ylabel(ylabel,fontname="sans-serif", fontsize=11)
+    plt.title(title,fontname="sans-serif", fontsize=11,fontweight='bold')
     for label in (ax.get_yticklabels()):
         label.set_fontsize(8)
 
@@ -194,7 +194,7 @@ def make_stackedbar(data1,data2,title,xlabel,ylabel,labels,colors,alphas,figure_
     plt.setp(L.texts, family='Arial')
 
     # x-ticks x-axis
-    plt.xticks(ind, labels, fontname="Arial", fontsize=10)
+    plt.xticks(ind, labels, fontname="sans-serif", fontsize=10)
     for tick in ax.get_xticklabels():
         tick.set_rotation(0)
 
@@ -229,7 +229,7 @@ def make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_siz
                    alpha=0.5)
 
     ax.set_axisbelow(True) # Hide these grid behind plot objects
-    ax.set_title(title, fontsize=10, fontweight='bold',fontname="Arial")
+    ax.set_title(title, fontsize=10, fontweight='bold',fontname="sans-serif")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     # for label in (ax.get_xticklabels() + ax.get_yticklabels()):
