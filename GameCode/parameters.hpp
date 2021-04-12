@@ -6,13 +6,13 @@
 // while running experiments.*
 //---------------------------------------------------------------------
 // Subject parameters (update once at the beginning)
-int subject_num = 205;
+int subject_num = 207;
 
 // Trial parameters (update every iteration) 
-int arm = 0; // 0: paretic; 1: non-paretic
+int arm = 1; // 0: paretic; 1: non-paretic
 int trial_num = 159;
 int support_num = 2; // 0: haptic table (always), 1: 0%, 2: 35%, 3: 50%
-int freq_num = 0; // 0: 0.5Hz 1: 1Hz 2: 1.5Hz 3: 2.5Hz
+int freq_num = 2; // 0: 0.5Hz 1: 1Hz 2: 1.5Hz 3: 2.5Hz
 // 0: 0.25Hz 1: 0.5Hz 2: 0.75Hz 3: 1Hz 4: 1.5Hz 5:2Hz 6:2.5Hz
 int personalbests_flag = 1; // 0: off for learning, 1: on for data collection
 
