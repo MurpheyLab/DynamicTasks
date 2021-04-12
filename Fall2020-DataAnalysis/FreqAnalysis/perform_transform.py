@@ -17,6 +17,26 @@ def normalize_spectrum(A,dw):
     A *= np.sqrt(1/E_signal) # normalizes
     return A
 
+def find_energy_at_resonance(w,A,resonant_freq,window):
+    """
+    Finds the energy of a normalized signal at resonance
+    Inputs:
+        w - list of frequencies corresponding to the signal amplitude vector
+        A - frequency amplitudes equally spaced
+        resonant_freq - frequency around which to calculate the energy
+        window - how much on either side of the resonant frequency to include
+
+    Outputs:
+        the energy at resonance
+    """
+    freq_list = []
+    dw = w[1]-w[0]
+    for w_i in range(0,len(w)):
+        if (w[w_i] < resonant_freq+window) and (w[w_i] > resonant_freq-window):
+            freq_list.append(A[w_i])
+    # return np.sum(freq_list)*dw
+    return np.sum(np.square(freq_list))*dw
+
 def calculate_amplitude(w,y,Fs,type='bin'):
     """
     Calculates the discrete time fourier transform and frequency amplitudes for the signal,
