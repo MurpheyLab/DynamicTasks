@@ -97,7 +97,7 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
     """
     # create plot
     figure_size = (6,3.55) # inches
-    plt.figure(1, figsize=figure_size, dpi=150)
+    # plt.figure(1, figsize=figure_size, dpi=150)
     fig, ax =plt.subplots(nrows=1, ncols=1, sharey='row', squeeze=True, figsize=figure_size, dpi=150)
     fig.subplots_adjust(hspace=0.05)
     fig.subplots_adjust(wspace=0.05)
@@ -138,7 +138,28 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
     # create titles
     fig.text(0.5, 0.91,title, ha='center', fontsize=10, fontweight='bold')
     fig.text(0.5, 0.01,xlabel, ha='center', fontsize=10)
-    fig.text(0.065, 0.5,ylabel, va='center', rotation='vertical', fontsize=10)
-    fig.legend(legend_lines,labels=legend,loc="center right", fontsize=9)
-    fig.subplots_adjust(right=0.7)
+    fig.text(0.06, 0.5,ylabel, va='center', rotation='vertical', fontsize=10)
+    if len(legend)>0:
+        fig.legend(legend_lines,labels=legend,loc="center right", fontsize=9)
+        fig.subplots_adjust(right=0.7)
     return [fig,ax]
+
+
+# remove rows where the ball is green
+def remove_lowe(df,freq):
+    gravity = 9.81
+    mass = 1.0
+    percent_height = 0.3
+    radius_options = [0.995, 0.249, 0.111, 0.04]
+    R = radius_options[freq]
+    max_energy = mass * gravity * percent_height * R
+    # print('max_energy',max_energy)
+    df = df[df['ball_energy'] > max_energy]
+    return df
+
+# remove rows where the person is not lifted
+def remove_notlifted(df):
+    table_z = -0.14
+    z_tolerance = table_z + 0.01
+    df = df[df['z'] > z_tolerance]
+    return df

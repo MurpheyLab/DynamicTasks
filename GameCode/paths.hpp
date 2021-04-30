@@ -76,10 +76,10 @@ const char* taskpath0 = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Task
 
 //const char* flagspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\flags_example.csv";
 //const char* setuppath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\setup_S205_A0.csv";
-//string flagspathstring = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\Flags_S" + to_string(subject_num) + "_SL2_A" + to_string(arm) + ".csv";
+string flagspathstring = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\Flags_S" + to_string(subject_num) + "_SL2_A" + to_string(arm) + ".csv";
 string setuppathstring = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\setup_S" + to_string(subject_num) + "_A" + to_string(arm) + ".csv";
 const char* setuppath = setuppathstring.c_str();
-//const char* flagspath = flagspathstring.c_str();
+const char* flagspath = flagspathstring.c_str();
 
 //const char* tablepath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\wood_table.png"; // old table
 const char* tablepath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\wood_2.png";
@@ -91,10 +91,10 @@ const char* mediumRpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Te
 const char* intenseLpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\intense_L.png";
 const char* intenseRpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\intense_R.png";
 
-//string dirpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\";
-//string personalbestspathstring = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\personalbests_A" + to_string(arm) + ".csv";
-//const char* personalbestspath = personalbestspathstring.c_str();
+string dirpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\";
+string personalbestspathstring = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\SubjectData\\personalbests_A" + to_string(arm) + ".csv";
+const char* personalbestspath = personalbestspathstring.c_str();
 ////const char* personalbestspath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\WorkspaceCSVs\\personalbests_example.csv";
-//const char* trophypath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\personal-best-trophy2.png"; // trophy.png";
-//const char* liftpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\liftred.png"; 
+const char* trophypath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\personal-best-trophy2.png"; // trophy.png";
+const char* liftpath = "C:\\Users\\numur\\Documents\\DowntownGames-Biodex\\Textures\\liftred.png"; 
 

@@ -2,8 +2,8 @@ import csv
 import numpy as np
 import random
 
-minsub = 3
-maxsub = 8
+minsub = 10
+maxsub = 15
 
 for sub in range(minsub,maxsub+1):
     filename = "S0"+str(sub)+"_testorder_stroke.csv"
@@ -30,6 +30,8 @@ for sub in range(minsub,maxsub+1):
 
         arm_first = random.randint(0,num_arms-1)
         for day in range(2):
+            if day==1:
+                num_repetitions = 4
 
             # set experimental order
             trial_order_0 = np.arange(0,num_conditions,1)

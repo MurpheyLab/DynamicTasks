@@ -1405,7 +1405,7 @@ int main(int argc, char** argv)
 		//Set up haptic block to protect person
 		haSendCommand(dev, "create block myShield", response);
 		haSendCommand(dev, "set myShield pos", xmax, springPos[PosY], springPos[PosZ], response);
-		haSendCommand(dev, "set myShield size", 0.01, 0.7, 0.7, response); //set to be a little larger than workspace
+		haSendCommand(dev, "set myShield size", 0.01, 1.5, 0.7, response); //set to be a little larger than workspace
 		haSendCommand(dev, "set myShield stiffness", 20000.0, response);
 		haSendCommand(dev, "set myShield enable", response);
 		printf("Personal shield enabled...\n");
