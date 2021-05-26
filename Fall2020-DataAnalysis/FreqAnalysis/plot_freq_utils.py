@@ -125,7 +125,7 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
     # set plot parameters
     ax.set_xscale('log')
     # ax.set_yscale('log')
-    ax.set_xlim((0,w[len(w)-1]))
+    ax.set_xlim((w[1],w[len(w)-1]))
     # ax.set_xlim((10^-1,w[len(w)-1]))
     # ax.set_ylim(ymin,ymax)
     # ax.set_xlim((w[1],w[len(w)-1]))
@@ -141,7 +141,7 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
     fig.text(0.06, 0.5,ylabel, va='center', rotation='vertical', fontsize=10)
     if len(legend)>0:
         fig.legend(legend_lines,labels=legend,loc="center right", fontsize=9)
-        fig.subplots_adjust(right=0.7)
+        fig.subplots_adjust(right=0.69)
     return [fig,ax]
 
 
