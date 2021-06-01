@@ -1,0 +1,203 @@
+DAY 1---WORKSPACE SETUP
+Paretic,30%max (SL1)
+Paretic,0%max (SL0)
+Paretic,practice ball-in-bowl
+Nonparetic,30%max (SL1)
+Nonparetic,0%max (SL0)
+Nonparetic,practice ball-in-bowl
+DAY 1---BALL-IN-BOWL
+Set 1
+Arm,Supportlevel,Frequency,trial
+Nonparetic,2.0,3.0,1
+Nonparetic,2.0,3.0,2
+Nonparetic,2.0,3.0,3
+Nonparetic,2.0,3.0,4
+Nonparetic,2.0,3.0,5
+Nonparetic,2.0,2.0,6
+Nonparetic,2.0,2.0,7
+Nonparetic,2.0,2.0,8
+Nonparetic,2.0,2.0,9
+Nonparetic,2.0,2.0,10
+Nonparetic,1.0,3.0,11
+Nonparetic,1.0,3.0,12
+Nonparetic,1.0,3.0,13
+Nonparetic,1.0,3.0,14
+Nonparetic,1.0,3.0,15
+Nonparetic,2.0,0.0,16
+Nonparetic,2.0,0.0,17
+Nonparetic,2.0,0.0,18
+Nonparetic,2.0,0.0,19
+Nonparetic,2.0,0.0,20
+Mandatory 5min break + switch arms
+Paretic,2.0,3.0,21
+Paretic,2.0,3.0,22
+Paretic,2.0,3.0,23
+Paretic,2.0,3.0,24
+Paretic,2.0,3.0,25
+Paretic,2.0,2.0,26
+Paretic,2.0,2.0,27
+Paretic,2.0,2.0,28
+Paretic,2.0,2.0,29
+Paretic,2.0,2.0,30
+Paretic,2.0,0.0,31
+Paretic,2.0,0.0,32
+Paretic,2.0,0.0,33
+Paretic,2.0,0.0,34
+Paretic,2.0,0.0,35
+Paretic,1.0,0.0,36
+Paretic,1.0,0.0,37
+Paretic,1.0,0.0,38
+Paretic,1.0,0.0,39
+Paretic,1.0,0.0,40
+Set 2
+Mandatory 5min break + switch arms
+Arm,Supportlevel,Frequency,trial
+Nonparetic,1.0,2.0,41
+Nonparetic,1.0,2.0,42
+Nonparetic,1.0,2.0,43
+Nonparetic,1.0,2.0,44
+Nonparetic,1.0,2.0,45
+Nonparetic,1.0,0.0,46
+Nonparetic,1.0,0.0,47
+Nonparetic,1.0,0.0,48
+Nonparetic,1.0,0.0,49
+Nonparetic,1.0,0.0,50
+Nonparetic,2.0,1.0,51
+Nonparetic,2.0,1.0,52
+Nonparetic,2.0,1.0,53
+Nonparetic,2.0,1.0,54
+Nonparetic,2.0,1.0,55
+Nonparetic,1.0,1.0,56
+Nonparetic,1.0,1.0,57
+Nonparetic,1.0,1.0,58
+Nonparetic,1.0,1.0,59
+Nonparetic,1.0,1.0,60
+Mandatory 5min break + switch arms
+Paretic,1.0,1.0,61
+Paretic,1.0,1.0,62
+Paretic,1.0,1.0,63
+Paretic,1.0,1.0,64
+Paretic,1.0,1.0,65
+Paretic,1.0,3.0,66
+Paretic,1.0,3.0,67
+Paretic,1.0,3.0,68
+Paretic,1.0,3.0,69
+Paretic,1.0,3.0,70
+Paretic,2.0,1.0,71
+Paretic,2.0,1.0,72
+Paretic,2.0,1.0,73
+Paretic,2.0,1.0,74
+Paretic,2.0,1.0,75
+Paretic,1.0,2.0,76
+Paretic,1.0,2.0,77
+Paretic,1.0,2.0,78
+Paretic,1.0,2.0,79
+Paretic,1.0,2.0,80
+
+
+DAY 2
+Nonparetic,practice ball-in-bowl
+Paretic,practice ball-in-bowl
+DAY 2---BALL-IN-BOWL
+Set 1
+Arm,Supportlevel,Frequency,trial
+Paretic,1.0,3.0,81
+Paretic,1.0,3.0,82
+Paretic,1.0,3.0,83
+Paretic,1.0,3.0,84
+Paretic,2.0,2.0,85
+Paretic,2.0,2.0,86
+Paretic,2.0,2.0,87
+Paretic,2.0,2.0,88
+Paretic,1.0,1.0,89
+Paretic,1.0,1.0,90
+Paretic,1.0,1.0,91
+Paretic,1.0,1.0,92
+Paretic,1.0,2.0,93
+Paretic,1.0,2.0,94
+Paretic,1.0,2.0,95
+Paretic,1.0,2.0,96
+Mandatory 5min break + switch arms
+Nonparetic,1.0,2.0,97
+Nonparetic,1.0,2.0,98
+Nonparetic,1.0,2.0,99
+Nonparetic,1.0,2.0,100
+Nonparetic,2.0,0.0,101
+Nonparetic,2.0,0.0,102
+Nonparetic,2.0,0.0,103
+Nonparetic,2.0,0.0,104
+Nonparetic,2.0,3.0,105
+Nonparetic,2.0,3.0,106
+Nonparetic,2.0,3.0,107
+Nonparetic,2.0,3.0,108
+Nonparetic,1.0,1.0,109
+Nonparetic,1.0,1.0,110
+Nonparetic,1.0,1.0,111
+Nonparetic,1.0,1.0,112
+Set 2
+Mandatory 5min break + switch arms
+Arm,Supportlevel,Frequency,trial
+Paretic,2.0,1.0,113
+Paretic,2.0,1.0,114
+Paretic,2.0,1.0,115
+Paretic,2.0,1.0,116
+Paretic,2.0,0.0,117
+Paretic,2.0,0.0,118
+Paretic,2.0,0.0,119
+Paretic,2.0,0.0,120
+Paretic,2.0,3.0,121
+Paretic,2.0,3.0,122
+Paretic,2.0,3.0,123
+Paretic,2.0,3.0,124
+Paretic,1.0,0.0,125
+Paretic,1.0,0.0,126
+Paretic,1.0,0.0,127
+Paretic,1.0,0.0,128
+Mandatory 5min break + switch arms
+Nonparetic,1.0,3.0,129
+Nonparetic,1.0,3.0,130
+Nonparetic,1.0,3.0,131
+Nonparetic,1.0,3.0,132
+Nonparetic,2.0,1.0,133
+Nonparetic,2.0,1.0,134
+Nonparetic,2.0,1.0,135
+Nonparetic,2.0,1.0,136
+Nonparetic,2.0,2.0,137
+Nonparetic,2.0,2.0,138
+Nonparetic,2.0,2.0,139
+Nonparetic,2.0,2.0,140
+Nonparetic,1.0,0.0,141
+Nonparetic,1.0,0.0,142
+Nonparetic,1.0,0.0,143
+Nonparetic,1.0,0.0,144
+Mandatory 5min break
+
+NAIL-AND-HAMMER
+Arm,SupportLevel
+Nonparetic,training
+Paretic,training
+Paretic,1,1
+Paretic,1,2
+Paretic,1,3
+Paretic,1,4
+Paretic,1,5
+Paretic,1,6
+Paretic,0,7
+Paretic,0,8
+Paretic,0,9
+Paretic,0,10
+Paretic,0,11
+Paretic,0,12
+Mandatory 5min break + switch arms
+Nonparetic,1,13
+Nonparetic,1,14
+Nonparetic,1,15
+Nonparetic,1,16
+Nonparetic,1,17
+Nonparetic,1,18
+Nonparetic,0,19
+Nonparetic,0,20
+Nonparetic,0,21
+Nonparetic,0,22
+Nonparetic,0,23
+Nonparetic,0,24
