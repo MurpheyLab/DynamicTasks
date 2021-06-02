@@ -23,7 +23,8 @@ remove(list = ls())
 
 # parameters 
 DIR = 'C:/Users/milli/OneDrive/Documents/DowntownGames-Biodex/Fall2020-DataAnalysis/FreqAnalysis'
-subjects = list("Sub202","Sub203","Sub208","Sub209","Sub211","Sub212")
+subjects = list("Sub202","Sub203","Sub208","Sub209","Sub211","Sub212","Sub214")
+# subjects = list("Sub208","Sub211","Sub212","Sub214")
 
 # loads packages and dependencies
 library(ez)
@@ -38,7 +39,7 @@ library(multcomp)
 ################################################################################
 data = read.csv(paste(DIR,paste("stroke-freq",".csv",sep=""),sep="/"))
 
-
+# data = subset(data, Subject!="Sub202" & Subject!="Sub203" & Subject!="Sub209")
 for(i in 1:length(subjects)) {
   # define file to save data to
   sink(paste(DIR,"Stats",paste(subjects[i],"tests.txt",sep="-"),sep="/"))

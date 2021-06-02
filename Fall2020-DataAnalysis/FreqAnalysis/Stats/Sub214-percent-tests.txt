@@ -1,0 +1,61 @@
+Percent decrease in paretic arm with loading 
+Anova Table (Type II tests)
+
+Response: SL1
+           Sum Sq Df F value    Pr(>F)    
+BallFreq  1.34702  2  15.608 0.0006132 ***
+Residuals 0.47468 11                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  data_SL1_subject$SL1 and data_SL1_subject$BallFreq 
+
+      1.5Hz   1Hz    
+1Hz   1.00000 -      
+2.5Hz 0.00517 0.00079
+
+P value adjustment method: bonferroni 
+
+
+
+Percent decrease in paretic arm with no loading 
+Anova Table (Type II tests)
+
+Response: SL0
+          Sum Sq Df F value    Pr(>F)    
+BallFreq  7.3606  2  20.073 0.0001485 ***
+Residuals 2.2002 12                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+Percent decrease due to loading in paretic arm 
+Anova Table (Type II tests)
+
+Response: A0
+           Sum Sq Df F value Pr(>F)
+BallFreq  0.58325  2  1.4405 0.2782
+Residuals 2.22692 11               
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  data_SL1_subject$A0 and data_SL1_subject$BallFreq 
+
+      1.5Hz 1Hz 
+1Hz   0.42  -   
+2.5Hz 0.60  1.00
+
+P value adjustment method: bonferroni 
+
+
+
+Percent decrease due to loading in nonparetic arm 
+Anova Table (Type II tests)
+
+Response: A1
+          Sum Sq Df F value Pr(>F)
+BallFreq   5.736  2  2.6932 0.1081
+Residuals 12.779 12               

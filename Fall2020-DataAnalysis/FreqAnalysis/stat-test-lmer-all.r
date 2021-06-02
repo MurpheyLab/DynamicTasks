@@ -23,7 +23,8 @@ remove(list = ls())
 
 # parameters 
 DIR = 'C:/Users/milli/OneDrive/Documents/DowntownGames-Biodex/Fall2020-DataAnalysis/FreqAnalysis'
-subjects = list("Sub202","Sub203","Sub208","Sub209","Sub211","Sub212")
+subjects = list("Sub202","Sub203","Sub208","Sub209","Sub211","Sub212","Sub214")
+# subjects = list("Sub208","Sub211","Sub212","Sub214")
 
 set = 'all' # 'all' or 'combined'
 # loads packages and dependencies
@@ -42,6 +43,9 @@ if (set=='all') {
 } else {
   data = read.csv(paste(DIR,paste("stroke-freq-average",".csv",sep=""),sep="/"))
 }
+
+# data = subset(data, Subject!="Sub202" & Subject!="Sub203" & Subject!="Sub209")
+data = subset(data, BallFreq!="0.5Hz")
 
 data_SL1 = subset(data, SL1!=1000)
 data_SL0 = subset(data, SL0!=1000)

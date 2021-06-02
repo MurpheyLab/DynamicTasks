@@ -1,0 +1,216 @@
+Energy at Resonance Metric 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                        Chisq Df Pr(>Chisq)    
+Arm                    5.9325  1    0.01486 *  
+Loading                0.3561  1    0.55070    
+BallFreq             542.3928  3    < 2e-16 ***
+Arm:Loading            0.1466  1    0.70178    
+Arm:BallFreq          14.0409  3    0.00285 ** 
+Loading:BallFreq       2.2913  3    0.51419    
+Arm:Loading:BallFreq   0.5981  3    0.89687    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+0.5Hz 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+             Chisq Df Pr(>Chisq)  
+Arm         4.7089  1    0.03001 *
+Loading     0.5354  1    0.46433  
+Arm:Loading 0.3712  1    0.54235  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 1.3375  1     0.2475
+
+Non-Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.0273  1     0.8687
+
+
+
+1Hz 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+             Chisq Df Pr(>Chisq)
+Arm         2.3633  1     0.1242
+Loading     1.1126  1     0.2915
+Arm:Loading 0.0583  1     0.8092
+
+Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.9733  1     0.3239
+
+Non-Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.3581  1     0.5496
+
+
+
+1.5Hz 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+             Chisq Df Pr(>Chisq)  
+Arm         5.6177  1    0.01778 *
+Loading     1.2965  1    0.25485  
+Arm:Loading 0.1402  1    0.70804  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.3673  1     0.5445
+
+Non-Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.8622  1     0.3531
+
+
+
+2.5Hz 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+              Chisq Df Pr(>Chisq)    
+Arm         11.8767  1  0.0005684 ***
+Loading      0.0672  1  0.7954866    
+Arm:Loading  0.3362  1  0.5620337    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.2328  1     0.6294
+
+Non-Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.6048  1     0.4367
+
+
+
+Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                    Chisq Df Pr(>Chisq)    
+BallFreq         294.8325  3     <2e-16 ***
+Loading            0.0180  1     0.8932    
+BallFreq:Loading   1.4803  3     0.6868    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+Non-Paretic 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                    Chisq Df Pr(>Chisq)    
+BallFreq         267.3857  3     <2e-16 ***
+Loading            0.5379  1     0.4633    
+BallFreq:Loading   1.4440  3     0.6953    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+Loading 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                Chisq Df Pr(>Chisq)    
+BallFreq     336.1734  3     <2e-16 ***
+Arm            2.1062  1     0.1467    
+BallFreq:Arm   5.0495  3     0.1682    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+No Loading 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                Chisq Df Pr(>Chisq)    
+BallFreq     225.1665  3    < 2e-16 ***
+Arm            3.8152  1    0.05079 .  
+BallFreq:Arm   9.6819  3    0.02147 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+Paretic - Loading 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+          Chisq Df Pr(>Chisq)    
+BallFreq 158.84  3  < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+Paretic - No Loading 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+          Chisq Df Pr(>Chisq)    
+BallFreq 144.46  3  < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+Non-Paretic - Loading 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+          Chisq Df Pr(>Chisq)    
+BallFreq 185.15  3  < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+Non-Paretic - No Loading 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)    
+BallFreq 101.8  3  < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1

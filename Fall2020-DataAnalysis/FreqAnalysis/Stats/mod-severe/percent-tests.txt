@@ -1,0 +1,92 @@
+Percent decrease in paretic arm with loading 
+Anova Table (Type II tests)
+
+Response: SL1
+                  Sum Sq Df F value   Pr(>F)   
+BallFreq          2.9924  2  6.3297 0.002835 **
+Subject           1.9640  3  2.7696 0.047153 * 
+BallFreq:Subject  1.1299  6  0.7967 0.575363   
+Residuals        18.4371 78                    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  data_SL1$SL1 and data_SL1$BallFreq 
+
+      1.5Hz  1Hz   
+1Hz   1.0000 -     
+2.5Hz 0.0065 0.0074
+
+P value adjustment method: bonferroni 
+
+
+
+########################################################################### 
+Percent decrease in paretic arm with no loading 
+Anova Table (Type II tests)
+
+Response: SL0
+                  Sum Sq Df F value  Pr(>F)  
+BallFreq          1.4771  2  1.8527 0.16373  
+Subject           1.3470  3  1.1263 0.34373  
+BallFreq:Subject  7.2192  6  3.0183 0.01055 *
+Residuals        30.6945 77                  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  data_SL0$SL0 and data_SL0$BallFreq 
+
+      1.5Hz 1Hz 
+1Hz   1.00  -   
+2.5Hz 0.27  0.43
+
+P value adjustment method: bonferroni 
+
+
+
+########################################################################### 
+Percent decrease due to loading in paretic arm 
+Anova Table (Type II tests)
+
+Response: A0
+                  Sum Sq Df F value Pr(>F)
+BallFreq          0.3018  2  0.5509 0.5788
+Subject           0.0929  3  0.1130 0.9522
+BallFreq:Subject  1.0520  6  0.6400 0.6979
+Residuals        20.2742 74               
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  data_A0$A0 and data_A0$BallFreq 
+
+      1.5Hz 1Hz 
+1Hz   0.84  -   
+2.5Hz 1.00  1.00
+
+P value adjustment method: bonferroni 
+
+
+
+########################################################################### 
+Percent decrease due to loading in nonparetic arm 
+Anova Table (Type II tests)
+
+Response: A1
+                 Sum Sq Df F value Pr(>F)
+BallFreq          1.019  2  0.6297 0.5353
+Subject           2.371  3  0.9773 0.4077
+BallFreq:Subject  7.145  6  1.4724 0.1981
+Residuals        65.512 81               
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  data_A1$A1 and data_A1$BallFreq 
+
+      1.5Hz 1Hz 
+1Hz   1.00  -   
+2.5Hz 1.00  0.76
+
+P value adjustment method: bonferroni 
