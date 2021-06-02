@@ -24,17 +24,18 @@ make_plots = 1 # 0-do not make plots 1-make plots
 make_plot_each_sub = 0 # 0-do not make plots 1-make plots
 filter = 1
 window = .3
+only_modsevere = 0
 
 
 # subjects = [202,203,205,207,208,209,211,212]
+subjects = [202,203,208,209,211,212,214]
 subjects = [202,203,208,209,211,212]
-# subjects = [202,203,208,211,212]
-# subjects = [211,212]
-# subjects = [202,203,208,211]
-# subjects = [211]
-# subjects = [205,207]
-# subjects = [202,208]
-# subjects = [203,205,207]
+make_line_plot = 0
+if only_modsevere:
+    subjects = [208,211,212]
+    make_line_plot = 1
+# subjects = [214,215]
+
 DIR = "/home/mschlafly/Desktop/Stroke/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:"
 DT = 0.05
 Fs = 1/DT
@@ -413,7 +414,7 @@ for sub_plot in range(0,num_sub_plots):
                             testwriter.writerow(row)
 
     if make_plots and make_plot_each_sub==0:
-        starting_i = 0
+        starting_i = 1
 
 
         # Aggregate frequency plot
@@ -446,10 +447,14 @@ for sub_plot in range(0,num_sub_plots):
             freq_plot = [freq_pendulum[freq]]
             title = 'Force Frequency Spectrum for the '+frequencylabels[freq]+' Ball'
             [fig_spec,ax_spec] = mag_spectrum(w,mag_list,freq_plot,title,xlabel,ylabel,legend,linestyles_spec,colors_spec,ymin,ymax,ymax_pend)
-            fig_spec.savefig('Plots/agg_spectrum_'+frequencylabels[freq]+'.pdf')
+            if only_modsevere:
+                fig_spec.savefig('Plots/agg_spectrum_'+frequencylabels[freq]+'_modsevere.pdf')
+
+            else:
+                fig_spec.savefig('Plots/agg_spectrum_'+frequencylabels[freq]+'.pdf')
 
 
-        # Line plot for raw data
+    # Line plots for raw data
         figure_size = (6,3.55)
         fig_scat, ax_scat = plt.subplots(figsize=figure_size,dpi=300)
         xlabel = 'Resonant Frequency of Ball'
@@ -492,8 +497,11 @@ for sub_plot in range(0,num_sub_plots):
         L = ax_scat.legend(p, conditions, fontsize=10,loc='upper right')
         # L = fig.legend(p, conditions, fontsize=10,loc='upper left',bbox_to_anchor=(0,0.35),bbox_transform=ax.transAxes)#'upper right')
         plt.setp(L.texts, family='sans-serif')
-        # fig.subplots_adjust(right=0.7)
-        fig_scat.savefig('Plots/e_at_res_raw.pdf')
+        fig_scat.subplots_adjust(bottom=0.15)
+        if only_modsevere:
+            fig_scat.savefig('Plots/e_at_res_raw_modsevere.pdf')
+        else:
+            fig_scat.savefig('Plots/e_at_res_raw.pdf')
 
 
         outlier = 3000000.
@@ -517,39 +525,45 @@ for sub_plot in range(0,num_sub_plots):
             fig.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[sub_plot])+'/'+'S'+str(subjects[sub_plot])+'_pl_SL1.pdf')
         else:
             fig.savefig('Plots/pl_SL1.pdf')
+        if make_line_plot:
+            # Line plot for SL1
+            figure_size = (6,3.55) # sets the size of the figure in inches
+            fig, ax = plt.subplots(figsize=figure_size,dpi=300)
+            # place grid in back
+            ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
+                           alpha=0.5)
+            ax.set_axisbelow(True)
+            # Add titles and labels
+            plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
+            plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
+            plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
+            for label in (ax_scat.get_yticklabels()):
+                label.set_fontsize(8)
+            # x-ticks x-axis
+            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
+            for tick in ax_scat.get_xticklabels():
+                tick.set_rotation(0)
 
-        # Line plot for SL1
-        figure_size = (6,3.55) # sets the size of the figure in inches
-        fig, ax = plt.subplots(figsize=figure_size,dpi=300)
-        # place grid in back
-        ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
-                       alpha=0.5)
-        ax.set_axisbelow(True)
-        # Add titles and labels
-        plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
-        plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
-        plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
-        for label in (ax_scat.get_yticklabels()):
-            label.set_fontsize(8)
-        # x-ticks x-axis
-        plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
-        for tick in ax_scat.get_xticklabels():
-            tick.set_rotation(0)
+            p = np.zeros(len(subjects), dtype=object)
 
-        p = np.zeros(len(subjects), dtype=object)
+            for subject_num in range(0,len(subjects)):
+                freq_list = []
+                for freq in range(starting_i,len(frequencylabels)):
+                    freq_list.append(SL1[freq,subject_num])
+                p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
 
-        for subject_num in range(0,len(subjects)):
-            freq_list = []
-            for freq in range(starting_i,len(frequencylabels)):
-                freq_list.append(SL1[freq,subject_num])
-            p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
-
-        if len(subjects)==6:
-            sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13']
-            fig.subplots_adjust(right=0.75)
-            L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            plt.setp(L.texts, family='sans-serif')
-        fig.savefig('Plots/pl_SL1_seperate.pdf')
+            # if len(subjects)==7:
+            #     sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13','S214, FMA-30?']
+            #     fig.subplots_adjust(right=0.75)
+            #     L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+            #     plt.setp(L.texts, family='sans-serif')
+            if only_modsevere:
+                # sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13','S214, FMA-30?']
+                sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13']
+                fig.subplots_adjust(right=0.75)
+                L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+                plt.setp(L.texts, family='sans-serif')
+            fig.savefig('Plots/pl_SL1_modsevere.pdf')
 
         # Make boxplot for A0
         figure_size = (6,3.55) # sets the size of the figure in inches
@@ -573,38 +587,45 @@ for sub_plot in range(0,num_sub_plots):
             fig.savefig('Plots/pl_A0.pdf')
 
 
-        # Line plot for A0
-        figure_size = (6,3.55) # sets the size of the figure in inches
-        fig, ax = plt.subplots(figsize=figure_size,dpi=300)
-        # place grid in back
-        ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
-                       alpha=0.5)
-        ax.set_axisbelow(True)
-        # Add titles and labels
-        plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
-        plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
-        plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
-        for label in (ax_scat.get_yticklabels()):
-            label.set_fontsize(8)
-        # x-ticks x-axis
-        plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
-        for tick in ax_scat.get_xticklabels():
-            tick.set_rotation(0)
+        if make_line_plot:
+            # Line plot for A0
+            figure_size = (6,3.55) # sets the size of the figure in inches
+            fig, ax = plt.subplots(figsize=figure_size,dpi=300)
+            # place grid in back
+            ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
+                           alpha=0.5)
+            ax.set_axisbelow(True)
+            # Add titles and labels
+            plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
+            plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
+            plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
+            for label in (ax_scat.get_yticklabels()):
+                label.set_fontsize(8)
+            # x-ticks x-axis
+            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
+            for tick in ax_scat.get_xticklabels():
+                tick.set_rotation(0)
 
-        p = np.zeros(len(subjects), dtype=object)
+            p = np.zeros(len(subjects), dtype=object)
 
-        for subject_num in range(0,len(subjects)):
-            freq_list = []
-            for freq in range(starting_i,len(frequencylabels)):
-                freq_list.append(A0[freq,subject_num])
-            p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
+            for subject_num in range(0,len(subjects)):
+                freq_list = []
+                for freq in range(starting_i,len(frequencylabels)):
+                    freq_list.append(A0[freq,subject_num])
+                p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
 
-        if len(subjects)==6:
-            sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13']
-            fig.subplots_adjust(right=0.75)
-            L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            plt.setp(L.texts, family='sans-serif')
-        fig.savefig('Plots/pl_A0_seperate.pdf')
+            # if len(subjects)==7:
+            #     sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13','S214, FMA-30?']
+            #     fig.subplots_adjust(right=0.75)
+            #     L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+            #     plt.setp(L.texts, family='sans-serif')
+            if only_modsevere:
+                # sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13','S214, FMA-30?']
+                sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13']
+                fig.subplots_adjust(right=0.75)
+                L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+                plt.setp(L.texts, family='sans-serif')
+            fig.savefig('Plots/pl_A0_modsevere.pdf')
 
 
 
@@ -631,38 +652,45 @@ for sub_plot in range(0,num_sub_plots):
 
 
 
-        # Line plot for SL0
-        figure_size = (6,3.55) # sets the size of the figure in inches
-        fig, ax = plt.subplots(figsize=figure_size,dpi=300)
-        # place grid in back
-        ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
-                       alpha=0.5)
-        ax.set_axisbelow(True)
-        # Add titles and labels
-        plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
-        plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
-        plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
-        for label in (ax_scat.get_yticklabels()):
-            label.set_fontsize(8)
-        # x-ticks x-axis
-        plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
-        for tick in ax_scat.get_xticklabels():
-            tick.set_rotation(0)
+        if make_line_plot:
+            # Line plot for SL0
+            figure_size = (6,3.55) # sets the size of the figure in inches
+            fig, ax = plt.subplots(figsize=figure_size,dpi=300)
+            # place grid in back
+            ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
+                           alpha=0.5)
+            ax.set_axisbelow(True)
+            # Add titles and labels
+            plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
+            plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
+            plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
+            for label in (ax_scat.get_yticklabels()):
+                label.set_fontsize(8)
+            # x-ticks x-axis
+            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
+            for tick in ax_scat.get_xticklabels():
+                tick.set_rotation(0)
 
-        p = np.zeros(len(subjects), dtype=object)
+            p = np.zeros(len(subjects), dtype=object)
 
-        for subject_num in range(0,len(subjects)):
-            freq_list = []
-            for freq in range(starting_i,len(frequencylabels)):
-                freq_list.append(SL0[freq,subject_num])
-            p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
+            for subject_num in range(0,len(subjects)):
+                freq_list = []
+                for freq in range(starting_i,len(frequencylabels)):
+                    freq_list.append(SL0[freq,subject_num])
+                p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
 
-        if len(subjects)==6:
-            sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13']
-            fig.subplots_adjust(right=0.75)
-            L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            plt.setp(L.texts, family='sans-serif')
-        fig.savefig('Plots/pl_SL0_seperate.pdf')
+            # if len(subjects)==7:
+            #     sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13','S214, FMA-30?']
+            #     fig.subplots_adjust(right=0.75)
+            #     L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+            #     plt.setp(L.texts, family='sans-serif')
+            if only_modsevere:
+                # sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13','S214, FMA-30?']
+                sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13']
+                fig.subplots_adjust(right=0.75)
+                L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+                plt.setp(L.texts, family='sans-serif')
+            fig.savefig('Plots/pl_SL0_modsevere.pdf')
 
 
         # Make boxplot for A1
@@ -686,38 +714,45 @@ for sub_plot in range(0,num_sub_plots):
         else:
             fig.savefig('Plots/pl_A1.pdf')
 
-        # Line plot for A1
-        figure_size = (6,3.55) # sets the size of the figure in inches
-        fig, ax = plt.subplots(figsize=figure_size,dpi=300)
-        # place grid in back
-        ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
-                       alpha=0.5)
-        ax.set_axisbelow(True)
-        # Add titles and labels
-        plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
-        plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
-        plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
-        for label in (ax_scat.get_yticklabels()):
-            label.set_fontsize(8)
-        # x-ticks x-axis
-        plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
-        for tick in ax_scat.get_xticklabels():
-            tick.set_rotation(0)
+        if make_line_plot:
+            # Line plot for A1
+            figure_size = (6,3.55) # sets the size of the figure in inches
+            fig, ax = plt.subplots(figsize=figure_size,dpi=300)
+            # place grid in back
+            ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
+                           alpha=0.5)
+            ax.set_axisbelow(True)
+            # Add titles and labels
+            plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
+            plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
+            plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
+            for label in (ax_scat.get_yticklabels()):
+                label.set_fontsize(8)
+            # x-ticks x-axis
+            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
+            for tick in ax_scat.get_xticklabels():
+                tick.set_rotation(0)
 
-        p = np.zeros(len(subjects), dtype=object)
+            p = np.zeros(len(subjects), dtype=object)
 
-        for subject_num in range(0,len(subjects)):
-            freq_list = []
-            for freq in range(starting_i,len(frequencylabels)):
-                freq_list.append(A1[freq,subject_num])
-            p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
+            for subject_num in range(0,len(subjects)):
+                freq_list = []
+                for freq in range(starting_i,len(frequencylabels)):
+                    freq_list.append(A1[freq,subject_num])
+                p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
 
-        if len(subjects)==6:
-            sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13']
-            fig.subplots_adjust(right=0.75)
-            L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            plt.setp(L.texts, family='sans-serif')
-        fig.savefig('Plots/pl_A1_seperate.pdf')
+            # if len(subjects)==7:
+            #     sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13','S214, FMA-30?']
+            #     fig.subplots_adjust(right=0.75)
+            #     L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+            #     plt.setp(L.texts, family='sans-serif')
+            if only_modsevere:
+                # sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13','S214, FMA-30?']
+                sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13']
+                fig.subplots_adjust(right=0.75)
+                L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+                plt.setp(L.texts, family='sans-serif')
+            fig.savefig('Plots/pl_A1_modsevere.pdf')
 
 
 print(SL1)
