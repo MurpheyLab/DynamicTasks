@@ -1,0 +1,131 @@
+Energy at Resonance Metric  
+Anova Table (Type II tests)
+
+Response: EResonance
+                      Sum Sq  Df F value    Pr(>F)    
+Arm                  0.00986   1  1.1006 0.2961398    
+Loading              0.05650   1  6.3049 0.0133057 *  
+BallFreq             1.28458   3 47.7795 < 2.2e-16 ***
+Arm:Loading          0.01739   1  1.9408 0.1660333    
+Arm:BallFreq         0.18491   3  6.8775 0.0002507 ***
+Loading:BallFreq     0.01739   3  0.6468 0.5863821    
+Arm:Loading:BallFreq 0.03639   3  1.3533 0.2602035    
+Residuals            1.12920 126                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+
+0.5Hz 
+Anova Table (Type II tests)
+
+Response: EResonance
+              Sum Sq Df F value  Pr(>F)  
+Arm         0.015659  1  2.8181 0.10265  
+Loading     0.032032  1  5.7649 0.02214 *
+Arm:Loading 0.014714  1  2.6481 0.11318  
+Residuals   0.183364 33                  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Paretic 
+Anova Table (Type II tests)
+
+Response: EResonance
+            Sum Sq Df F value  Pr(>F)  
+Loading   0.044854  1  6.0318 0.02586 *
+Residuals 0.118981 16                  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Non-Paretic 
+Anova Table (Type II tests)
+
+Response: EResonance
+            Sum Sq Df F value Pr(>F)
+Loading   0.001892  1  0.4996 0.4892
+Residuals 0.064383 17               
+
+1Hz 
+Anova Table (Type II tests)
+
+Response: EResonance
+              Sum Sq Df F value    Pr(>F)    
+Arm         0.103803  1 15.5497 0.0004106 ***
+Loading     0.000056  1  0.0084 0.9276516    
+Arm:Loading 0.005566  1  0.8339 0.3679866    
+Residuals   0.213617 32                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Paretic 
+Anova Table (Type II tests)
+
+Response: EResonance
+            Sum Sq Df F value Pr(>F)
+Loading   0.003369  1  0.5619 0.4644
+Residuals 0.095928 16               
+
+Non-Paretic 
+Anova Table (Type II tests)
+
+Response: EResonance
+            Sum Sq Df F value Pr(>F)
+Loading   0.002253  1  0.3063 0.5876
+Residuals 0.117689 16               
+
+1.5Hz 
+Anova Table (Type II tests)
+
+Response: EResonance
+             Sum Sq Df F value Pr(>F)
+Arm         0.00008  1  0.0062 0.9379
+Loading     0.02128  1  1.7199 0.1993
+Arm:Loading 0.00832  1  0.6724 0.4185
+Residuals   0.38350 31               
+
+Paretic 
+Anova Table (Type II tests)
+
+Response: EResonance
+            Sum Sq Df F value Pr(>F)
+Loading   0.001654  1  0.1635 0.6913
+Residuals 0.161842 16               
+
+Non-Paretic 
+Anova Table (Type II tests)
+
+Response: EResonance
+            Sum Sq Df F value Pr(>F)
+Loading   0.027942  1  1.8909 0.1893
+Residuals 0.221656 15               
+
+2.5Hz 
+Anova Table (Type II tests)
+
+Response: EResonance
+             Sum Sq Df F value  Pr(>F)  
+Arm         0.07242  1  6.2300 0.01829 *
+Loading     0.02063  1  1.7752 0.19277  
+Arm:Loading 0.02518  1  2.1661 0.15150  
+Residuals   0.34872 30                  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Paretic 
+Anova Table (Type II tests)
+
+Response: EResonance
+            Sum Sq Df F value  Pr(>F)  
+Loading   0.045498  1  6.8025 0.01902 *
+Residuals 0.107016 16                  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Non-Paretic 
+Anova Table (Type II tests)
+
+Response: EResonance
+            Sum Sq Df F value Pr(>F)
+Loading   0.000315  1  0.0183 0.8945
+Residuals 0.241703 14               
