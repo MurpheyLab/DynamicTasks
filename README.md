@@ -1,5 +1,5 @@
-# Ball-in-Bowl Version 2 - Windows
-This repository is for interfacing with the HapticMaster (ACT-3D) in the NeuroImaging Lab using Windows/VS. This version renders the Ball-in-Bowl game including visualization improvements and optional joystick control for testing without the HapticMaster.
+# Downtown Games - Biodex
+This repository is for interfacing with the HapticMaster (ACT-3D) currently in the NeuroImaging Lab (previously in the Biodex Lab) using Windows/VS. This version renders the Ball-in-Bowl game including visualization improvements and optional joystick control for testing without the HapticMaster. This version also includes the Nail-and-Hammer game.
 
 ## Connecting to the HapticMaster
 Start by switching the robot on, wait for a beep, then press the green start button.
