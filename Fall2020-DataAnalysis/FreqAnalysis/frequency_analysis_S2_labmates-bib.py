@@ -32,6 +32,7 @@ position_acc = 0
 window = .20000000000
 
 window_options = [.1,.2,.3]# Three window sizes for evaluation
+normalization_cutoff = 4
 
 number_of_subjects = 7
 min_sub = 1
@@ -62,7 +63,10 @@ w = np.zeros(int(np.floor(nyquist_freq/freq_step)-1))
 frq = 0 # freq_step
 for i in range(len(w)):
     w[i] = frq
+    if frq<normalization_cutoff:
+        normalization_cutoff_i = i
     frq = frq + freq_step
+w = w[:normalization_cutoff_i]
 print('w: ', w)
 w_len = len(w)
 
@@ -338,7 +342,7 @@ for sub_plot in range(1,1+num_sub_plots):
                 savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_xy_freq_'+group_label[group]+'.pdf'
             xlabel = 'Frequency (Hz)'
             ylabel = 'Normalized Frequency Amplitude'
-            colors = ['#601A4A','#EE442F','#63ACBE','#006400']
+            colors = ['#006400','#601A4A','#EE442F','#63ACBE']
             linestyles = ['-','-','-','-']
             ymin = 0.1
             ymax = 2
@@ -409,8 +413,8 @@ for sub_plot in range(1,1+num_sub_plots):
 
 
             ax.set_xlim((0,3.5))
-            if not normalize_by_baseline:
-                ax.set_ylim((0,1.3))
+            if group==2:
+                ax.set_ylim((0,1))
             for label in (ax.get_xticklabels() + ax.get_yticklabels()):
                 label.set_fontsize(8)
 
@@ -475,7 +479,7 @@ for sub_plot in range(1,1+num_sub_plots):
 
                 # Add rectangles for background
                 [ymin,ymax]=ax.get_ylim()
-                ax.set_ylim(top=46)
+                ax.set_ylim(top=40)
                 [ymin,ymax]=ax.get_ylim()
                 grey_colors = ['#e3e3e3','#ffffff','#e3e3e3','#ffffff']
                 x1 = []
@@ -536,7 +540,7 @@ for sub_plot in range(1,1+num_sub_plots):
                                 'Still Ball With\nHaptic Forces',
                                 'Moving Ball Without\nHaptic Forces',
                                 'Moving Ball With\nHaptic Forces']
-                    colors = ['#601A4A','#EE442F','#63ACBE','#006400']
+                    colors = ['#006400','#601A4A','#EE442F','#63ACBE']
                 else:
                     title = 'Haptic Feedback Encourages Movement\nCloser to the Desired Frequency'
                     energy_mat_windows = np.divide(energy_mat_windows,energy_num_windows)
@@ -549,7 +553,7 @@ for sub_plot in range(1,1+num_sub_plots):
                     legend_cond = ['Resonant Frequency +/- '+str(window_options[0])+'Hz',
                                     'Resonant Frequency +/- '+str(window_options[1])+'Hz',
                                     'Resonant Frequency +/- '+str(window_options[2])+'Hz']
-                    colors = ['#1C4199','#658CE6','#B8CDFF']
+                    colors = ['#FFA759','#FF7E0D','#803F06']
                     ylabel = 'Percentage Increase in Energy\nAround Resonance'
 
                     if save_values:
@@ -600,22 +604,29 @@ for sub_plot in range(1,1+num_sub_plots):
                 x = 5
                 l1 = ax.add_patch(Rectangle((x,ymin-600), 3, ymax-ymin, facecolor=colors[0], alpha=1,zorder=1))
                 l2 = ax.add_patch(Rectangle((x,ymin-600), 3, ymax-ymin, facecolor=colors[1], alpha=1,zorder=1))
-                if plot==3:
+                if plot==3 or plot==2:
                     l3 = ax.add_patch(Rectangle((x,ymin-600), 3, ymax-ymin, facecolor=colors[2], alpha=1,zorder=1))
-                # l4 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[3], alpha=1,zorder=1))
+                if plot==2:
+                    l4 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[3], alpha=1,zorder=1))
                 ax.set_ylim(ymin,ymax)
 
-                if plot!=2:
-                    if plot==3:
-                        fig.subplots_adjust(bottom=0.35)
-                        fig.subplots_adjust(left=0.15)
-                        L = fig.legend([l1,l2,l3], legend_cond,ncol=1, fontsize=10,loc='lower center')
-                    else:
-                        fig.subplots_adjust(bottom=0.28)
-                        L = fig.legend([l1,l2], legend_cond,ncol=1, fontsize=10,loc='lower center')
 
-                fig.savefig('Plots/'+'energy_comparegroups'+str(plot)+'.pdf')
-                plt.close(fig)
+                if plot==3:
+                    fig.subplots_adjust(bottom=0.35)
+                    fig.subplots_adjust(left=0.15)
+                    L = fig.legend([l1,l2,l3], legend_cond,ncol=1, fontsize=10,loc='lower center')
+                elif plot==2:
+                    fig.savefig('Plots/'+'energy_comparegroups'+str(plot)+'.pdf')
+                    fig.subplots_adjust(bottom=.75)
+                    L = fig.legend([l1,l2,l3,l4], legend_cond,ncol=1, fontsize=10,loc='lower center')
+                    fig.savefig('Plots/'+'energy_comparegroups'+str(plot)+'_legend.pdf')
+                else:
+                    fig.subplots_adjust(bottom=0.28)
+                    L = fig.legend([l1,l2], legend_cond,ncol=1, fontsize=10,loc='lower center')
+                    
+                if plot!=2:
+                    fig.savefig('Plots/'+'energy_comparegroups'+str(plot)+'.pdf')
+                    plt.close(fig)
 
         ####################################################################
         ####################################################################
@@ -625,7 +636,7 @@ for sub_plot in range(1,1+num_sub_plots):
         title = 'Frequency Spectrum Plot'
         xlabel = 'Frequency (Hz)'
         ylabel = 'Normalized Frequency Amplitude'
-        colors = ['#601A4A','#EE442F','#63ACBE','#006400']
+        colors = ['#006400','#601A4A','#EE442F','#63ACBE']
         # colors = ['#EE442F','#63ACBE']
         linestyles = ['-','-','-','-']
         if haptic_forces_added:
