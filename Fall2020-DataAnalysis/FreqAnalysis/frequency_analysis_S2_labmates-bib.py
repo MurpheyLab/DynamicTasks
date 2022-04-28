@@ -7,9 +7,9 @@ from matplotlib.patches import Polygon, Rectangle
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from plot_utils import *
-from plot_freq_spectrum import *
+from plot_freq_utils import *
 import csv
-from perform_transform import calculate_amplitude,normalize_spectrum
+from perform_transform import *
 import pandas as pd
 import os
 
@@ -22,16 +22,20 @@ import os
 ################################################################################
 
 # Edit these variables before running
-save_values = 0 # 0-do not save values for statistical tests 1-do save values
+save_values = 1 # 0-do not save values for statistical tests 1-do save values
 make_plots = 1 # 0-do not make plots 1-make plots
 make_plot_each_sub = 0 # 0-do not make plots 1-make plots
 haptic_forces_added = 0 # Include adding the haptic forces as an experimental condition
 filter = 1
-window = .2
+normalize_by_baseline = 0
+position_acc = 0
+window = .20000000000
+
+window_options = [.1,.2,.3]# Three window sizes for evaluation
 
 number_of_subjects = 7
 min_sub = 1
-DIR = "Z:Fall2020Data-round2/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:"
+DIR = "/home/milli/Desktop/Round2/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:"
 DT = 0.05
 Fs = 1/DT
 freq_pendulum = [.5,1,1.5,2.5]
@@ -51,7 +55,7 @@ markerstyles = ['o','D']
 # Create vector of frequencies of interest
 nyquist_freq = int(np.floor(Fs/2))
 print('Highest frequency evaluated: ', nyquist_freq)
-freq_step = 0.1 # set the resolution for the frequency bins
+freq_step = 0.04 # set the resolution for the frequency bins
 
 # Fill a vector of frequencies according to these specifications
 w = np.zeros(int(np.floor(nyquist_freq/freq_step)-1))
@@ -67,6 +71,11 @@ if save_values==1:
     file_metrics = "freq-metrics.csv"
     columns = ["Subject","Force","BallFreq","Energy0.5","Energy1.0","Energy1.5","Energy2.5","Resonance"]
     with open(file_metrics,'w') as csvfile:
+        testwriter = csv.writer(csvfile,delimiter=',')
+        testwriter.writerow(columns)
+    file_metrics_windows = "freq-metrics-windows.csv"
+    columns = ["Subject","BallFreq","Window","Energy"]
+    with open(file_metrics_windows,'w') as csvfile:
         testwriter = csv.writer(csvfile,delimiter=',')
         testwriter.writerow(columns)
 
@@ -85,9 +94,12 @@ for sub_plot in range(1,1+num_sub_plots):
     compare_groups1 = np.zeros((2,4,number_of_subjects))
     compare_groups2 = np.zeros((2,4,number_of_subjects))
     compare_groups3 = np.zeros((len(forceconditions),4,number_of_subjects))
-    # for group in range(0,len(forceconditions)):
-    for group in range(3,len(forceconditions)):
-        print('group',group)
+    energy_mat_windows = np.zeros((2,3,4,number_of_subjects)) # two conditions (F0_B1 and F1_B1), 3 windows, 4 frequencies, #subjects
+    energy_num_windows = np.zeros((2,3,4,number_of_subjects)) # two conditions (F0_B1 and F1_B1), 3 windows, 4 frequencies, #subjects
+
+    for group in range(0,len(forceconditions)):
+    # for group in range(3,len(forceconditions)):
+        # print('group',group)
         num_freq = np.zeros(4)
         A_Fmag = np.zeros((4,w_len))
         A_Fx = np.zeros((4,w_len))
@@ -95,6 +107,7 @@ for sub_plot in range(1,1+num_sub_plots):
 
         energy_mat = np.zeros((4,4,number_of_subjects))
         energy_num = np.zeros((4,4,number_of_subjects)) # saves the number of times trials for each condition
+
         for subject_num in range(min_sub,1+number_of_subjects): #iterate though subjects
 
             if (make_plot_each_sub==0) or (make_plot_each_sub==1 and sub_plot==subject_num):
@@ -108,65 +121,125 @@ for sub_plot in range(1,1+num_sub_plots):
                             if "_Freq"+str(freq) in fileName:
                                 if group_label_read[group] in fileName:
                                     Files.append(fileName)
-
+                    trialnum_list = []
                     for i in Files:
+                        str_split = i.split("_")
+                        trial_num = int(str_split[2].split("Trial")[1])
+                        trialnum_list.append(trial_num)
+                    zipped_lists = zip(trialnum_list, Files)
+                    sorted_zipped_lists = sorted(zipped_lists)
 
-                        print(i)
-                        file = open(os.path.join(pathName, i), "rU")
+                    for i in range(len(sorted_zipped_lists)):
+
+                        print(sorted_zipped_lists[i][1])
+                        file = open(os.path.join(pathName, sorted_zipped_lists[i][1]), "r")
                         data = genfromtxt(file,delimiter=',',dtype=float)
                         data = np.delete(data,0,0) # Deletes the first column of column names
+                        df = pd.DataFrame({'z':data[:,3],'fx':data[:,8],'fy':data[:,9],'ball_energy':data[:,16]})
+                        # df = remove_lowe(df,freq)
+                        # df = remove_notlifted(df)
+                        if position_acc:
+                            df = pd.DataFrame({'z':data[:,3],'x':data[:,1],'y':data[:,2],'ball_energy':data[:,16]})
 
-                        str_split = i.split("_")
+
+                            time_x = []; acc_mag = []; x_row = 1; y_row = 2; time_row = 0
+                            line_count = 0; prevtime = 0; deltaTvec = [0.05,0.05,0.05]; xprev = [0,0,0]; yprev = [0,0,0]
+
+                            for row in data:
+                                if line_count == 0:
+                                    xprev[0] = float(row[x_row]); xprev[1] = float(row[x_row]); xprev[2] = float(row[x_row]);
+                                    yprev[0] = float(row[y_row]); yprev[1] = float(row[y_row]); yprev[2] = float(row[y_row]);
+                                # x.append(float(row[x_row])); y.append(float(row[y_row]))
+                                time_x.append(float(row[time_row]))
+                                deltaT = float(row[time_row]) - prevtime; prevtime = float(row[time_row])
+                                if (deltaT == 0.0):
+                                    deltaT = 0.05
+                                deltaTvec[0] = deltaTvec[1]; deltaTvec[1] = deltaTvec[2]; deltaTvec[2] = deltaT;
+                                xprev[0] = xprev[1]; xprev[1] = xprev[2]; xprev[2] = float(row[x_row]);
+                                xacc = -(2.0 * xprev[1] - xprev[2] - xprev[0]) / (deltaTvec[1] * deltaTvec[2]);
+                                yprev[0] = yprev[1]; yprev[1] = yprev[2]; yprev[2] = float(row[y_row]);
+                                yacc = -(2.0 * yprev[1] - yprev[2] - yprev[0]) / (deltaTvec[1] * deltaTvec[2]);
+                                # y.append( pow(pow(float(row[x_row]),2)+pow(float(row[y_row]),2),0.5) )
+                                acc_mag.append( pow(pow(xacc,2)+pow(yacc,2),0.5) )
+                                line_count += 1
+
+
+                        str_split = sorted_zipped_lists[i][1].split("_")
                         trial_num = int(str_split[2].split("Trial")[1])
                         if subject_num==6 and trial_num==72:
                             continue
 
                         # Use signal directly 1-x position 2- y position 8- x force 9- y force 12-x ball force 13-y ball force
                         if 'F1_B1_add'==group_label[group]: # add the haptic forces
-                            y = data[:,8]+data[:,12]+data[:,9]+data[:,13]
+                            # y = data[:,8]+data[:,12]+data[:,9]+data[:,13]
                             A_Fmag_i,frq = calculate_amplitude(w,y,Fs)
                             y_Fx = data[:,8]+data[:,12]
                             A_Fx_i,frq = calculate_amplitude(w,y_Fx,Fs)
                             y_Fy = data[:,9]+data[:,13]
                             A_Fy_i,frq = calculate_amplitude(w,y_Fy,Fs)
                         else:
-                            # Get amplitudes for force and position signals
-                            # Combine the x and y direction forces
-                            y = data[:,8]+data[:,9]
-                            A_Fmag_i,frq = calculate_amplitude(w,y,Fs)
-                            y_Fx = data[:,8]
+                            y_Fx = df['fx'].tolist()
+                            if position_acc:
+                                y_Fx = df['x'].tolist()
                             A_Fx_i,frq = calculate_amplitude(w,y_Fx,Fs)
-                            y_Fy = data[:,9]
+                            y_Fy = df['fy'].tolist()
+                            if position_acc:
+                                y_Fy = df['y'].tolist()
                             A_Fy_i,frq = calculate_amplitude(w,y_Fy,Fs)
-                        A_Fmag[freq,:] += A_Fmag_i
-                        A_Fx[freq,:] += A_Fx_i
-                        A_Fy[freq,:] += A_Fy_i
-                        num_freq[freq] += 1
 
                         dw = w[1]-w[0]
                         Ax_norm = normalize_spectrum(A_Fx_i,dw)
                         Ay_norm = normalize_spectrum(A_Fy_i,dw)
-                        Amag_norm = normalize_spectrum(A_Fmag_i,dw)
+                        Amag_norm = normalize_spectrum(Ax_norm+Ay_norm,dw)
+
+                        if position_acc:
+                            A_Fx_i,frq = calculate_amplitude(w,acc_mag,Fs)
+                            Amag_norm = normalize_spectrum(A_Fx_i,dw)
+
+
+
+                        if normalize_by_baseline:
+                            if group!=0 and group!=1:
+                                Ax_norm = Ax_norm - A_Fx_g0
+                                Ay_norm = Ay_norm - A_Fy_g0
+                                Amag_norm = Amag_norm - A_Fmag_g0
+
+                                Ax_norm = normalize_spectrum(A_Fx_i,dw)
+                                Ay_norm = normalize_spectrum(A_Fy_i,dw)
+                                Amag_norm = normalize_spectrum(Amag_norm,dw)
+
+
+                        A_Fmag[freq,:] += Amag_norm
+                        A_Fx[freq,:] += A_Fx_i
+                        A_Fy[freq,:] += A_Fy_i
+                        num_freq[freq] += 1
 
                         if group==0:
                             freq=0
                         for freq2 in range(0,4):
 
-
-
-                                # if
-                                # freq2 = 0 == 1:
-                                #     break
-
                             freq_list = []
                             for w_i in range(0,len(w)):
-                                if (w[w_i] < freq_pendulum[freq2]+window) and (w[w_i] > freq_pendulum[freq2]-window):
-                                    # freq_list.append(Ax_norm[w_i])
-                                    # freq_list.append(Ay_norm[w_i])
+                                if (w[w_i] <= freq_pendulum[freq2]+window) and (w[w_i] >= freq_pendulum[freq2]-window):
                                     freq_list.append(Amag_norm[w_i])
 
                             energy_mat[freq,freq2,subject_num-1] += np.sum(np.square(freq_list))*dw
                             energy_num[freq,freq2,subject_num-1] += 1
+
+                            if group_label[group]=='F0_B1' or group_label[group]=='F1_B1':
+                                if group_label[group]=='F0_B1':
+                                    energy_mat_index = 0
+                                else:
+                                    energy_mat_index = 1
+
+                                for win in range(len(window_options)):
+                                    freq_list = []
+                                    for w_i in range(0,len(w)):
+                                        if (w[w_i] <= freq_pendulum[freq2]+window_options[win]) and (w[w_i] >= freq_pendulum[freq2]-window_options[win]):
+                                            freq_list.append(Amag_norm[w_i])
+
+                                    energy_mat_windows[energy_mat_index,win,freq2,subject_num-1] += np.sum(np.square(freq_list))*dw
+                                    energy_num_windows[energy_mat_index,win,freq2,subject_num-1] += 1
 
                         if save_values:
                             if subject_num==6 and (trial_num==70 or trial_num==71):
@@ -232,7 +305,7 @@ for sub_plot in range(1,1+num_sub_plots):
                 A_Fy[freq,:] /= num_freq[freq]
 
                 if filter:
-                    cutoff = 5  # desired cutoff frequency of the filter, Hz
+                    cutoff = 5 # desired cutoff frequency of the filter, Hz
                     A_Fmag[freq,:] = butter_lowpass_filter(A_Fmag[freq,:], cutoff, Fs)
                     A_Fx[freq,:] = butter_lowpass_filter(A_Fx[freq,:], cutoff, Fs)
                     A_Fy[freq,:] = butter_lowpass_filter(A_Fy[freq,:], cutoff, Fs)
@@ -240,6 +313,12 @@ for sub_plot in range(1,1+num_sub_plots):
                 A_Fmag[freq,:] = normalize_spectrum(A_Fmag[freq,:],dw)
                 A_Fx[freq,:] = normalize_spectrum(A_Fx[freq,:],dw)
                 A_Fy[freq,:] = normalize_spectrum(A_Fy[freq,:],dw)
+            if group == 0 or group == 1:
+                freq = 0
+                if normalize_by_baseline:
+                    A_Fmag_g0 = A_Fmag[freq,:]
+                    A_Fx_g0 = A_Fx[freq,:]
+                    A_Fy_g0 = A_Fy[freq,:]
 
             for freq in range(0,4):
                 if group == 0:
@@ -253,10 +332,10 @@ for sub_plot in range(1,1+num_sub_plots):
             ####################################################################
             ####################################################################
             title = 'Frequency Spectrum Plot: ' + forceconditions[group]
-            savename = 'Plots/'+'xy_freq_'+group_label[group]+'.png'
+            savename = 'Plots/'+'xy_freq_'+group_label[group]+'.pdf'
             if make_plot_each_sub==1:
                 title = 'Sub' + str(sub_plot) + ' Frequency Spectrum Plot:\n' + forceconditions[group]
-                savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_xy_freq_'+group_label[group]+'.png'
+                savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_xy_freq_'+group_label[group]+'.pdf'
             xlabel = 'Frequency (Hz)'
             ylabel = 'Normalized Frequency Amplitude'
             colors = ['#601A4A','#EE442F','#63ACBE','#006400']
@@ -275,17 +354,18 @@ for sub_plot in range(1,1+num_sub_plots):
             n = len(xy_xlist)
             [fig,ax] = xy_spectrum(w,xy_xlist[n-4:n],xy_ylist[n-4:n],freq_pendulum,title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend)
             fig.savefig(savename)
+            plt.close(fig)
 
             title = 'Frequency Spectrum Plot: ' + forceconditions[group]
-            savename = 'Plots/'+'mag_freq_'+group_label[group]+'.png'
+            savename = 'Plots/'+'mag_freq_'+group_label[group]+'.pdf'
             if make_plot_each_sub==1:
                 title = 'Sub' + str(sub_plot) + ' Frequency Spectrum Plot:\n' + forceconditions[group]
-                savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_mag_freq_'+group_label[group]+'.png'
+                savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_mag_freq_'+group_label[group]+'.pdf'
             xlabel = 'Frequency (Hz)'
             ylabel = 'Normalized Frequency Amplitude'
-            colors = ['#601A4A','#EE442F','#63ACBE','#006400']
+            colors = ['#BEBEBE','#BEBEBE','#BEBEBE','#BEBEBE']
             linestyles = ['-','-','-','-']
-            ymin = 0.1
+            ymin = 0
             ymax = 2
             ymax_pend = 1.5
             if group==0:
@@ -297,8 +377,52 @@ for sub_plot in range(1,1+num_sub_plots):
                     frequencylabels[2],
                     frequencylabels[3]]
             n = len(xy_xlist)
-            [fig,ax] = mag_spectrum(w,mag_list[n-4:n],freq_pendulum,title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend)
+            data = mag_list[n-4:n]
+
+            # create plot
+            figure_size = (4.5,3.55) # inches
+            fig, ax =plt.subplots(nrows=1, ncols=1, sharey='row', squeeze=True, figsize=figure_size, dpi=150)
+
+            # plot dashed lines at resonance
+            if len(freq_pendulum)>0:
+                for i in range(0,len(freq_pendulum)):
+                    ax.plot([freq_pendulum[i], freq_pendulum[i]],[ymin, ymax_pend],linestyle=':',color='k')
+
+            # plot data
+            if len(data)>0:
+                for i in range(0,len(data)):
+                    ax.plot(w,data[i],linestyle=linestyles[i],color=colors[i])
+
+                    # Get data for +/- window
+                    window_range_x = []
+                    window_range_y = []
+                    for w_i in range(len(w)):
+                        # if (w[w_i] < freq_pendulum[i]+window*freq_pendulum[i]) and (w[w_i] > freq_pendulum[i]-(window/freq_pendulum[i])):
+                        if (w[w_i] <= freq_pendulum[i]+window) and (w[w_i] >= freq_pendulum[i]-window):
+                        # if abs(np.log(w[w_i])/np.log(.2) - np.log(freq_pendulum[i])/np.log(.2)) < .07:
+                        # w[w_i] < freq_pendulum[i]+window) and (w[w_i] > freq_pendulum[i]-window):
+                            window_range_x.append(w[w_i])
+                            window_range_y.append(data[i][w_i])
+                    # if i==3:
+                    # print(window_range_x)
+                    ax.plot(window_range_x,window_range_y,linestyle='-',color='#ff7e0d')
+
+
+            ax.set_xlim((0,3.5))
+            if not normalize_by_baseline:
+                ax.set_ylim((0,1.3))
+            for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+                label.set_fontsize(8)
+
+            # create titles
+            fig.text(0.5, 0.91,title, ha='center', fontsize=10, fontweight='bold')
+            fig.text(0.5, 0.01,xlabel, ha='center', fontsize=10)
+            fig.text(0.05, 0.5,ylabel, va='center', rotation='vertical', fontsize=10)
+
+            # [fig,ax] = mag_spectrum(w,mag_list[n-4:n],freq_pendulum,title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend)
             fig.savefig(savename)
+            plt.close(fig)
+
             ####################################################################
             ####################################################################
             ## Boxplot comparing frequency metrics for force-condition group ###
@@ -349,39 +473,6 @@ for sub_plot in range(1,1+num_sub_plots):
                 title = 'Frequency Content of Movement During Task Completion'
                 [fig,ax]=make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_size)
 
-                # # print(ax.get_xticks())
-                # locs = ax.get_xticks()            # Get locations and labels
-                # xlabels = ax.get_xticklabels()
-                # print(xlabels)
-                # tick = 0
-                # # labels
-                # # xlabels2 = []
-                # for freq in range(0,4):
-                #     for freq2 in range(0,4):
-                #
-                #         if freq==freq2:
-                #             print(locs[tick], xlabels[tick])
-                #             xlabels[tick] = plt.text(1,0,'5',color='#ff7e0d')
-                #             print(xlabels[tick])
-                #             labels[tick] = '5'
-                #             # ax.set_xticklabels(locs[tick], xlabels[tick])
-                #             # xlabels.append('hi')
-                #             # xticks(locs[tick], labels[tick], **kwargs)  # Set locations and labels
-                #         else:
-                #             labels[tick] = '5'
-                #             # xlabels.append('')
-                #         tick += 1
-                # # print(xlabels2)
-                # # ax.set_xticks(locs[4:5],labels[4:5])#,color='#ff7e0d')
-                # # ax.set_xticks(ticks=locs,labels=labels)#,color='#ff7e0d')
-                # ax.set_xticklabels(xlabels)
-                # # ax.set_xlabels(labels2)
-                # print(locs,labels)
-                # ax.set_xticklabels(locs,labels)
-                # xticks(ticks, [labels], **kwargs)  # Set locations and labels
-                # for label in (ax.get_xticklabels()):
-                #     print(label)
-                    # label.set_fontsize(8)
                 # Add rectangles for background
                 [ymin,ymax]=ax.get_ylim()
                 ax.set_ylim(top=46)
@@ -393,7 +484,7 @@ for sub_plot in range(1,1+num_sub_plots):
                 for i in range(4):
                     x = i*4+0.5
                     ax.add_patch(Rectangle((x,ymin), 4, ymax-ymin, facecolor=grey_colors[i], alpha=1,zorder=1))
-                    ax.text(x+2, ymax-3,toplabel[i],horizontalalignment='center', fontname="Arial", fontsize=10, fontweight='bold')
+                    ax.text(x+2, ymax-3,toplabel[i],horizontalalignment='center', fontname="sans-serif", fontsize=10, fontweight='bold')
                     x1.append(x)
                     if i!=0:
                         x2.append(x)
@@ -405,12 +496,12 @@ for sub_plot in range(1,1+num_sub_plots):
                 # name = ['0.5+/-0.2','1+/-0.2','1.5+/-0.2','2.5+/-0.2']
                 # add_labels(ax,x1,x2,y,name,text_buffer)
                 # y = ymin - ((ymax-ymin)/6)
-                # ax.text(0.5, y,'Range(Hz):',horizontalalignment='right', fontname="Arial", fontsize=10, fontweight='bold')
+                # ax.text(0.5, y,'Range(Hz):',horizontalalignment='right', fontname="sans-serif", fontsize=10, fontweight='bold')
                 y = ymin - ((ymax-ymin)/12)
-                ax.text(0.5, y,'Task(Hz):',horizontalalignment='right', fontname="Arial", fontsize=10, fontweight='bold')
+                ax.text(0.5, y,'Task(Hz):',horizontalalignment='right', fontname="sans-serif", fontsize=10, fontweight='bold')
                 # add_labels(ax,x1,x2,y,name,text_buffer)
                 fig.savefig('Plots/'+'energy_'+group_label[group]+'.pdf')
-
+                plt.close(fig)
 
     if make_plots:
 
@@ -420,28 +511,58 @@ for sub_plot in range(1,1+num_sub_plots):
         ####################################################################
         ####################################################################
         if make_plot_each_sub==0:
-            for plot in range(3):
+            for plot in range(4):
                 figure_size = (5,3) # sets the size of the figure in inches
                 xlabel = ''
-                ylabel = 'Fraction of Total Energy'
+                ylabel = 'Percentage of Total Energy'
 
                 if plot==0:
-                    title = 'Energy Content of Movement at Resonance\nFor Moving Ball Trials'
+                    title = 'Energy Content of Movement at Resonance\nFor Trials With Moving Balls'
                     compare_groups = compare_groups1
                     legend_cond = ['Without Haptic Forces','With Haptic Forces']
                     # print(colors[1])
                     # colors = ['#601A4A','#EE442F','#63ACBE','#006400']
                     colors = ['#601A4A','#63ACBE']
                 elif plot==1:
-                    title = 'Energy Content of Movement at Resonance\nFor Haptic Force Trials'
+                    title = 'Energy Content of Movement at Resonance\nFor Trials With Haptic Forces'
                     compare_groups = compare_groups2
                     legend_cond = ['Still Ball','Moving Ball']
                     colors = ['#EE442F','#63ACBE']
-                else:
+                elif plot==2:
                     title = 'Energy Content of Movement For All Experimental Conditions'
                     compare_groups = compare_groups3
                     legend_cond = group_label
+                    legend_cond = ['Baseline Motion',
+                                'Still Ball With\nHaptic Forces',
+                                'Moving Ball Without\nHaptic Forces',
+                                'Moving Ball With\nHaptic Forces']
                     colors = ['#601A4A','#EE442F','#63ACBE','#006400']
+                else:
+                    title = 'Haptic Feedback Encourages Movement\nCloser to the Desired Frequency'
+                    energy_mat_windows = np.divide(energy_mat_windows,energy_num_windows)
+                    compare_groups = 100*np.divide(np.subtract(energy_mat_windows[1,:,:,:],energy_mat_windows[0,:,:,:]),energy_mat_windows[0,:,:,:])
+                    # compare_groups = np.subtract(energy_mat_windows[1,:,:,:],energy_mat_windows[0,:,:,:])
+                    # compare_groups[0,:,:] /= window_options[0]
+                    # compare_groups[1,:,:] /= window_options[1]
+                    # compare_groups[2,:,:] /= window_options[2]
+
+                    legend_cond = ['Resonant Frequency +/- '+str(window_options[0])+'Hz',
+                                    'Resonant Frequency +/- '+str(window_options[1])+'Hz',
+                                    'Resonant Frequency +/- '+str(window_options[2])+'Hz']
+                    colors = ['#1C4199','#658CE6','#B8CDFF']
+                    ylabel = 'Percentage Increase in Energy\nAround Resonance'
+
+                    if save_values:
+
+                        with open (file_metrics_windows,'a') as csvfile:
+                            testwriter = csv.writer(csvfile,delimiter=',')
+                            for subject_num in range(min_sub,1+number_of_subjects): #iterate though subjects
+                                for freq in range(0,4):
+                                    for group in range(len(window_options)):
+                                        row = [subjects[subject_num-1],frequencylabels[freq],'win'+str(group),
+                                                compare_groups[group,freq,subject_num-1]]
+                                        testwriter.writerow(row)
+
                 n_group = compare_groups.shape[0]
                 data = []
                 labels = []
@@ -474,21 +595,27 @@ for sub_plot in range(1,1+num_sub_plots):
                 name =frequencylabels
                 add_labels(ax,x1,x2,y,name,text_buffer)
                 y = ymin - ((ymax-ymin)/7.5)
-                ax.text(0.5, y,'Ball:',horizontalalignment='right', fontname="Arial", fontsize=10, fontweight='bold')
+                ax.text(0.5, y,'Ball:',horizontalalignment='right', fontname="sans-serif", fontsize=10, fontweight='bold')
 
                 x = 5
-                l1 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[0], alpha=1,zorder=1))
-                l2 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[1], alpha=1,zorder=1))
-                # l3 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[2], alpha=1,zorder=1))
+                l1 = ax.add_patch(Rectangle((x,ymin-600), 3, ymax-ymin, facecolor=colors[0], alpha=1,zorder=1))
+                l2 = ax.add_patch(Rectangle((x,ymin-600), 3, ymax-ymin, facecolor=colors[1], alpha=1,zorder=1))
+                if plot==3:
+                    l3 = ax.add_patch(Rectangle((x,ymin-600), 3, ymax-ymin, facecolor=colors[2], alpha=1,zorder=1))
                 # l4 = ax.add_patch(Rectangle((x,ymin-100), 3, ymax-ymin, facecolor=colors[3], alpha=1,zorder=1))
                 ax.set_ylim(ymin,ymax)
 
                 if plot!=2:
-                    # fig.subplots_adjust(right=0.72)
-                    fig.subplots_adjust(bottom=0.28)
-                    L = fig.legend([l1,l2], legend_cond,ncol=1, fontsize=10,loc='lower center')
+                    if plot==3:
+                        fig.subplots_adjust(bottom=0.35)
+                        fig.subplots_adjust(left=0.15)
+                        L = fig.legend([l1,l2,l3], legend_cond,ncol=1, fontsize=10,loc='lower center')
+                    else:
+                        fig.subplots_adjust(bottom=0.28)
+                        L = fig.legend([l1,l2], legend_cond,ncol=1, fontsize=10,loc='lower center')
 
-                fig.savefig('Plots/'+'energy_comparegroups'+str(plot)+'.png')
+                fig.savefig('Plots/'+'energy_comparegroups'+str(plot)+'.pdf')
+                plt.close(fig)
 
         ####################################################################
         ####################################################################
@@ -542,10 +669,13 @@ for sub_plot in range(1,1+num_sub_plots):
             if haptic_forces_added:
                 ydata.append(xy_ylist[freq+16])
             [fig,ax] = xy_spectrum(w,xdata,ydata,[freq_pendulum[freq]],title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend)
-            savename = 'Plots/'+'xy_freq_'+frequencylabels[freq]+'.png'
+            # ax[0].set_ylim([.1,1.4])
+            # ax[1].set_ylim([.1,1.4])
+            savename = 'Plots/'+'xy_freq_'+frequencylabels[freq]+'.pdf'
             if make_plot_each_sub==1:
-                savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_xy_freq_'+frequencylabels[freq]+'.png'
+                savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_xy_freq_'+frequencylabels[freq]+'.pdf'
             fig.savefig(savename)
+            plt.close(fig)
 
             data = []
             data.append(mag_list[freq])
@@ -556,8 +686,13 @@ for sub_plot in range(1,1+num_sub_plots):
                 data.append(mag_list[freq+16])
             n = len(xy_xlist)
             [fig,ax] = mag_spectrum(w,data,[freq_pendulum[freq]],title,xlabel,ylabel,legend,linestyles,colors,ymin,ymax,ymax_pend)
-            savename = 'Plots/'+'mag_freq_'+frequencylabels[freq]+'.png'
+
+            ax.set_ylim([.1,1.4])
+            savename = 'Plots/'+'mag_freq_'+frequencylabels[freq]+'.pdf'
             if make_plot_each_sub==1:
-                savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_mag_freq_'+frequencylabels[freq]+'.png'
+                savename = 'Plots/IndividualSubjectPlots/Sub'+str(sub_plot)+'_mag_freq_'+frequencylabels[freq]+'.pdf'
             fig.savefig(savename)
+            plt.close(fig)
+
+
 # plt.show()

@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter, freqz
 
-
 def butter_lowpass(cutoff, fs, order=5):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq
@@ -31,7 +30,7 @@ def xy_spectrum(w,xdata,ydata,w_resonance,title,xlabel,ylabel,legend,linestyles,
     """
     # create plot
     figure_size = (8,3.55) # inches
-    plt.figure(1, figsize=figure_size, dpi=150)
+    # plt.figure(1, figsize=figure_size, dpi=150)
     fig, ax =plt.subplots(nrows=1, ncols=2, sharey='row', squeeze=True, figsize=figure_size, dpi=150)
     fig.subplots_adjust(hspace=0.05)
     fig.subplots_adjust(wspace=0.05)
@@ -123,7 +122,7 @@ def mag_spectrum(w,data,w_resonance,title,xlabel,ylabel,legend,linestyles,colors
             ax.plot(w,data[i],linestyle=linestyles[i],color=colors[i])
 
     # set plot parameters
-    ax.set_xscale('log')
+    # ax.set_xscale('log')
     # ax.set_yscale('log')
     ax.set_xlim((w[1],w[len(w)-1]))
     # ax.set_xlim((10^-1,w[len(w)-1]))
