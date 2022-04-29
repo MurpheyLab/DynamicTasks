@@ -1,0 +1,144 @@
+
+########################################################################### 
+################################# 0.5Hz ################################### 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 4 x 4[39m
+  BallFreq variable  statistic         p
+  [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m         [3m[38;5;246m<dbl>[39m[23m     [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m1[39m 0.5Hz    Energy0.5     0.956 0.105    
+[38;5;250m2[39m 1.5Hz    Energy0.5     0.847 0.000[4m0[24m[4m5[24m[4m1[24m2
+[38;5;250m3[39m 1Hz      Energy0.5     0.890 0.000[4m7[24m[4m2[24m[4m3[24m 
+[38;5;250m4[39m 2.5Hz    Energy0.5     0.902 0.001[4m6[24m[4m7[24m  
+$ANOVA
+       Effect DFn DFd      SSn       SSd        F            p p<.05       ges
+1 (Intercept)   1   6 2.121470 0.1315943 96.72776 6.367804e-05     * 0.8681426
+2    BallFreq   3  18 0.546407 0.1906240 17.19847 1.598335e-05     * 0.6290480
+
+$`Mauchly's Test for Sphericity`
+    Effect         W       p p<.05
+2 BallFreq 0.1440896 0.11005      
+
+$`Sphericity Corrections`
+    Effect       GGe       p[GG] p[GG]<.05      HFe        p[HF] p[HF]<.05
+2 BallFreq 0.5306142 0.001007353         * 0.691362 0.0002404733         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy0.5 and data$BallFreq 
+
+      0.5Hz   1.5Hz  1Hz    
+1.5Hz 1.4e-10 -      -      
+1Hz   2.1e-08 0.0060 -      
+2.5Hz 9.9e-11 0.0041 3.3e-05
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+################################# 1.0Hz ################################### 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 4 x 4[39m
+  BallFreq variable  statistic      p
+  [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m         [3m[38;5;246m<dbl>[39m[23m  [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m1[39m 0.5Hz    Energy1.0     0.952 0.077[4m7[24m
+[38;5;250m2[39m 1.5Hz    Energy1.0     0.927 0.010[4m1[24m
+[38;5;250m3[39m 1Hz      Energy1.0     0.957 0.116 
+[38;5;250m4[39m 2.5Hz    Energy1.0     0.945 0.044[4m0[24m
+$ANOVA
+       Effect DFn DFd      SSn       SSd         F            p p<.05       ges
+1 (Intercept)   1   6 9.445483 0.5090931 111.32128 4.262687e-05     * 0.9052913
+2    BallFreq   3  18 1.120764 0.4790629  14.03695 5.829638e-05     * 0.5314398
+
+$`Mauchly's Test for Sphericity`
+    Effect         W         p p<.05
+2 BallFreq 0.3790355 0.4775449      
+
+$`Sphericity Corrections`
+    Effect       GGe       p[GG] p[GG]<.05       HFe        p[HF] p[HF]<.05
+2 BallFreq 0.6204723 0.001026005         * 0.8883813 0.0001346424         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy1.0 and data$BallFreq 
+
+      0.5Hz   1.5Hz   1Hz    
+1.5Hz 1.00000 -       -      
+1Hz   2.1e-10 0.00011 -      
+2.5Hz 1.5e-08 5.5e-06 1.4e-12
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+################################# 1.5Hz ################################### 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 4 x 4[39m
+  BallFreq variable  statistic     p
+  [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m         [3m[38;5;246m<dbl>[39m[23m [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m1[39m 0.5Hz    Energy1.5     0.975 0.468
+[38;5;250m2[39m 1.5Hz    Energy1.5     0.964 0.212
+[38;5;250m3[39m 1Hz      Energy1.5     0.963 0.194
+[38;5;250m4[39m 2.5Hz    Energy1.5     0.969 0.305
+$ANOVA
+       Effect DFn DFd       SSn       SSd          F            p p<.05       ges
+1 (Intercept)   1   6 8.1045974 0.1508511 322.354899 1.919870e-06     * 0.9285330
+2    BallFreq   3  18 0.4886251 0.4729405   6.198985 4.428004e-03     * 0.4392465
+
+$`Mauchly's Test for Sphericity`
+    Effect         W         p p<.05
+2 BallFreq 0.2219187 0.2213759      
+
+$`Sphericity Corrections`
+    Effect       GGe     p[GG] p[GG]<.05      HFe       p[HF] p[HF]<.05
+2 BallFreq 0.7001817 0.0125755         * 1.085948 0.004428004         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy1.5 and data$BallFreq 
+
+      0.5Hz   1.5Hz   1Hz   
+1.5Hz 1.2e-08 -       -     
+1Hz   8.2e-07 5.3e-06 -     
+2.5Hz 9.3e-06 0.0063  0.7614
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+################################# 2.5Hz ################################### 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 4 x 4[39m
+  BallFreq variable  statistic         p
+  [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m         [3m[38;5;246m<dbl>[39m[23m     [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m1[39m 0.5Hz    Energy2.5     0.968 0.274    
+[38;5;250m2[39m 1.5Hz    Energy2.5     0.851 0.000[4m0[24m[4m6[24m[4m8[24m1
+[38;5;250m3[39m 1Hz      Energy2.5     0.964 0.200    
+[38;5;250m4[39m 2.5Hz    Energy2.5     0.953 0.081[4m8[24m   
+$ANOVA
+       Effect DFn DFd       SSn        SSd         F            p p<.05       ges
+1 (Intercept)   1   6 1.5073535 0.06184242 146.24462 1.941794e-05     * 0.8851701
+2    BallFreq   3  18 0.2269556 0.13370112  10.18491 3.802931e-04     * 0.5371741
+
+$`Mauchly's Test for Sphericity`
+    Effect         W         p p<.05
+2 BallFreq 0.2710758 0.2997048      
+
+$`Sphericity Corrections`
+    Effect       GGe       p[GG] p[GG]<.05      HFe        p[HF] p[HF]<.05
+2 BallFreq 0.6776996 0.002433955         * 1.027812 0.0003802931         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy2.5 and data$BallFreq 
+
+      0.5Hz   1.5Hz   1Hz    
+1.5Hz 0.3837  -       -      
+1Hz   0.0014  0.0034  -      
+2.5Hz 2.8e-07 1.7e-06 8.8e-10
+
+P value adjustment method: bonferroni 

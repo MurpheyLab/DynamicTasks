@@ -1,0 +1,144 @@
+
+########################################################################### 
+################################# 0.5Hz ################################### 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 4 x 4[39m
+  BallFreq variable  statistic          p
+  [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m         [3m[38;5;246m<dbl>[39m[23m      [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m1[39m 0.5Hz    Energy0.5     0.967 0.269     
+[38;5;250m2[39m 1.5Hz    Energy0.5     0.920 0.006[4m0[24m[4m2[24m   
+[38;5;250m3[39m 1Hz      Energy0.5     0.815 0.000[4m0[24m[4m0[24m[4m9[24m23
+[38;5;250m4[39m 2.5Hz    Energy0.5     0.954 0.087[4m4[24m    
+$ANOVA
+       Effect DFn DFd      SSn       SSd         F            p p<.05       ges
+1 (Intercept)   1   6 2.698388 0.1158397 139.76500 2.213932e-05     * 0.9072002
+2    BallFreq   3  18 2.192711 0.1601853  82.13153 1.072693e-10     * 0.8881918
+
+$`Mauchly's Test for Sphericity`
+    Effect         W         p p<.05
+2 BallFreq 0.3090885 0.3621977      
+
+$`Sphericity Corrections`
+    Effect      GGe        p[GG] p[GG]<.05      HFe        p[HF] p[HF]<.05
+2 BallFreq 0.724064 3.056031e-08         * 1.149948 1.072693e-10         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy0.5 and data$BallFreq 
+
+      0.5Hz   1.5Hz   1Hz    
+1.5Hz 3.6e-14 -       -      
+1Hz   5.1e-13 0.02917 -      
+2.5Hz 1.2e-13 6.6e-05 0.00031
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+################################# 1.0Hz ################################### 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 4 x 4[39m
+  BallFreq variable  statistic        p
+  [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m         [3m[38;5;246m<dbl>[39m[23m    [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m1[39m 0.5Hz    Energy1.0     0.962 0.170   
+[38;5;250m2[39m 1.5Hz    Energy1.0     0.892 0.000[4m8[24m[4m2[24m[4m0[24m
+[38;5;250m3[39m 1Hz      Energy1.0     0.963 0.196   
+[38;5;250m4[39m 2.5Hz    Energy1.0     0.879 0.000[4m3[24m[4m5[24m[4m8[24m
+$ANOVA
+       Effect DFn DFd      SSn       SSd         F            p p<.05       ges
+1 (Intercept)   1   6 8.053489 0.1186823 407.14512 9.624438e-07     * 0.9369881
+2    BallFreq   3  18 4.282587 0.4229101  60.75883 1.292681e-09     * 0.8877338
+
+$`Mauchly's Test for Sphericity`
+    Effect         W         p p<.05
+2 BallFreq 0.2423811 0.2534902      
+
+$`Sphericity Corrections`
+    Effect       GGe        p[GG] p[GG]<.05       HFe        p[HF] p[HF]<.05
+2 BallFreq 0.5201882 7.569138e-06         * 0.6700515 4.956858e-07         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy1.0 and data$BallFreq 
+
+      0.5Hz   1.5Hz   1Hz    
+1.5Hz 0.21    -       -      
+1Hz   8.7e-15 4.8e-12 -      
+2.5Hz 6.8e-05 2.4e-05 1.6e-14
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+################################# 1.5Hz ################################### 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 4 x 4[39m
+  BallFreq variable  statistic        p
+  [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m         [3m[38;5;246m<dbl>[39m[23m    [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m1[39m 0.5Hz    Energy1.5     0.889 0.000[4m6[24m[4m9[24m[4m1[24m
+[38;5;250m2[39m 1.5Hz    Energy1.5     0.953 0.086[4m0[24m  
+[38;5;250m3[39m 1Hz      Energy1.5     0.942 0.032[4m9[24m  
+[38;5;250m4[39m 2.5Hz    Energy1.5     0.951 0.072[4m3[24m  
+$ANOVA
+       Effect DFn DFd      SSn       SSd          F            p p<.05       ges
+1 (Intercept)   1   6 7.844513 0.1716479 274.207189 3.093032e-06     * 0.8816741
+2    BallFreq   3  18 1.068436 0.8811328   7.275423 2.134621e-03     * 0.5036901
+
+$`Mauchly's Test for Sphericity`
+    Effect         W         p p<.05
+2 BallFreq 0.3292959 0.3956532      
+
+$`Sphericity Corrections`
+    Effect       GGe       p[GG] p[GG]<.05       HFe       p[HF] p[HF]<.05
+2 BallFreq 0.6288874 0.009997242         * 0.9081543 0.003115131         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy1.5 and data$BallFreq 
+
+      0.5Hz   1.5Hz   1Hz   
+1.5Hz 0.0011  -       -     
+1Hz   9.9e-07 1.5e-09 -     
+2.5Hz 1.0000  3.1e-07 0.0003
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+################################# 2.5Hz ################################### 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 4 x 4[39m
+  BallFreq variable  statistic          p
+  [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m         [3m[38;5;246m<dbl>[39m[23m      [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m1[39m 0.5Hz    Energy2.5     0.943 0.036[4m4[24m    
+[38;5;250m2[39m 1.5Hz    Energy2.5     0.794 0.000[4m0[24m[4m0[24m[4m3[24m31
+[38;5;250m3[39m 1Hz      Energy2.5     0.968 0.288     
+[38;5;250m4[39m 2.5Hz    Energy2.5     0.943 0.035[4m7[24m    
+$ANOVA
+       Effect DFn DFd       SSn        SSd        F            p p<.05       ges
+1 (Intercept)   1   6 1.2883349 0.08718488 88.66227 8.154097e-05     * 0.8149587
+2    BallFreq   3  18 0.4002344 0.20533937 11.69482 1.740245e-04     * 0.5777400
+
+$`Mauchly's Test for Sphericity`
+    Effect         W          p p<.05
+2 BallFreq 0.1074499 0.06666876      
+
+$`Sphericity Corrections`
+    Effect       GGe       p[GG] p[GG]<.05       HFe       p[HF] p[HF]<.05
+2 BallFreq 0.6600276 0.001587806         * 0.9834846 0.000193563         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy2.5 and data$BallFreq 
+
+      0.5Hz   1.5Hz   1Hz    
+1.5Hz 0.076   -       -      
+1Hz   1.000   0.252   -      
+2.5Hz 6.8e-09 4.7e-07 4.3e-09
+
+P value adjustment method: bonferroni 

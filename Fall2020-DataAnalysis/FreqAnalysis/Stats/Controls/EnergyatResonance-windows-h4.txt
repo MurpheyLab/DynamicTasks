@@ -1,0 +1,180 @@
+
+########################################################################### 
+######### Energy at Resonance for Different Window Sizes ############# 
+########################################################################### 
+Test for normality 
+[38;5;246m# A tibble: 12 x 5[39m
+   BallFreq Window variable statistic      p
+   [3m[38;5;246m<chr>[39m[23m    [3m[38;5;246m<chr>[39m[23m  [3m[38;5;246m<chr>[39m[23m        [3m[38;5;246m<dbl>[39m[23m  [3m[38;5;246m<dbl>[39m[23m
+[38;5;250m 1[39m 0.5Hz    win0   Energy       0.817 0.060[4m5[24m
+[38;5;250m 2[39m 1.5Hz    win0   Energy       0.913 0.419 
+[38;5;250m 3[39m 1Hz      win0   Energy       0.962 0.839 
+[38;5;250m 4[39m 2.5Hz    win0   Energy       0.796 0.037[4m3[24m
+[38;5;250m 5[39m 0.5Hz    win1   Energy       0.940 0.637 
+[38;5;250m 6[39m 1.5Hz    win1   Energy       0.877 0.212 
+[38;5;250m 7[39m 1Hz      win1   Energy       0.945 0.689 
+[38;5;250m 8[39m 2.5Hz    win1   Energy       0.895 0.301 
+[38;5;250m 9[39m 0.5Hz    win2   Energy       0.971 0.905 
+[38;5;250m10[39m 1.5Hz    win2   Energy       0.897 0.313 
+[38;5;250m11[39m 1Hz      win2   Energy       0.975 0.930 
+[38;5;250m12[39m 2.5Hz    win2   Energy       0.916 0.437 
+$ANOVA
+           Effect DFn DFd        SSn       SSd          F
+1     (Intercept)   1   6   318.1048  2380.594  0.8017448
+2          Window   2  12  5537.7146  2028.712 16.3780246
+3        BallFreq   3  18 10793.9175 25773.842  2.5127610
+4 Window:BallFreq   6  36  5126.0182  3093.262  9.9429365
+             p p<.05        ges
+1 4.050595e-01       0.00946895
+2 3.715156e-04     * 0.14267267
+3 9.115689e-02       0.24492483
+4 1.805788e-06     * 0.13348162
+
+$`Mauchly's Test for Sphericity`
+           Effect            W           p p<.05
+2          Window 1.114634e-01 0.004147922     *
+3        BallFreq 1.253137e-01 0.088078652      
+4 Window:BallFreq 1.474284e-05 0.010214878     *
+
+$`Sphericity Corrections`
+           Effect       GGe       p[GG] p[GG]<.05       HFe
+2          Window 0.5295105 0.005669251         * 0.5477808
+3        BallFreq 0.5561260 0.135338507           0.7448054
+4 Window:BallFreq 0.4144862 0.001131860         * 0.7310018
+         p[HF] p[HF]<.05
+2 5.090459e-03         *
+3 1.143174e-01          
+4 3.378658e-05         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data$Energy and data$Window 
+
+     win0   win1  
+win1 0.0030 -     
+win2 0.0018 0.0027
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+######### 0.5Hz:     ############# 
+########################################################################### 
+$ANOVA
+       Effect DFn DFd      SSn       SSd         F            p p<.05
+1 (Intercept)   1   6 8447.528 14212.187  3.566317 1.078808e-01      
+2      Window   2  12 8199.018  2058.151 23.902084 6.526777e-05     *
+        ges
+1 0.3417580
+2 0.3350729
+
+$`Mauchly's Test for Sphericity`
+  Effect         W           p p<.05
+2 Window 0.1019294 0.003317024     *
+
+$`Sphericity Corrections`
+  Effect       GGe       p[GG] p[GG]<.05       HFe       p[HF]
+2 Window 0.5268508 0.002235184         * 0.5434277 0.001971078
+  p[HF]<.05
+2         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data_freq$Energy and data_freq$Window 
+
+     win0   win1  
+win1 0.0085 -     
+win2 0.0077 0.0134
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+######### 1Hz:      ############# 
+########################################################################### 
+$ANOVA
+       Effect DFn DFd      SSn      SSd        F          p p<.05
+1 (Intercept)   1   6 1037.533 2105.047 2.957272 0.13628615      
+2      Window   2  12  766.544 1348.243 3.411302 0.06714433      
+        ges
+1 0.2310340
+2 0.1816526
+
+$`Mauchly's Test for Sphericity`
+  Effect        W           p p<.05
+2 Window 0.109077 0.003929465     *
+
+$`Sphericity Corrections`
+  Effect       GGe     p[GG] p[GG]<.05       HFe     p[HF] p[HF]<.05
+2 Window 0.5288423 0.1108434           0.5466863 0.1087684          
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data_freq$Energy and data_freq$Window 
+
+     win0 win1
+win1 0.32 -   
+win2 0.33 0.42
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+######### 1.5Hz:    ############# 
+########################################################################### 
+$ANOVA
+       Effect DFn DFd       SSn      SSd         F           p p<.05
+1 (Intercept)   1   6  191.9146 8491.582 0.1356034 0.725334248      
+2      Window   2  12 1613.9629 1364.415 7.0973818 0.009242736     *
+         ges
+1 0.01909995
+2 0.14071217
+
+$`Mauchly's Test for Sphericity`
+  Effect         W          p p<.05
+2 Window 0.2011994 0.01815794     *
+
+$`Sphericity Corrections`
+  Effect      GGe      p[GG] p[GG]<.05       HFe      p[HF] p[HF]<.05
+2 Window 0.555926 0.03182816         * 0.5915291 0.02877342         *
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data_freq$Energy and data_freq$Window 
+
+     win0  win1 
+win1 0.174 -    
+win2 0.094 0.080
+
+P value adjustment method: bonferroni 
+
+########################################################################### 
+######### 2.5Hz:      ############# 
+########################################################################### 
+$ANOVA
+       Effect DFn DFd        SSn       SSd        F         p p<.05
+1 (Intercept)   1   6 1435.04711 3345.6203 2.573598 0.1597820      
+2      Window   2  12   84.20841  351.1639 1.438788 0.2753559      
+         ges
+1 0.27963646
+2 0.02227151
+
+$`Mauchly's Test for Sphericity`
+  Effect         W          p p<.05
+2 Window 0.2209562 0.02294909     *
+
+$`Sphericity Corrections`
+  Effect       GGe     p[GG] p[GG]<.05       HFe     p[HF] p[HF]<.05
+2 Window 0.5620997 0.2770499           0.6018905 0.2776527          
+
+
+	Pairwise comparisons using paired t tests 
+
+data:  data_freq$Energy and data_freq$Window 
+
+     win0 win1
+win1 0.54 -   
+win2 0.81 1.00
+
+P value adjustment method: bonferroni 

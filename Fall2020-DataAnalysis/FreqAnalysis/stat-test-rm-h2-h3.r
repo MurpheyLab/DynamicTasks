@@ -1,4 +1,7 @@
 ################################################################################
+# Hypothesis 2 determines whether haptic forces significantly impacts energy@resonance (comparing F0_B1 and F1_B1)
+# Hypothesis 3 determines whether a moving ball significantly impacts energy@resonance (comparing F1_B0 and F1_B1)
+
 # This program performs ANOVA repeated measures statistical tests for darpa HST data.
 # Statistical results are published to output file created by sink()
 
@@ -29,7 +32,7 @@ library(ez)
 library(rstatix) # for the %>% function
 
 # parameters 
-DIR = 'C:/Users/numur/Documents/DowntownGames-Biodex/Fall2020-DataAnalysis/FreqAnalysis'
+DIR = 'C:/Users/milli/OneDrive/Documents/DowntownGames-Biodex/Fall2020-DataAnalysis/FreqAnalysis'
 
 ################################################################################
 ################################################################################
@@ -49,7 +52,7 @@ data = subset(data_original, Force!="F0_B0" & Force!="F1_B0" & Force!="F1_B1_add
 data[] <- lapply(data, function(x) if(is.factor(x)) factor(x) else x)
 
 # define file to save data to
-sink(paste(DIR,"stattests",paste("EnergyatResonance","h2.txt",sep="-"),sep="/"))
+sink(paste(DIR,"Stats","Controls",paste("EnergyatResonance","h2.txt",sep="-"),sep="/"))
 
 cat("\n")
 cat("########################################################################### \n")
@@ -92,6 +95,54 @@ print(posthoc)
 #                          p.adjust.method = "bonferroni")
 # print(posthoc)
 
+cat("\n")
+cat("########################################################################### \n")
+cat("######### 0.5Hz:      Energy at Resonance for F0_B1 and F1_B1 ############# \n")
+cat("########################################################################### \n")
+
+data_freq = subset(data, BallFreq=="0.5Hz")
+mod.ez<-ezANOVA(data_freq,Resonance,
+                wid = .(Subject),
+                within = .(Force),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n")
+cat("########################################################################### \n")
+cat("######### 1Hz:      Energy at Resonance for F0_B1 and F1_B1 ############# \n")
+cat("########################################################################### \n")
+
+data_freq = subset(data, BallFreq=="1Hz")
+mod.ez<-ezANOVA(data_freq,Resonance,
+                wid = .(Subject),
+                within = .(Force),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n")
+cat("########################################################################### \n")
+cat("######### 1.5Hz:      Energy at Resonance for F0_B1 and F1_B1 ############# \n")
+cat("########################################################################### \n")
+
+data_freq = subset(data, BallFreq=="1.5Hz")
+mod.ez<-ezANOVA(data_freq,Resonance,
+                wid = .(Subject),
+                within = .(Force),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n")
+cat("########################################################################### \n")
+cat("######### 2.5Hz:      Energy at Resonance for F0_B1 and F1_B1 ############# \n")
+cat("########################################################################### \n")
+
+data_freq = subset(data, BallFreq=="2.5Hz")
+mod.ez<-ezANOVA(data_freq,Resonance,
+                wid = .(Subject),
+                within = .(Force),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
 ################################################################################
 ################################################################################
 #              Metric: Energy at Resonance for
@@ -103,7 +154,7 @@ data = subset(data_original, Force=="F1_B0" | Force=="F1_B1")
 data[] <- lapply(data, function(x) if(is.factor(x)) factor(x) else x)
 
 # define file to save data to
-sink(paste(DIR,"stattests",paste("EnergyatResonance","h3.txt",sep="-"),sep="/"))
+sink(paste(DIR,"Stats","Controls",paste("EnergyatResonance","h3.txt",sep="-"),sep="/"))
 
 cat("\n")
 cat("########################################################################### \n")
@@ -145,3 +196,51 @@ print(posthoc)
 #                          paired = TRUE,
 #                          p.adjust.method = "bonferroni")
 # print(posthoc)
+
+cat("\n")
+cat("########################################################################### \n")
+cat("######### 0.5Hz:      Energy at Resonance for F1_B0 and F1_B1 ############# \n")
+cat("########################################################################### \n")
+
+data_freq = subset(data, BallFreq=="0.5Hz")
+mod.ez<-ezANOVA(data_freq,Resonance,
+                wid = .(Subject),
+                within = .(Force),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n")
+cat("########################################################################### \n")
+cat("######### 1Hz:      Energy at Resonance for F1_B0 and F1_B1 ############# \n")
+cat("########################################################################### \n")
+
+data_freq = subset(data, BallFreq=="1Hz")
+mod.ez<-ezANOVA(data_freq,Resonance,
+                wid = .(Subject),
+                within = .(Force),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n")
+cat("########################################################################### \n")
+cat("######### 1.5Hz:      Energy at Resonance for F1_B0 and F1_B1 ############# \n")
+cat("########################################################################### \n")
+
+data_freq = subset(data, BallFreq=="1.5Hz")
+mod.ez<-ezANOVA(data_freq,Resonance,
+                wid = .(Subject),
+                within = .(Force),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n")
+cat("########################################################################### \n")
+cat("######### 2.5Hz:      Energy at Resonance for F1_B0 and F1_B1 ############# \n")
+cat("########################################################################### \n")
+
+data_freq = subset(data, BallFreq=="2.5Hz")
+mod.ez<-ezANOVA(data_freq,Resonance,
+                wid = .(Subject),
+                within = .(Force),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
