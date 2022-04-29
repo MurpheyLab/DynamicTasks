@@ -32,7 +32,7 @@ library(rstatix) # for the %>% function
 
 # parameters 
 DIR = 'C:/Users/milli/OneDrive/Documents/DowntownGames-Biodex/Fall2020-DataAnalysis/FreqAnalysis'
-group = "F1_B0"
+group = "F0_B1"
 
 ################################################################################
 ################################################################################
