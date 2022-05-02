@@ -63,27 +63,27 @@ cat("###########################################################################
 #               normally distributed
 cat("Test for normality \n")
 normality = data %>%
-  group_by(Window,BallFreq) %>%
-  shapiro_test(Energy)
+  group_by(Window,BallFreq,Force) %>%
+  shapiro_test(Resonance)
 print(normality)
 
 # Assumption 3: Sphericity/Equal variances between treatments - ezANOVA performs this test
 #               if the null hypothesis is violated p<.05 for any particular factor, use a corrected
 #               p-value, possibly the Greenhouse-Geisser p[GG]
-mod.ez<-ezANOVA(data,Energy,
+mod.ez<-ezANOVA(data,Resonance,
                   wid = .(Subject),
-                  within = .(Window,BallFreq),
+                  within = .(Window,Force),
                   between = NULL, type = 2, detailed = TRUE)
 
 print(mod.ez)
 
 # If a factor is significant, that means that at least one of the groups is different from the others
 # But you still do not know which group is different. T-tests can help.
-posthoc<-pairwise.t.test(data$Energy,
-                         data$Window,
-                         paired = TRUE,
-                         p.adjust.method = "bonferroni")
-print(posthoc)
+# posthoc<-pairwise.t.test(data$Energy,
+#                          data$Window,
+#                          paired = TRUE,
+#                          p.adjust.method = "bonferroni")
+# print(posthoc)
 # # Compare all group/factor combinations for putting asterisks on plots
 # data$combo <- paste(data$Force,data$BallFreq)
 # posthoc<-pairwise.t.test(data$Resonance,
@@ -98,16 +98,16 @@ cat("######### 0.5Hz:     ############# \n")
 cat("########################################################################### \n")
 
 data_freq = subset(data, BallFreq=="0.5Hz")
-mod.ez<-ezANOVA(data_freq,Energy,
+mod.ez<-ezANOVA(data_freq,Resonance,
                 wid = .(Subject),
-                within = .(Window),
+                within = .(Window,Force),
                 between = NULL, type = 2, detailed = TRUE)
 print(mod.ez)
-posthoc<-pairwise.t.test(data_freq$Energy,
-                         data_freq$Window,
-                         paired = TRUE,
-                         p.adjust.method = "bonferroni")
-print(posthoc)
+# posthoc<-pairwise.t.test(data_freq$Energy,
+#                          data_freq$Window,
+#                          paired = TRUE,
+#                          p.adjust.method = "bonferroni")
+# print(posthoc)
 
 cat("\n")
 cat("########################################################################### \n")
@@ -115,16 +115,16 @@ cat("######### 1Hz:      ############# \n")
 cat("########################################################################### \n")
 
 data_freq = subset(data, BallFreq=="1Hz")
-mod.ez<-ezANOVA(data_freq,Energy,
+mod.ez<-ezANOVA(data_freq,Resonance,
                 wid = .(Subject),
-                within = .(Window),
+                within = .(Window,Force),
                 between = NULL, type = 2, detailed = TRUE)
 print(mod.ez)
-posthoc<-pairwise.t.test(data_freq$Energy,
-                         data_freq$Window,
-                         paired = TRUE,
-                         p.adjust.method = "bonferroni")
-print(posthoc)
+# posthoc<-pairwise.t.test(data_freq$Energy,
+#                          data_freq$Window,
+#                          paired = TRUE,
+#                          p.adjust.method = "bonferroni")
+# print(posthoc)
 
 cat("\n")
 cat("########################################################################### \n")
@@ -132,16 +132,16 @@ cat("######### 1.5Hz:    ############# \n")
 cat("########################################################################### \n")
 
 data_freq = subset(data, BallFreq=="1.5Hz")
-mod.ez<-ezANOVA(data_freq,Energy,
+mod.ez<-ezANOVA(data_freq,Resonance,
                 wid = .(Subject),
-                within = .(Window),
+                within = .(Window,Force),
                 between = NULL, type = 2, detailed = TRUE)
 print(mod.ez)
-posthoc<-pairwise.t.test(data_freq$Energy,
-                         data_freq$Window,
-                         paired = TRUE,
-                         p.adjust.method = "bonferroni")
-print(posthoc)
+# posthoc<-pairwise.t.test(data_freq$Energy,
+#                          data_freq$Window,
+#                          paired = TRUE,
+#                          p.adjust.method = "bonferroni")
+# print(posthoc)
 
 cat("\n")
 cat("########################################################################### \n")
@@ -149,13 +149,13 @@ cat("######### 2.5Hz:      ############# \n")
 cat("########################################################################### \n")
 
 data_freq = subset(data, BallFreq=="2.5Hz")
-mod.ez<-ezANOVA(data_freq,Energy,
+mod.ez<-ezANOVA(data_freq,Resonance,
                 wid = .(Subject),
-                within = .(Window),
+                within = .(Window,Force),
                 between = NULL, type = 2, detailed = TRUE)
 print(mod.ez)
-posthoc<-pairwise.t.test(data_freq$Energy,
-                         data_freq$Window,
-                         paired = TRUE,
-                         p.adjust.method = "bonferroni")
-print(posthoc)
+# posthoc<-pairwise.t.test(data_freq$Energy,
+#                          data_freq$Window,
+#                          paired = TRUE,
+#                          p.adjust.method = "bonferroni")
+# print(posthoc)
