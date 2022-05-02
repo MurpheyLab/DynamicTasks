@@ -78,7 +78,7 @@ if save_values==1:
         testwriter = csv.writer(csvfile,delimiter=',')
         testwriter.writerow(columns)
     file_metrics_windows = "freq-metrics-windows.csv"
-    columns = ["Subject","Force","BallFreq","Window","Resonance"]
+    columns = ["Subject","BallFreq","Window","Energy"]
     with open(file_metrics_windows,'w') as csvfile:
         testwriter = csv.writer(csvfile,delimiter=',')
         testwriter.writerow(columns)
@@ -230,30 +230,20 @@ for sub_plot in range(1,1+num_sub_plots):
                             energy_mat[freq,freq2,subject_num-1] += np.sum(np.square(freq_list))*dw
                             energy_num[freq,freq2,subject_num-1] += 1
 
+                            if group_label[group]=='F0_B1' or group_label[group]=='F1_B1':
+                                if group_label[group]=='F0_B1':
+                                    energy_mat_index = 0
+                                else:
+                                    energy_mat_index = 1
 
-                        if group_label[group]=='F0_B1' or group_label[group]=='F1_B1':
-                            if group_label[group]=='F0_B1':
-                                energy_mat_index = 0
-                            else:
-                                energy_mat_index = 1
+                                for win in range(len(window_options)):
+                                    freq_list = []
+                                    for w_i in range(0,len(w)):
+                                        if (w[w_i] <= freq_pendulum[freq2]+window_options[win]) and (w[w_i] >= freq_pendulum[freq2]-window_options[win]):
+                                            freq_list.append(Amag_norm[w_i])
 
-                            for win in range(len(window_options)):
-                                freq_list = []
-                                for w_i in range(0,len(w)):
-                                    if (w[w_i] <= freq_pendulum[freq]+window_options[win]) and (w[w_i] >= freq_pendulum[freq]-window_options[win]):
-                                        freq_list.append(Amag_norm[w_i])
-
-                                energy = np.sum(np.square(freq_list))*dw
-                                energy_mat_windows[energy_mat_index,win,freq,subject_num-1] += energy
-                                energy_num_windows[energy_mat_index,win,freq,subject_num-1] += 1
-
-                                if save_values:
-                                    with open (file_metrics_windows,'a') as csvfile:
-                                        testwriter = csv.writer(csvfile,delimiter=',')
-                                        row = [subjects[subject_num-1],group_label[group],frequencylabels[freq],
-                                                'win'+str(window_options[win]),energy]
-                                        testwriter.writerow(row)
-
+                                    energy_mat_windows[energy_mat_index,win,freq2,subject_num-1] += np.sum(np.square(freq_list))*dw
+                                    energy_num_windows[energy_mat_index,win,freq2,subject_num-1] += 1
 
                         if save_values:
                             if subject_num==6 and (trial_num==70 or trial_num==71):
@@ -279,8 +269,6 @@ for sub_plot in range(1,1+num_sub_plots):
                             with open (file_metrics,'a') as csvfile:
                                 testwriter = csv.writer(csvfile,delimiter=',')
                                 testwriter.writerow(row)
-
-
 
         if make_plots==1:
             # Take average of each signal and re-normalizes
@@ -427,8 +415,6 @@ for sub_plot in range(1,1+num_sub_plots):
             ax.set_xlim((0,3.5))
             if group==2:
                 ax.set_ylim((0,1))
-            if group==3:
-                ax.set_ylim((0,1.4))
             for label in (ax.get_xticklabels() + ax.get_yticklabels()):
                 label.set_fontsize(8)
 
@@ -570,6 +556,17 @@ for sub_plot in range(1,1+num_sub_plots):
                     colors = ['#FFA759','#FF7E0D','#803F06']
                     ylabel = 'Percentage Increase in Energy\nAround Resonance'
 
+                    if save_values:
+
+                        with open (file_metrics_windows,'a') as csvfile:
+                            testwriter = csv.writer(csvfile,delimiter=',')
+                            for subject_num in range(min_sub,1+number_of_subjects): #iterate though subjects
+                                for freq in range(0,4):
+                                    for group in range(len(window_options)):
+                                        row = [subjects[subject_num-1],frequencylabels[freq],'win'+str(group),
+                                                compare_groups[group,freq,subject_num-1]]
+                                        testwriter.writerow(row)
+
                 n_group = compare_groups.shape[0]
                 data = []
                 labels = []
@@ -626,7 +623,7 @@ for sub_plot in range(1,1+num_sub_plots):
                 else:
                     fig.subplots_adjust(bottom=0.28)
                     L = fig.legend([l1,l2], legend_cond,ncol=1, fontsize=10,loc='lower center')
-
+                    
                 if plot!=2:
                     fig.savefig('Plots/'+'energy_comparegroups'+str(plot)+'.pdf')
                     plt.close(fig)
