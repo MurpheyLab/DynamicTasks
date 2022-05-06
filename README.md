@@ -50,4 +50,4 @@ If the isometric setup computer requires a user name, enter the FSM... domain di
 ## Data Analysis
 
 ### Frequency Decomposition
-You can plot a frequency decomposition of any of the trials using this file: `.\DataAnalysis/FreqAnalysis/plot_spectrum.py`
+You can plot a frequency decomposition of any of the trials using this file: `./DataAnalysis/FreqAnalysis/plot_spectrum.py`
