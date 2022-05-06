@@ -1,4 +1,4 @@
-# Downtown Games - Biodex
+# DynamicTasks
 This repository is for interfacing with the HapticMaster (ACT-3D) currently in the NeuroImaging Lab (previously in the Biodex Lab) using Windows/VS. This version renders the Ball-in-Bowl game including visualization improvements and optional joystick control for testing without the HapticMaster. This version also includes the Nail-and-Hammer game.
 
 ![games](./ExperimentGames.png)
