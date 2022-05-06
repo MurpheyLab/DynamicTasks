@@ -1,6 +1,8 @@
 # Downtown Games - Biodex
 This repository is for interfacing with the HapticMaster (ACT-3D) currently in the NeuroImaging Lab (previously in the Biodex Lab) using Windows/VS. This version renders the Ball-in-Bowl game including visualization improvements and optional joystick control for testing without the HapticMaster. This version also includes the Nail-and-Hammer game.
 
+![games](./ExperimentGames.png)
+
 ## Connecting to the HapticMaster
 Start by switching the robot on, wait for a beep, then press the green start button.
 Plug the Ethernet cable into the host computer, then set up a static IP address on the host. On Windows, go to Control Panel>Network and Internet>Network Connections. Click on "Change adapter settings", then right click on "Local Area Connection". In "Properties", set the desired IPv4 IP address and subnet mask. (You should only have to do this once unless you switch to a new Ethernet adapter.)  
@@ -33,7 +35,7 @@ Commonly altered parameters are located in `parameters.hpp`
 If the contents of `OpenGL/stb` are missing when cloning this repo, try `git submodule update --init --recursive --remote`
 
 ### Output files
-Before running the games, a safe workspace has to be defined. Two files: `flags.csv` and `workspace.csv` are expected in a WorkspaceCSVs folder. All output files from the workspace setup and the games are saved to a folder called SubjectData. 
+Before running the games, a safe workspace has to be defined. Two files: `flags.csv` and `workspace.csv` are expected in a WorkspaceCSVs folder. All output files from the workspace setup and the games are saved to a folder called SubjectData.
 
 ## Other useful information
 
