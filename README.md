@@ -45,3 +45,9 @@ y: -0.3 to 0.3
 
 ### Isometric Setup Note
 If the isometric setup computer requires a user name, enter the FSM... domain displayed (click on "How to log in to a different domain?" to make this visible) followed by user name dewaldlab
+
+
+## Data Analysis
+
+### Frequency Decomposition
+You can plot a frequency decomposition of any of the trials using this file: `.\DataAnalysis/FreqAnalysis/plot_spectrum.py`
