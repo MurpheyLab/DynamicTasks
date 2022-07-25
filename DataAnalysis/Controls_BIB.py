@@ -6,17 +6,17 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon, Rectangle
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
-from plot_utils import *
-from plot_freq_utils import *
+from utils.plot_utils import *
+from utils.plot_freq_utils import *
+from utils.perform_transform import *
 import csv
-from perform_transform import *
 import pandas as pd
 import os
 
 ################################################################################
 # This program analyses the frequency spectrum for each trial/participant.
 # It saves and shows figures and saves matrics into csv file
-# "freq-metrics.csv"
+# "controls-metrics.csv"
 # for statistical analyses in R.
 # This code expects the original data to be formatted and named properly
 ################################################################################
@@ -36,7 +36,7 @@ normalization_cutoff = 4
 
 number_of_subjects = 7
 min_sub = 1
-DIR = "E:\\Research\\DowntownWork\\DowntownData\\Fall2020RoundTwo\\" #"/home/milli/Desktop/Round2/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:"
+DIR = "/home/milli/Desktop/Round2/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:", "E:\\Research\\DowntownWork\\DowntownData\\Fall2020RoundTwo\\"
 DT = 0.05
 Fs = 1/DT
 freq_pendulum = [.5,1,1.5,2.5]
@@ -72,12 +72,12 @@ w_len = len(w)
 
 # Store data for statistical analysis
 if save_values==1:
-    file_metrics = "freq-metrics.csv"
+    file_metrics = "controls-metrics.csv"
     columns = ["Subject","Force","BallFreq","Energy0.5","Energy1.0","Energy1.5","Energy2.5","Resonance"]
     with open(file_metrics,'w') as csvfile:
         testwriter = csv.writer(csvfile,delimiter=',')
         testwriter.writerow(columns)
-    file_metrics_windows = "freq-metrics-windows.csv"
+    file_metrics_windows = "controls-metrics-windows.csv"
     columns = ["Subject","BallFreq","Window","Energy"]
     with open(file_metrics_windows,'w') as csvfile:
         testwriter = csv.writer(csvfile,delimiter=',')

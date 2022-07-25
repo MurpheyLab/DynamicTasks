@@ -51,3 +51,10 @@ If the isometric setup computer requires a user name, enter the FSM... domain di
 
 ### Frequency Decomposition
 You can plot a frequency decomposition of any of the trials using this file: `./DataAnalysis/FreqAnalysis/plot_spectrum.py`
+
+### Controls Data Analysis
+`Controls_BIB.py` and `Controls_NAH.py` parses the data and stores metrics into csv files, `controls-metrics.csv` and `controls-metric-windows.csv`, which are used for the statistical analyses in R: `controls-rm-h1.r`, `controls-rm-h2-h3.r`, and `controls-rm-h4.r`. The top of each R script has run instructions.
+
+### Stroke Data Analysis
+`Stroke_BIB.py` and ??????? parses the data and stores raw energy@resonance metrics into `stroke-BIB.csv` and percent comparison metric into `stroke-BIB-percent-loss-aggregate.csv` and `stroke-BIB-percent-loss-separate.csv`.
+The R scripts (add here later!) import the csv files and perform the statistical analyses. All ball-in-bowl stroke results are collected in `Stroke_BIB_results_summary.pdf`.
