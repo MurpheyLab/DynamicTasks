@@ -5,6 +5,10 @@
 *.obj
 *.o
 *.json
+*.aux
+*.log
+*.out
+*.gz
 Output*.csv
 VisualStudio/
 DataAnalysis/FreqAnalysis/Plots
