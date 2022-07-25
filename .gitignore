@@ -11,5 +11,5 @@
 *.gz
 Output*.csv
 VisualStudio/
-DataAnalysis/FreqAnalysis/Plots
-DataAnalysis/FreqAnalysis/Stats
+DataAnalysis/Plots/*
+DataAnalysis/Stats/*
