@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon, Rectangle
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
-from plot_utils import *
-from plot_freq_utils import *
+from utils.plot_utils import *
+from utils.plot_freq_utils import *
+from utils.perform_transform import *
 import csv
-from perform_transform import *
 import pandas as pd
 import os
 
@@ -22,24 +22,30 @@ import os
 ################################################################################
 
 # Edit these variables before running
-save_values = 1 # 0-do not save values for statistical tests 1-do save values
-make_plots = 1 # 0-do not make plots 1-make plots
+save_values = 0 # 0-do not save values for statistical tests 1-do save values
+make_plots = 0 # 0-do not make plots 1-make plots
 make_plot_each_sub = 0 # 0-do not make plots 1-make plots
+if make_plot_each_sub:
+    print('Note: Some aggregate plots will not be generated if make_plot_each_sub is True')
+    if not make_plots:
+        print('Individual plots will not generate unless make_plots is True')
 window = .30000000000001
 group = 'all' # 'all', mild stroke: 'm', moderate-severe: 'ms'
 make_line_plot = 1
 
+# Parameters for showing energy@resonance over time
+window_plots = 1
+if window_plots:
+    if make_plot_each_sub or make_plots or save_values:
+        print('ERROR: To plot energy at resonance windowed over time, make_plot_each_sub, make_plots, and save_values must be set to False')
+        manually_quit
+time_window = 5 # seconds
+num_samples = 100 # per trial for time window plot
+
+
+
 subjects = [202,203,208,209,211,212,214,218,219,220]
-# subjects = [202,203,208,209,211,212,214,218,220]
-# subjects = [202,203,208,209,211,212,214,218]
-# subjects = [216,217,218,219,220]
-# subjects = [202,219]
 FMA_list = [51,49,37,49,17,13,32,7,7,21]
-# FMA_list = [51,49,37,49,17,13,32,7,21]
-# FMA_list = [51,49,37,49,17,13,32,7]
-# FMA_list = [51,7]
-# FMA_list = [51,49,13,32]
-# FMA_list = [51,7]
 if group=='ms':
     new_sub_list = []
     new_FMA_list = []
@@ -63,7 +69,7 @@ elif group=='m':
     save_values = 0
     # subjects = [202,203,209]
 
-DIR = "/home/mschlafly/Desktop/Stroke/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:"
+DIR = "/home/milli/Desktop/Stroke/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:"
 DT = 0.05
 Fs = 1/DT
 freq_pendulum = [.5,1,1.5,2.5]
@@ -195,6 +201,11 @@ for sub_plot in range(0,num_sub_plots):
 
                         energy_at_resonance = np.array([])
 
+                        if window_plots:
+                            energy_at_resonance_time = np.zeros(num_samples)
+                            energy_at_resonance_overtime = np.zeros(num_samples)
+                            energy_at_resonance_N = np.zeros(num_samples)
+
                         [pathName,Files] = search_directory(DIR,str(subjects[subject_num]),arms_label[arm],SL_label[SL])
                         trialnum_list = []
                         for i in Files:
@@ -250,7 +261,7 @@ for sub_plot in range(0,num_sub_plots):
                                 if len(sorted_zipped_lists)-i>=9:
                                     use_trial = 0
 
-                                if use_trial:
+                                if use_trial and not window_plots:
 
                                     # Store the signal
                                     A_Fmag[arm,SL,freq,subject_num,:] += Amag_norm
@@ -270,8 +281,54 @@ for sub_plot in range(0,num_sub_plots):
                                         with open(file_metrics,'a') as csvfile:
                                             testwriter = csv.writer(csvfile,delimiter=',')
                                             testwriter.writerow(row)
+                            else:
+                                print('w\'s resolution is too high')
+
+                            if window_plots:
+                                i = 0
+                                t_i = time_window
+                                t_step = (30 - time_window)/num_samples
+                                df = pd.DataFrame({'system_time':data[:,0],'z':data[:,3],'fx':data[:,8],'fy':data[:,9],'ball_energy':data[:,16]})
+
+                                while i<num_samples:
+
+                                    df_window = df[(df['system_time'] < t_i) & (df['system_time'] > t_i-time_window)]
+                                    if len(df_window) < 15:
+                                        print('problem here!', t_i)
+                                        break
+                                    y_Fx = df_window['fx'].tolist()
+                                    A_Fx_i,frq = calculate_amplitude(w,y_Fx,Fs,type='none')
+                                    y_Fy = df_window['fy'].tolist()
+                                    A_Fy_i,frq = calculate_amplitude(w,y_Fy,Fs,type='none')
+
+                                    # Normalize the spectrum so that the energy=1
+                                    dw = frq[1]-frq[0]
+                                    Ax_norm = normalize_spectrum(A_Fx_i,dw)
+                                    Ay_norm = normalize_spectrum(A_Fy_i,dw)
+
+                                    # Add the x and y spectrums together and normalize
+                                    Amag_norm = normalize_spectrum(Ax_norm+Ay_norm,dw)
+                                    ee = find_energy_at_resonance(frq,Amag_norm,freq_pendulum[freq],window)
+
+                                    energy_at_resonance_time[i] = t_i
+                                    energy_at_resonance_overtime[i] += ee
+                                    energy_at_resonance_N[i] += 1
+
+                                    t_i += t_step
+                                    i += 1
+
 
                         arm_SL_list.append(energy_at_resonance)
+
+                        if window_plots:
+                            energy_at_resonance_overtime = energy_at_resonance_overtime/energy_at_resonance_N
+                            plt.figure()
+                            plt.scatter(energy_at_resonance_time,energy_at_resonance_overtime)
+                            plt.title('S'+str(subjects[subject_num])+'_'+arms[arm]+'_'+support_levels[SL]+'_'+frequencylabels[freq])
+                            plt.xlabel('Trial Time')
+                            plt.ylabel('Energy at Resonance')
+                            plt.savefig('Plots/Time_windows/'+'S'+str(subjects[subject_num])+'_'+arms_label[arm]+'_'+SL_label[SL]+'_'+frequencylabels[freq]+'.png')
+                            # plt.show()
 
                     if make_plot_each_sub and make_plots:
 
@@ -292,13 +349,15 @@ for sub_plot in range(0,num_sub_plots):
                         p[i] = ax_sub.errorbar(ind,data_mean,yerr=data_std,color=colors[arm],ls=linestyles[SL],marker="o",ecolor=colors[arm],capsize=5)
 
             # Normalize subject spectrums
-            for freq in range(len(frequencylabels)):
-                for arm in range(0,len(arms)):
-                    for SL in range(0,len(support_levels)):
-                        A_Fmag[arm,SL,freq,subject_num,:] /= num_freq[arm,SL,freq,subject_num]
-                        A_Fmag[arm,SL,freq,subject_num,:] = normalize_spectrum(A_Fmag[arm,SL,freq,subject_num,:],dw)
-                        # print("Energy: ",np.sum(np.square(A_Fmag[arm,SL,freq,subject_num,:])*dw))
-
+            if not window_plots:
+                for freq in range(len(frequencylabels)):
+                    for arm in range(0,len(arms)):
+                        for SL in range(0,len(support_levels)):
+                            A_Fmag[arm,SL,freq,subject_num,:] /= num_freq[arm,SL,freq,subject_num]
+                            A_Fmag[arm,SL,freq,subject_num,:] = normalize_spectrum(A_Fmag[arm,SL,freq,subject_num,:],dw)
+                            # print("Energy: ",np.sum(np.square(A_Fmag[arm,SL,freq,subject_num,:])*dw))
+            else:
+                plt.close('all')
 
             if save_values:
                 # go through energy_array matching up values for percent decrease data
