@@ -39,7 +39,7 @@ data = read.csv(paste(DIR,paste("stroke-freq-percent-loss-aggregate",".csv",sep=
 data_all = subset(data, BallFreq!="0.5Hz")
 data_modsev = subset(data_all, FMA<40)
 
-sink(paste(DIR,"Stats",paste("percent-tests-mod-sev.txt",sep="-"),sep="/"))
+sink(paste(DIR,"Stroke_Stats",paste("percent-tests-mod-sev.txt",sep="-"),sep="/"))
 
 cat("\n")
 cat("################################################################################ \n")
