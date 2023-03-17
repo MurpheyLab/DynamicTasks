@@ -11,4 +11,5 @@
 *.gz
 Output*.csv
 VisualStudio/
-
+DataAnalysis/Plots/*
+DataAnalysis/Stats/*
