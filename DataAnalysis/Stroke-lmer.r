@@ -36,11 +36,11 @@ library(rstatix)
 ################################################################################
 data_all = read.csv(paste(DIR,paste("stroke-freq",".csv",sep=""),sep="/"))
 data_all = subset(data_all, EResonance!=0)
-data_modsev = subset(data_all, FMA<40)
+data_modsev = subset(data_all, FMA<35)
 # data_modsev = data_all
 
 # define file to save data to
-sink(paste(DIR,"Stats",paste("e-at-res-stats-mod-sev.txt",sep="-"),sep="/"))
+sink(paste(DIR,"Stats",paste("e-at-res-stats-mod-sev-noS208.txt",sep="-"),sep="/"))
 
 cat("\n")
 cat("################################################################################ \n")
