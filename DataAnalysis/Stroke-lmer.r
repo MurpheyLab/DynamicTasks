@@ -1,5 +1,5 @@
 ################################################################################
-# This program performs statistical tests for darpa HST overall performance data.
+# This program performs statistical tests for stroke paper.
 # Statistical results are published to output file created by sink()
 
 ################################################################################
@@ -8,299 +8,367 @@
 #     To run in the terminal
 #     $ R
 #     Then run the script by executing the following
-#     > source('stat-test-glmer.r')
+#     > source('Stroke-lmer.r')
 #     If running from console in RStudio on windows computer, use setwd
 #     for example - setwd('C:/Users/numur/Desktop/darpa_dataanalysis/src')
 ################################################################################
-# COMMENTS:
-# - To test a different metric, Ctrl replace the name of the metric
 
-
-################################################################################
-# useful link https://www.youtube.com/watch?v=wWjVQ8eqR9k
 options(contrasts=c("contr.sum","contr.poly"))
 remove(list = ls())
 
 # parameters 
-DIR = 'C:/Users/milli/OneDrive/Documents/DowntownGames-Biodex/Fall2020-DataAnalysis/FreqAnalysis'
-subjects = list("Sub202","Sub203","Sub208","Sub209","Sub211","Sub212","Sub214")
-# subjects = list("Sub208","Sub211","Sub212","Sub214")
+DIR = '/home/milli/Desktop/DynamicTasks/DataAnalysis'
+
+subjects = list("Sub202","Sub203","Sub208","Sub209","Sub211","Sub212","Sub214","Sub218","Sub219","Sub220")
+run_indiv_subjects = 0 # 1 is TRUE and 0 is FALSE
 
 # loads packages and dependencies
 library(ez)
-library(car) 
+library(car)
 library(lme4)
 library(multcomp)
+library(rstatix)
 
 ################################################################################
 ################################################################################
 #               Import Data 
 ################################################################################
 ################################################################################
-data = read.csv(paste(DIR,paste("stroke-freq",".csv",sep=""),sep="/"))
-
-# data = subset(data, Subject!="Sub202" & Subject!="Sub203" & Subject!="Sub209")
-for(i in 1:length(subjects)) {
-  # define file to save data to
-  sink(paste(DIR,"Stats",paste(subjects[i],"tests.txt",sep="-"),sep="/"))
-  
-  cat("Energy at Resonance Metric  \n")
-  data_subject = subset(data, Subject==subjects[i])
-  lmer_model = lm(EResonance ~  Arm*Loading*BallFreq,
-                      data = data_subject)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  
-  cat("\n\n\n")
-  cat("0.5Hz \n")
-  data_freq = subset(data_subject, BallFreq=="0.5Hz")
-  lmer_model = lm(EResonance ~  Arm*Loading,
-                  data = data_freq)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  cat("\n")
-  cat("Paretic \n")
-  data_A0 = subset(data_freq, Arm=="paretic")
-  lmer_model = lm(EResonance ~  Loading,
-                    data = data_A0)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  cat("\n")
-  cat("Non-Paretic \n")
-  data_A1 = subset(data_freq, Arm=="nonparetic")
-  lmer_model = lm(EResonance ~  Loading,
-                    data = data_A1)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  
-  cat("\n")
-  cat("1Hz \n")
-  data_freq = subset(data_subject, BallFreq=="1Hz")
-  lmer_model = lm(EResonance ~  Arm*Loading,
-                  data = data_freq)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  cat("\n")
-  cat("Paretic \n")
-  data_A0 = subset(data_freq, Arm=="paretic")
-  lmer_model = lm(EResonance ~  Loading,
-                  data = data_A0)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  cat("\n")
-  cat("Non-Paretic \n")
-  data_A1 = subset(data_freq, Arm=="nonparetic")
-  lmer_model = lm(EResonance ~  Loading,
-                  data = data_A1)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  
-  cat("\n")
-  cat("1.5Hz \n")
-  data_freq = subset(data_subject, BallFreq=="1.5Hz")
-  lmer_model = lm(EResonance ~  Arm*Loading,
-                  data = data_freq)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  cat("\n")
-  cat("Paretic \n")
-  data_A0 = subset(data_freq, Arm=="paretic")
-  lmer_model = lm(EResonance ~  Loading,
-                  data = data_A0)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  cat("\n")
-  cat("Non-Paretic \n")
-  data_A1 = subset(data_freq, Arm=="nonparetic")
-  lmer_model = lm(EResonance ~  Loading,
-                  data = data_A1)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  
-  cat("\n")
-  cat("2.5Hz \n")
-  data_freq = subset(data_subject, BallFreq=="2.5Hz")
-  lmer_model = lm(EResonance ~  Arm*Loading,
-                  data = data_freq)
-  anov = Anova(lmer_model,type="II")
-  print(anov) 
-  cat("\n")
-  cat("Paretic \n")
-  data_A0 = subset(data_freq, Arm=="paretic")
-  lmer_model = lm(EResonance ~  Loading,
-                  data = data_A0)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  cat("\n")
-  cat("Non-Paretic \n")
-  data_A1 = subset(data_freq, Arm=="nonparetic")
-  lmer_model = lm(EResonance ~  Loading,
-                  data = data_A1)
-  anov = Anova(lmer_model,type="II")
-  print(anov)
-  
-}
+data_all = read.csv(paste(DIR,paste("stroke-freq",".csv",sep=""),sep="/"))
+data_all = subset(data_all, EResonance!=0)
+data_modsev = subset(data_all, FMA<40)
+# data_modsev = data_all
 
 # define file to save data to
-sink(paste(DIR,"Stats",paste("all-trial-tests.txt",sep="-"),sep="/"))
+sink(paste(DIR,"Stats",paste("e-at-res-stats-mod-sev.txt",sep="-"),sep="/"))
 
-cat("Energy at Resonance Metric \n")
-lmer_model = lmer(EResonance ~  Arm*Loading*BallFreq + (1|Subject),
-                  data = data)
-#print(summary(lmer_model), correlation=TRUE)
-# lmer_model = lmer(EResonance ~  Arm*Loading*BallFreq + ((Subject)/(Arm*Loading*BallFreq)),
-#                 data = data)
+cat("\n")
+cat("################################################################################ \n")
+cat("###############            Energy at Resonance Metric            ############### \n")
+cat("################################################################################ \n")
+
+cat("\n")
+cat("################################################################################ \n")
+cat("Test for normality: Shapiro test\n")
+cat("################################################################################ \n")
+normality = data_modsev %>%
+  group_by(Arm,Loading,BallFreq) %>%
+  shapiro_test(EResonance)
+print(normality)
+
+
+cat("\n")
+cat("###############            All Experimental Factors            ############### \n")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Arm*Loading*BallFreq + (1+Arm*Loading*BallFreq|Subject),
+                  data = data_modsev)
 anov = Anova(lmer_model,type="II")
 print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_modsev,EResonance,
+                wid = .(Subject),
+                within = .(Arm,Loading,BallFreq),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
 
 cat("\n\n\n")
-cat("0.5Hz \n")
+cat("###############            0.5Hz Trials           ############### \n")
+data_freq = subset(data_modsev, BallFreq=="0.5Hz")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Arm*Loading + (1+Arm*Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+anov = Anova(lmer_model,type="II")
+print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Arm,Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n\n\n")
+cat("###############            1Hz Trials           ############### \n")
+data_freq = subset(data_modsev, BallFreq=="1Hz")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Arm*Loading + (1+Arm*Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+anov = Anova(lmer_model,type="II")
+print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Arm,Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n\n\n")
+cat("###############            1.5Hz Trials           ############### \n")
+data_freq = subset(data_modsev, BallFreq=="1.5Hz")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Arm*Loading + (1+Arm*Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+anov = Anova(lmer_model,type="II")
+print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Arm,Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n\n\n")
+cat("###############            2.5Hz Trials           ############### \n")
+data_freq = subset(data_modsev, BallFreq=="2.5Hz")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Arm*Loading + (1+Arm*Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+anov = Anova(lmer_model,type="II")
+print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Arm,Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n")
+cat("################################################################################ \n")
+cat("##########    Energy at Resonance Metric Within the Paretic Arm      ########### \n")
+cat("################################################################################ \n")
+data = subset(data_modsev, Arm=="paretic")
+
+cat("\n")
+cat("###############            All Experimental Factors            ############### \n")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading*BallFreq + (1+Loading*BallFreq|Subject),
+                  data = data,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+anov = Anova(lmer_model,type="II")
+print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_modsev,EResonance,
+                wid = .(Subject),
+                within = .(Loading,BallFreq),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
+cat("\n\n\n")
+cat("###############            0.5Hz Trials           ############### \n")
 data_freq = subset(data, BallFreq=="0.5Hz")
-lmer_model = lmer(EResonance ~  Arm*Loading + (1|Subject),
-                data = data_freq)
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading + (1+Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
-cat("\n")
-cat("Paretic \n")
-data_A0 = subset(data_freq, Arm=="paretic")
-lmer_model = lmer(EResonance ~  Loading + (1|Subject),
-                data = data_A0)
-anov = Anova(lmer_model,type="II")
-print(anov)
-cat("\n")
-cat("Non-Paretic \n")
-data_A1 = subset(data_freq, Arm=="nonparetic")
-lmer_model = lmer(EResonance ~  Loading + (1|Subject),
-                data = data_A1)
-anov = Anova(lmer_model,type="II")
-print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
 
 cat("\n\n\n")
-cat("1Hz \n")
+cat("###############            1Hz Trials           ############### \n")
 data_freq = subset(data, BallFreq=="1Hz")
-lmer_model = lmer(EResonance ~  Arm*Loading + (1|Subject),
-                data = data_freq)
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading + (1+Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
-cat("\n")
-cat("Paretic \n")
-data_A0 = subset(data_freq, Arm=="paretic")
-lmer_model = lmer(EResonance ~  Loading + (1|Subject),
-                  data = data_A0)
-anov = Anova(lmer_model,type="II")
-print(anov)
-cat("\n")
-cat("Non-Paretic \n")
-data_A1 = subset(data_freq, Arm=="nonparetic")
-lmer_model = lmer(EResonance ~  Loading + (1|Subject),
-                  data = data_A1)
-anov = Anova(lmer_model,type="II")
-print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data,EResonance,
+                wid = .(Subject),
+                within = .(Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
 
 cat("\n\n\n")
-cat("1.5Hz \n")
+cat("###############            1.5Hz Trials           ############### \n")
 data_freq = subset(data, BallFreq=="1.5Hz")
-lmer_model = lmer(EResonance ~  Arm*Loading + (1|Subject),
-                data = data_freq)
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading + (1+Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
-cat("\n")
-cat("Paretic \n")
-data_A0 = subset(data_freq, Arm=="paretic")
-lmer_model = lmer(EResonance ~  Loading + (1|Subject),
-                  data = data_A0)
-anov = Anova(lmer_model,type="II")
-print(anov)
-cat("\n")
-cat("Non-Paretic \n")
-data_A1 = subset(data_freq, Arm=="nonparetic")
-lmer_model = lmer(EResonance ~  Loading + (1|Subject),
-                  data = data_A1)
-anov = Anova(lmer_model,type="II")
-print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
 
 cat("\n\n\n")
-cat("2.5Hz \n")
+cat("###############            2.5Hz Trials           ############### \n")
 data_freq = subset(data, BallFreq=="2.5Hz")
-lmer_model = lmer(EResonance ~  Arm*Loading + (1|Subject),
-                data = data_freq)
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading + (1+Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
+
 cat("\n")
-cat("Paretic \n")
-data_A0 = subset(data_freq, Arm=="paretic")
-lmer_model = lmer(EResonance ~  Loading + (1|Subject),
-                  data = data_A0)
-anov = Anova(lmer_model,type="II")
-print(anov)
+cat("################################################################################ \n")
+cat("##########   Energy at Resonance Metric Within the Non-Paretic Arm   ########### \n")
+cat("################################################################################ \n")
+data = subset(data_modsev, Arm=="nonparetic")
+
 cat("\n")
-cat("Non-Paretic \n")
-data_A1 = subset(data_freq, Arm=="nonparetic")
-lmer_model = lmer(EResonance ~  Loading + (1|Subject),
-                  data = data_A1)
+cat("###############            All Experimental Factors            ############### \n")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading*BallFreq + (1+Loading*BallFreq|Subject),
+                  data = data,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_modsev,EResonance,
+                wid = .(Subject),
+                within = .(Loading,BallFreq),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
 
 cat("\n\n\n")
-cat("Paretic \n")
-data_A0 = subset(data, Arm=="paretic")
-lmer_model = lmer(EResonance ~  BallFreq*Loading + (1|Subject),
-                  data = data_A0)
+cat("###############            0.5Hz Trials           ############### \n")
+data_freq = subset(data, BallFreq=="0.5Hz")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading + (1+Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
 
 cat("\n\n\n")
-cat("Non-Paretic \n")
-data_A1 = subset(data, Arm=="nonparetic")
-lmer_model = lmer(EResonance ~  BallFreq*Loading + (1|Subject),
-                  data = data_A1)
+cat("###############            1Hz Trials           ############### \n")
+data_freq = subset(data, BallFreq=="1Hz")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading + (1+Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
 
 cat("\n\n\n")
-cat("Loading \n")
-data_SL1 = subset(data, Loading=="35%")
-lmer_model = lmer(EResonance ~  BallFreq*Arm + (1|Subject),
-                  data = data_SL1)
+cat("###############            1.5Hz Trials           ############### \n")
+data_freq = subset(data, BallFreq=="1.5Hz")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading + (1+Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
 
 cat("\n\n\n")
-cat("No Loading \n")
-data_SL0 = subset(data, Loading=="0%")
-lmer_model = lmer(EResonance ~  BallFreq*Arm + (1|Subject),
-                  data = data_SL0)
+cat("###############            2.5Hz Trials           ############### \n")
+data_freq = subset(data, BallFreq=="2.5Hz")
+cat("Linear Mixed Model \n")
+lmer_model = lmer(EResonance ~  Loading + (1+Loading|Subject),
+                  data = data_freq,
+                  control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 anov = Anova(lmer_model,type="II")
 print(anov)
+cat("\nANOVA (although ~23 trials are missing) \n")
+mod.ez<-ezANOVA(data_freq,EResonance,
+                wid = .(Subject),
+                within = .(Loading),
+                between = NULL, type = 2, detailed = TRUE)
+print(mod.ez)
 
-cat("\n\n\n")
-cat("Paretic - Loading \n")
-data_A0SL1 = subset(data_A0, Loading=="35%")
-lmer_model = lmer(EResonance ~  BallFreq + (1|Subject),
-                  data = data_A0SL1)
-anov = Anova(lmer_model,type="II")
-print(anov)
+if (run_indiv_subjects==1) {
+  for(i in 1:length(subjects)) {
+    data_subject = subset(data_all, Subject==subjects[i])
 
-cat("\n\n\n")
-cat("Paretic - No Loading \n")
-data_A0SL0 = subset(data_A0, Loading=="0%")
-lmer_model = lmer(EResonance ~  BallFreq + (1|Subject),
-                  data = data_A0SL0)
-anov = Anova(lmer_model,type="II")
-print(anov)
+    # define file to save data to
+    sink(paste(DIR,"Stats",paste(subjects[i],"e-at-res-stats.txt",sep="-"),sep="/"))
 
-cat("\n\n\n")
-cat("Non-Paretic - Loading \n")
-data_A1SL1 = subset(data_A1, Loading=="35%")
-lmer_model = lmer(EResonance ~  BallFreq + (1|Subject),
-                  data = data_A1SL1)
-anov = Anova(lmer_model,type="II")
-print(anov)
+    cat("\n")
+    cat("################################################################################ \n")
+    cat("###############            Energy at Resonance Metric            ############### \n")
+    cat("################################################################################ \n")
 
-cat("\n\n\n")
-cat("Non-Paretic - No Loading \n")
-data_A1SL0 = subset(data_A1, Loading=="0%")
-lmer_model = lmer(EResonance ~  BallFreq + (1|Subject),
-                  data = data_A1SL0)
-anov = Anova(lmer_model,type="II")
-print(anov)
+    cat("\n")
+    cat("###############            All Experimental Factors            ############### \n")
+    attach(data_subject)
+    aov_results <- aov(EResonance~Arm*Loading*BallFreq)
+    print(summary(aov_results))
+    detach(data_subject)
+
+    cat("\n\n\n")
+    cat("###############            0.5Hz Trials           ############### \n")
+    data_freq = subset(data_subject, BallFreq=="0.5Hz")
+    attach(data_freq)
+    aov_results <- aov(EResonance~Arm*Loading)
+    print(summary(aov_results))
+    detach(data_freq)
+
+    cat("\n\n\n")
+    cat("###############            1Hz Trials           ############### \n")
+    data_freq = subset(data_subject, BallFreq=="1Hz")
+    attach(data_freq)
+    aov_results <- aov(EResonance~Arm*Loading)
+    print(summary(aov_results))
+    detach(data_freq)
+
+    cat("\n\n\n")
+    cat("###############            1.5Hz Trials           ############### \n")
+    data_freq = subset(data_subject, BallFreq=="1.5Hz")
+    attach(data_freq)
+    aov_results <- aov(EResonance~Arm*Loading)
+    print(summary(aov_results))
+    detach(data_freq)
+
+    cat("\n\n\n")
+    cat("###############            2.5Hz Trials           ############### \n")
+    data_freq = subset(data_subject, BallFreq=="2.5Hz")
+    attach(data_freq)
+    aov_results <- aov(EResonance~Arm*Loading)
+    print(summary(aov_results))
+    detach(data_freq)
+
+    cat("\n")
+    cat("################################################################################ \n")
+    cat("##########    Energy at Resonance Metric Within the Paretic Arm      ########### \n")
+    cat("################################################################################ \n")
+    data_subject = subset(data_subject, Arm=="paretic")
+
+    cat("\n\n\n")
+    cat("###############            1.5Hz Trials           ############### \n")
+    data_freq = subset(data_subject, BallFreq=="1.5Hz")
+    attach(data_freq)
+    aov_results <- aov(EResonance~Loading)
+    print(summary(aov_results))
+    detach(data_freq)
+  }
+}

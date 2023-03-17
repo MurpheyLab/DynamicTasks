@@ -13,51 +13,47 @@ import csv
 import pandas as pd
 import os
 
-# send plot and plot combining things
-# 3 in a row with 3 types
-
 ################################################################################
 # This program analyses the frequency spectrum for each trial/participant.
 # This code expects the original data to be formatted and named properly
 ################################################################################
 
 # Edit these variables before running
-save_values = 0 # 0-do not save values for statistical tests 1-do save values
-make_plots = 0 # 0-do not make plots 1-make plots
-make_plot_each_sub = 0 # 0-do not make plots 1-make plots
+save_values = 1 # 0-do not save values for statistical tests 1-do save values
+make_plots = 1 # 0-do not make plots 1-make plots
+make_plot_each_sub = 0 # 0-do not make plots 1-make plots; consider using subject list that contains excluded participants
 if make_plot_each_sub:
     print('Note: Some aggregate plots will not be generated if make_plot_each_sub is True')
     if not make_plots:
         print('Individual plots will not generate unless make_plots is True')
-window = .30000000000001
+window = .3000000000001
 group = 'all' # 'all', mild stroke: 'm', moderate-severe: 'ms'
 make_line_plot = 1
+num_included_trials = 9 # number of trials included in statistics and plot per participant
 
-# Parameters for showing energy@resonance over time
-window_plots = 1
-if window_plots:
-    if make_plot_each_sub or make_plots or save_values:
-        print('ERROR: To plot energy at resonance windowed over time, make_plot_each_sub, make_plots, and save_values must be set to False')
-        manually_quit
-time_window = 5 # seconds
-num_samples = 100 # per trial for time window plot
-
-
-
+# Included participants
 subjects = [202,203,208,209,211,212,214,218,219,220]
-FMA_list = [51,49,37,49,17,13,32,7,7,21]
+FMA_list = [51,49,37,49,17,13,32,7,9,21]
+
+# # With excluded participants
+# subjects = [202,203,205,207,208,209,211,212,214,215,216,217,218,219,220]
+# FMA_list = [51,49,34,30,37,49,17,13,32,0,0,0,7,9,21]
+
+folder_name = 'all'
 if group=='ms':
+    folder_name = 'moderate-severe'
     new_sub_list = []
     new_FMA_list = []
     for i in range(len(subjects)):
+        # if FMA_list[i]<35:
         if FMA_list[i]<40:
             new_sub_list.append(subjects[i])
             new_FMA_list.append(FMA_list[i])
     subjects = new_sub_list
     FMA_list = new_FMA_list
     save_values = 0
-    # subjects = [208,211,212,214]
 elif group=='m':
+    folder_name = 'mild'
     new_sub_list = []
     new_FMA_list = []
     for i in range(len(subjects)):
@@ -67,12 +63,12 @@ elif group=='m':
     subjects = new_sub_list
     FMA_list = new_FMA_list
     save_values = 0
-    # subjects = [202,203,209]
 
 DIR = "/home/milli/Desktop/Stroke/" #set directory where data is mounted Ola- "/media/ola/Elements/R01prelim" Milli -"Z:"
 DT = 0.05
 Fs = 1/DT
 freq_pendulum = [.5,1,1.5,2.5]
+cutoff = 7  # desired cutoff frequency of the filter, Hz
 
 # Label factors as strings for ezANOVA analysis
 ind = [0,1,2,3]
@@ -88,33 +84,13 @@ linestyles = ['--','-']
 if make_line_plot:
     sub_names = []
     for i in range(len(subjects)):
-        sub_names.append(str(subjects[i])+', FMA-'+str(FMA_list[i]))
-
-
-# Store data for statistical analysis
-if save_values==1:
-    file_metrics = "stroke-freq.csv"
-    columns = ["Subject","FMA","Arm","Loading","BallFreq","EResonance"]
-    with open(file_metrics,'w') as csvfile:
-        testwriter = csv.writer(csvfile,delimiter=',')
-        testwriter.writerow(columns)
-
-    file_metrics_selected = "stroke-freq-percent-loss.csv"
-    columns = ["Subject","FMA","BallFreq","SL1","SL0","A0","A1"]
-    with open(file_metrics_selected,'w') as csvfile:
-        testwriter = csv.writer(csvfile,delimiter=',')
-        testwriter.writerow(columns)
-
-    file_metrics_all = "stroke-freq-percent-loss-all.csv"
-    columns = ["Subject","FMA","BallFreq","SL1","SL0","A0","A1"]
-    with open(file_metrics_all,'w') as csvfile:
-        testwriter = csv.writer(csvfile,delimiter=',')
-        testwriter.writerow(columns)
+        # sub_names.append(str(subjects[i])+', FMA-'+str(FMA_list[i]))
+        sub_names.append('FMA: '+str(FMA_list[i]))
 
 # Create vector of frequencies of interest
 nyquist_freq = int(np.floor(Fs/2))
 print('Highest frequency evaluated: ', nyquist_freq)
-nyquist_freq = 5
+nyquist_freq = 4
 freq_step = 0.15 # set the resolution for the frequency bins
 
 # Fill a vector of frequencies according to these specifications
@@ -125,6 +101,29 @@ for i in range(len(w)):
     frq = frq + freq_step
 print('w: ', w)
 w_len = len(w)
+dw = w[1]-w[0]
+
+# Store data for statistical analysis
+if save_values==1:
+    file_metrics = "stroke-freq.csv"
+    columns = ["Subject","FMA","Severity","Arm","Loading","BallFreq","EResonance"]
+    with open(file_metrics,'w') as csvfile:
+        testwriter = csv.writer(csvfile,delimiter=',')
+        testwriter.writerow(columns)
+
+    file_spectrum = "stroke-freq-spectrum.csv"
+    columns = ["Subject","FMA","Arm","Loading","BallFreq"]
+    for i in range(len(w)):
+        columns.append(w[i])
+    with open(file_spectrum,'w') as csvfile:
+        testwriter = csv.writer(csvfile,delimiter=',')
+        testwriter.writerow(columns)
+
+    file_metrics_selected = "stroke-freq-percent-loss-aggregate.csv"
+    columns = ["Subject","FMA","BallFreq","SL1","SL0","A0","A1","A_com"]
+    with open(file_metrics_selected,'w') as csvfile:
+        testwriter = csv.writer(csvfile,delimiter=',')
+        testwriter.writerow(columns)
 
 def search_directory(DIR,sub_str,arm_str,SL_str):
     pathName = DIR + "S" + sub_str + "/"
@@ -145,10 +144,11 @@ if make_plot_each_sub:
 for sub_plot in range(0,num_sub_plots):
 
     # fill arrays for plotting the percentage decrease in function
-    SL1 = np.zeros((len(frequencylabels),len(subjects)))
-    A0 = np.zeros((len(frequencylabels),len(subjects)))
-    SL0 = np.zeros((len(frequencylabels),len(subjects)))
-    A1 = np.zeros((len(frequencylabels),len(subjects)))
+    SL1 = np.zeros((len(frequencylabels),len(subjects))) # compare arms at SL1
+    A0 = np.zeros((len(frequencylabels),len(subjects))) # compare SLs at A0
+    SL0 = np.zeros((len(frequencylabels),len(subjects))) # compare arms at SL0
+    A1 = np.zeros((len(frequencylabels),len(subjects))) # compare SLs at A1
+    A_com = np.zeros((len(frequencylabels),len(subjects))) # compare arms with support levels combined
     mean_energy = np.zeros((len(arms),len(support_levels),len(frequencylabels),len(subjects)))
     num_energy = np.zeros((len(arms),len(support_levels),len(frequencylabels),len(subjects)))
 
@@ -159,6 +159,10 @@ for sub_plot in range(0,num_sub_plots):
         num_freq = np.zeros((len(arms),len(support_levels),len(frequencylabels),len(subjects)))
 
     for subject_num in range(0,len(subjects)): #iterate though subjects
+        if FMA_list[subject_num]<40:
+            severity = 'mod-severe'
+        else:
+            severity = 'mild'
 
         if (make_plot_each_sub==0) or (make_plot_each_sub==1 and sub_plot==subject_num):
 
@@ -177,21 +181,23 @@ for sub_plot in range(0,num_sub_plots):
                 ax_sub.set_axisbelow(True)
 
                 # Add titles and labels
-                plt.xlabel(xlabel,fontname="sans-serif", fontsize=11)
-                plt.ylabel(ylabel,fontname="sans-serif", fontsize=11)
-                plt.title(title,fontname="sans-serif", fontsize=11,fontweight='bold')
+                plt.xlabel(xlabel,fontname="sans-serif", fontsize=9)
+                plt.ylabel(ylabel,fontname="sans-serif", fontsize=9)
+                plt.title(title,fontname="sans-serif", fontsize=9,fontweight='bold')
                 for label in (ax_sub.get_yticklabels()):
                     label.set_fontsize(8)
 
                 # x-ticks x-axis
-                plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
+                plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=9)
                 for tick in ax_sub.get_xticklabels():
                     tick.set_rotation(0)
 
                 p = np.zeros(len(arms)+len(support_levels), dtype=object)
 
-            energy_array = np.zeros((len(arms),len(support_levels),len(frequencylabels),12))
-            for arm in range(0,len(arms)):
+            energy_array = np.zeros((len(arms),len(support_levels),len(frequencylabels),num_included_trials))
+
+            arm_list = [1,0]
+            for arm in arm_list:
 
                 for SL in range(0,len(support_levels)):
 
@@ -201,11 +207,7 @@ for sub_plot in range(0,num_sub_plots):
 
                         energy_at_resonance = np.array([])
 
-                        if window_plots:
-                            energy_at_resonance_time = np.zeros(num_samples)
-                            energy_at_resonance_overtime = np.zeros(num_samples)
-                            energy_at_resonance_N = np.zeros(num_samples)
-
+                        # Get all trials
                         [pathName,Files] = search_directory(DIR,str(subjects[subject_num]),arms_label[arm],SL_label[SL])
                         trialnum_list = []
                         for i in Files:
@@ -215,10 +217,9 @@ for sub_plot in range(0,num_sub_plots):
                         zipped_lists = zip(trialnum_list, Files)
                         sorted_zipped_lists = sorted(zipped_lists)
 
-                        i_ee = 0
+                        # Decide which trials to include
+                        sorted_zipped_lists_include = []
                         for i in range(len(sorted_zipped_lists)):
-
-                            print(sorted_zipped_lists[i][1])
                             file = open(os.path.join(pathName, sorted_zipped_lists[i][1]), "r")
                             data = genfromtxt(file,delimiter=',',dtype=float)
                             data = np.delete(data,0,0) # Deletes the first column of column names
@@ -226,109 +227,75 @@ for sub_plot in range(0,num_sub_plots):
                             df = remove_lowe(df,freq)
                             df = remove_notlifted(df)
                             if len(df) > w_len:
-                                y_Fx = df['fx'].tolist()
-                                A_Fx_i,frq = calculate_amplitude(w,y_Fx,Fs)
-                                y_Fy = df['fy'].tolist()
-                                A_Fy_i,frq = calculate_amplitude(w,y_Fy,Fs)
-
-                                # Normalize the spectrum so that the energy=1
-                                dw = w[1]-w[0]
-                                Ax_norm = normalize_spectrum(A_Fx_i,dw)
-                                Ay_norm = normalize_spectrum(A_Fy_i,dw)
-
-                                # Add the x and y spectrums together and normalize
-                                Amag_norm = normalize_spectrum(Ax_norm+Ay_norm,dw)
-
-                                # Check to see if the max amplitude is within 0.5 of desired amplitude
-                                # Check to see if the energy@resonance > energy@other_frequencies
-                                # use_trial = 1
-                                # if freq!=0: # don't do this for 0.5Hz
-                                #     window_keep = 0.5
-                                #     max_index = np.argmax(Amag_norm)
-                                #
-                                #     # if w[max_index]>freq_pendulum[freq]+window_keep or w[max_index]<freq_pendulum[freq]-window_keep:
-                                #     if abs(w[max_index]-freq_pendulum[freq])>window_keep:
-                                #         # print('skip trial',w[max_index])
-                                #         use_trial = 0
-
-
-                                # Skip first trial, unless trial is missing
-                                use_trial = 1
-                                if len(sorted_zipped_lists) > 9:
-                                    print('Too many trials. Check to see what happened.')
-                                elif len(sorted_zipped_lists) < 8:
-                                    print('Not enough trials. Check to see what happened.')
-                                if len(sorted_zipped_lists)-i>=9:
-                                    use_trial = 0
-
-                                if use_trial and not window_plots:
-
-                                    # Store the signal
-                                    A_Fmag[arm,SL,freq,subject_num,:] += Amag_norm
-                                    num_freq[arm,SL,freq,subject_num] += 1
-
-                                    ee = find_energy_at_resonance(w,Amag_norm,freq_pendulum[freq],window)
-
-                                    energy_at_resonance = np.append(energy_at_resonance,ee)
-                                    energy_array[arm,SL,freq,i_ee] = ee
-                                    i_ee += 1
-
-                                    mean_energy[arm,SL,freq,subject_num] += ee
-                                    num_energy[arm,SL,freq,subject_num] += 1
-
-                                    if save_values:
-                                        row = ["Sub"+str(subjects[subject_num]),FMA_list[subject_num],arms[arm],support_levels[SL],frequencylabels[freq],ee]
-                                        with open(file_metrics,'a') as csvfile:
-                                            testwriter = csv.writer(csvfile,delimiter=',')
-                                            testwriter.writerow(row)
+                                sorted_zipped_lists_include.append(sorted_zipped_lists[i])
                             else:
-                                print('w\'s resolution is too high')
+                                print('w\'s resolution is too high for ', sorted_zipped_lists[i][1])
+                        final_included_trials = []
+                        # print(len(sorted_zipped_lists_include))
+                        if len(sorted_zipped_lists_include)<num_included_trials:
+                            print('\n\n\n ERROR: not enough trials for this condition \n\n\n')
+                        if len(sorted_zipped_lists_include)<=num_included_trials:
+                            final_included_trials = sorted_zipped_lists_include
+                        else:
+                            for i in range(len(sorted_zipped_lists_include)):
+                                # Skip trial/2, unless trial is missing
+                                if len(sorted_zipped_lists_include)>=9: # full dataset
+                                    if i<9-num_included_trials:
+                                        continue
+                                else:
+                                    if i<len(sorted_zipped_lists_include)-num_included_trials:
+                                        continue
+                                final_included_trials.append(sorted_zipped_lists_include[i])
+                                if len(final_included_trials)==num_included_trials:
+                                    break
 
-                            if window_plots:
-                                i = 0
-                                t_i = time_window
-                                t_step = (30 - time_window)/num_samples
-                                df = pd.DataFrame({'system_time':data[:,0],'z':data[:,3],'fx':data[:,8],'fy':data[:,9],'ball_energy':data[:,16]})
+                        # print(final_included_trials)
+                        i_ee = 0
+                        for i in range(len(final_included_trials)):
 
-                                while i<num_samples:
+                            print(final_included_trials[i][1])
+                            file = open(os.path.join(pathName, final_included_trials[i][1]), "r")
+                            data = genfromtxt(file,delimiter=',',dtype=float)
+                            data = np.delete(data,0,0) # Deletes the first column of column names
+                            df = pd.DataFrame({'z':data[:,3],'fx':data[:,8],'fy':data[:,9],'ball_energy':data[:,16]})
+                            df = remove_lowe(df,freq)
+                            df = remove_notlifted(df)
 
-                                    df_window = df[(df['system_time'] < t_i) & (df['system_time'] > t_i-time_window)]
-                                    if len(df_window) < 15:
-                                        print('problem here!', t_i)
-                                        break
-                                    y_Fx = df_window['fx'].tolist()
-                                    A_Fx_i,frq = calculate_amplitude(w,y_Fx,Fs,type='none')
-                                    y_Fy = df_window['fy'].tolist()
-                                    A_Fy_i,frq = calculate_amplitude(w,y_Fy,Fs,type='none')
+                            y_Fx = df['fx'].tolist()
+                            A_Fx_i,frq = calculate_amplitude(w,y_Fx,Fs)
+                            y_Fy = df['fy'].tolist()
+                            A_Fy_i,frq = calculate_amplitude(w,y_Fy,Fs)
 
-                                    # Normalize the spectrum so that the energy=1
-                                    dw = frq[1]-frq[0]
-                                    Ax_norm = normalize_spectrum(A_Fx_i,dw)
-                                    Ay_norm = normalize_spectrum(A_Fy_i,dw)
+                            # Normalize the spectrum so that the energy=1
+                            dw = w[1]-w[0]
+                            Ax_norm = normalize_spectrum(A_Fx_i,dw)
+                            Ay_norm = normalize_spectrum(A_Fy_i,dw)
 
-                                    # Add the x and y spectrums together and normalize
-                                    Amag_norm = normalize_spectrum(Ax_norm+Ay_norm,dw)
-                                    ee = find_energy_at_resonance(frq,Amag_norm,freq_pendulum[freq],window)
+                            # Add the x and y spectrums together and normalize
+                            Amag_norm = normalize_spectrum(Ax_norm+Ay_norm,dw)
 
-                                    energy_at_resonance_time[i] = t_i
-                                    energy_at_resonance_overtime[i] += ee
-                                    energy_at_resonance_N[i] += 1
+                            # if not window_plots:
 
-                                    t_i += t_step
-                                    i += 1
+                            if make_plots:
+                                A_Fmag[arm,SL,freq,subject_num,:] += Amag_norm
+                                num_freq[arm,SL,freq,subject_num] += 1
 
+                            ee = find_energy_at_resonance(w,Amag_norm,freq_pendulum[freq],window)
+
+                            energy_at_resonance = np.append(energy_at_resonance,ee)
+                            energy_array[arm,SL,freq,i_ee] = ee
+                            i_ee += 1
+
+                            mean_energy[arm,SL,freq,subject_num] += ee
+                            num_energy[arm,SL,freq,subject_num] += 1
+
+                            if save_values:
+                                row = ["Sub"+str(subjects[subject_num]),FMA_list[subject_num],severity,arms[arm],support_levels[SL],frequencylabels[freq],ee]
+                                with open(file_metrics,'a') as csvfile:
+                                    testwriter = csv.writer(csvfile,delimiter=',')
+                                    testwriter.writerow(row)
 
                         arm_SL_list.append(energy_at_resonance)
-
-                        if window_plots:
-                            energy_at_resonance_overtime = energy_at_resonance_overtime/energy_at_resonance_N
-                            plt.figure()
-                            plt.scatter(energy_at_resonance_time,energy_at_resonance_overtime)
-                            plt.title('S'+str(subjects[subject_num])+'_'+arms[arm]+'_'+support_levels[SL]+'_'+frequencylabels[freq])
-                            plt.xlabel('Trial Time')
-                            plt.ylabel('Energy at Resonance')
-                            plt.savefig('Plots/Time_windows/'+'S'+str(subjects[subject_num])+'_'+arms_label[arm]+'_'+SL_label[SL]+'_'+frequencylabels[freq]+'.png')
-                            # plt.show()
 
                     if make_plot_each_sub and make_plots:
 
@@ -339,7 +306,6 @@ for sub_plot in range(0,num_sub_plots):
                             if len(arm_SL_list)>3:
                                 data_mean.append(np.mean(arm_SL_list[freq]))
                                 data_std.append(np.std(arm_SL_list[freq])/np.sqrt(len(arm_SL_list[freq])))
-                                # data_std.append(np.std(arm_SL_list[freq]))
                             else:
                                 print('Subject ', subjects[sub_plot], 'has less than 3 good trials')
                                 data_mean.append(0)
@@ -349,88 +315,54 @@ for sub_plot in range(0,num_sub_plots):
                         p[i] = ax_sub.errorbar(ind,data_mean,yerr=data_std,color=colors[arm],ls=linestyles[SL],marker="o",ecolor=colors[arm],capsize=5)
 
             # Normalize subject spectrums
-            if not window_plots:
-                for freq in range(len(frequencylabels)):
-                    for arm in range(0,len(arms)):
-                        for SL in range(0,len(support_levels)):
-                            A_Fmag[arm,SL,freq,subject_num,:] /= num_freq[arm,SL,freq,subject_num]
-                            A_Fmag[arm,SL,freq,subject_num,:] = normalize_spectrum(A_Fmag[arm,SL,freq,subject_num,:],dw)
-                            # print("Energy: ",np.sum(np.square(A_Fmag[arm,SL,freq,subject_num,:])*dw))
-            else:
-                plt.close('all')
+            # if not window_plots:
+            for freq in range(len(frequencylabels)):
+                for arm in range(0,len(arms)):
+                    for SL in range(0,len(support_levels)):
+                        A_Fmag[arm,SL,freq,subject_num,:] /= num_freq[arm,SL,freq,subject_num] # averaging first does not change the numbers at all
+                        A_Fmag[arm,SL,freq,subject_num,:] = normalize_spectrum(A_Fmag[arm,SL,freq,subject_num,:],dw)
+                        # print("Energy: ",np.sum(np.square(A_Fmag[arm,SL,freq,subject_num,:])*dw))
 
-            if save_values:
-                # go through energy_array matching up values for percent decrease data
-                for freq in range(0,len(frequencylabels)):
-                    for i in range(9):
-                        # SL1
-                        if min(abs(energy_array[:,1,freq,i]))>0.0:
-                            paretic_ee = energy_array[0,1,freq,i]
-                            nonparetic_ee = energy_array[1,1,freq,i]
-                            SL1_diff = (nonparetic_ee - paretic_ee)/nonparetic_ee
-                        else:
-                            SL1_diff = 1000
-
-                        # SL0
-                        if min(abs(energy_array[:,0,freq,i]))>0.0:
-                            paretic_ee = energy_array[0,0,freq,i]
-                            nonparetic_ee = energy_array[1,0,freq,i]
-                            SL0_diff = (nonparetic_ee - paretic_ee)/nonparetic_ee
-                        else:
-                            SL0_diff = 1000
-
-                        # A0
-                        if min(abs(energy_array[0,:,freq,i]))>0.0:
-                            SL1_ee = energy_array[0,1,freq,i]
-                            SL0_ee = energy_array[0,0,freq,i]
-                            A0_diff = (SL0_ee - SL1_ee)/SL0_ee
-                        else:
-                            A0_diff = 1000
-
-                        # A1
-                        if min(abs(energy_array[1,:,freq,i]))>0.0:
-                            SL1_ee = energy_array[1,1,freq,i]
-                            SL0_ee = energy_array[1,0,freq,i]
-                            A1_diff = (SL0_ee - SL1_ee)/SL0_ee
-                        else:
-                            A1_diff = 1000
-
-                        row = ["Sub"+str(subjects[subject_num]),FMA_list[subject_num],frequencylabels[freq],SL1_diff,SL0_diff,A0_diff,A1_diff]
-                        with open(file_metrics_all,'a') as csvfile:
-                            testwriter = csv.writer(csvfile,delimiter=',')
-                            testwriter.writerow(row)
+                        if save_values:
+                            row = ["Sub"+str(subjects[subject_num]),FMA_list[subject_num],arms[arm],support_levels[SL],frequencylabels[freq]]
+                            for i in range(len(w)):
+                                row.append(A_Fmag[arm,SL,freq,subject_num,i])
+                            with open(file_spectrum,'a') as csvfile:
+                                testwriter = csv.writer(csvfile,delimiter=',')
+                                testwriter.writerow(row)
 
             if make_plot_each_sub and make_plots:
 
                 # Energy@resonance scatter plot add legend and save
-                L = ax_sub.legend(p, conditions, fontsize=10,loc='upper right')
-                # L = fig.legend(p, conditions, fontsize=10,loc='upper left',bbox_to_anchor=(0,0.35),bbox_transform=ax.transAxes)#'upper right')
+                L = ax_sub.legend(p, conditions, fontsize=9,loc='upper right')
+                # L = fig.legend(p, conditions, fontsize=9,loc='upper left',bbox_to_anchor=(0,0.35),bbox_transform=ax.transAxes)#'upper right')
                 plt.setp(L.texts, family='sans-serif')
                 # fig.subplots_adjust(right=0.7)
-                fig_sub.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[subject_num])+'/'+'S'+str(subjects[subject_num])+'.pdf')
+                fig_sub.savefig('Plots_stroke/IndividualSubjectPlots/'+'S'+str(subjects[subject_num])+'/'+'S'+str(subjects[subject_num])+'.pdf')
                 plt.close(fig_sub)
 
                 # Make frequency spectrum plots for every ball frequency
                 xlabel = ''
                 ylabel = 'Frequency Amplitude'
                 linestyles_spec = ['-','-','-','-']
-                colors_spec = ['#f5793a','#a95aa1','#85c0f9','#0f2080']
-                legend = ['Resonant Frequency','paretic-0%','paretic-35%','nonparetic-0%','nonparetic-35%']
+                colors_spec = ['#85c0f9','#0f2080','#f5793a','#a95aa1']
+                legend = ['Resonant Frequency','nonparetic-0%','nonparetic-35%','paretic-0%','paretic-35%']
                 ymin = 0
-                ymax = 1
-                ymax_pend = 1
+                ymax = 1.4
+                ymax_pend = 1.4
                 for freq in range(len(frequencylabels)):
                     mag_list = []
-                    for arm in range(0,len(arms)):
+                    for arm in [1,0]:
                         for SL in range(0,len(support_levels)):
-                            cutoff = 5  # desired cutoff frequency of the filter, Hz
                             A_Fmag_temp= butter_lowpass_filter(A_Fmag[arm,SL,freq,subject_num,:], cutoff, Fs)
                             A_Fmag_temp= normalize_spectrum(A_Fmag_temp,dw)
                             mag_list.append(A_Fmag_temp)
                     freq_plot = [freq_pendulum[freq]]
                     title = 'Force Frequency Spectrum for the '+frequencylabels[freq]+' Ball'
                     [fig_spec,ax_spec] = mag_spectrum(w,mag_list,freq_plot,title,xlabel,ylabel,legend,linestyles_spec,colors_spec,ymin,ymax,ymax_pend)
-                    fig_spec.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[subject_num])+'/'+'S'+str(subjects[subject_num])+'_'+frequencylabels[freq]+'.pdf')
+                    fig_spec.savefig('Plots_stroke/IndividualSubjectPlots/'+'S'+str(subjects[subject_num])+'/'+'S'+str(subjects[subject_num])+'_'+frequencylabels[freq]+'.pdf')
+                    ax_spec.set_xscale('log')
+                    fig_spec.savefig('Plots_stroke/IndividualSubjectPlots/'+'S'+str(subjects[subject_num])+'/'+'S'+str(subjects[subject_num])+'_'+frequencylabels[freq]+'_log.pdf')
                     plt.close(fig_spec)
 
             if make_plots:
@@ -443,12 +375,14 @@ for sub_plot in range(0,num_sub_plots):
                         nonparetic_ee = find_energy_at_resonance(w,A_Fmag[1,1,freq,subject_num],freq_pendulum[freq],window)
 
                         SL1[freq,subject_num] = (nonparetic_ee - paretic_ee)/nonparetic_ee
+
                     if min(num_freq[0,:,freq,subject_num])>=min_trials:
                         # store percentage loss in function with loading for paretic arm
                         SL1_ee = find_energy_at_resonance(w,A_Fmag[0,1,freq,subject_num],freq_pendulum[freq],window)
                         SL0_ee = find_energy_at_resonance(w,A_Fmag[0,0,freq,subject_num],freq_pendulum[freq],window)
 
                         A0[freq,subject_num] = (SL0_ee - SL1_ee)/SL0_ee
+
                     if min(num_freq[:,0,freq,subject_num])>=min_trials:
                         # store percentage loss in function for arm 0% loading
                         paretic_ee = find_energy_at_resonance(w,A_Fmag[0,0,freq,subject_num],freq_pendulum[freq],window)
@@ -463,8 +397,17 @@ for sub_plot in range(0,num_sub_plots):
 
                         A1[freq,subject_num] = (SL0_ee - SL1_ee)/SL0_ee
 
+                    if min(num_freq[:,1,freq,subject_num])>=min_trials and min(num_freq[:,0,freq,subject_num])>=min_trials:
+                        paretic_combined = normalize_spectrum(A_Fmag[0,0,freq,subject_num]+A_Fmag[0,1,freq,subject_num],dw)
+                        paretic_ee = find_energy_at_resonance(w,paretic_combined,freq_pendulum[freq],window)
+
+                        nonparetic_combined = normalize_spectrum(A_Fmag[1,0,freq,subject_num]+A_Fmag[1,1,freq,subject_num],dw)
+                        nonparetic_ee = find_energy_at_resonance(w,nonparetic_combined,freq_pendulum[freq],window)
+
+                        A_com[freq,subject_num] = (nonparetic_ee - paretic_ee)/nonparetic_ee
+
                     if save_values:
-                        row = ["Sub"+str(subjects[subject_num]),FMA_list[subject_num],frequencylabels[freq],SL1[freq,subject_num],SL0[freq,subject_num],A0[freq,subject_num],A1[freq,subject_num]]
+                        row = ["Sub"+str(subjects[subject_num]),FMA_list[subject_num],frequencylabels[freq],SL1[freq,subject_num],SL0[freq,subject_num],A0[freq,subject_num],A1[freq,subject_num],A_com[freq,subject_num]]
                         with open(file_metrics_selected,'a') as csvfile:
                             testwriter = csv.writer(csvfile,delimiter=',')
                             testwriter.writerow(row)
@@ -476,56 +419,55 @@ for sub_plot in range(0,num_sub_plots):
         xlabel = ''
         ylabel = 'Frequency Amplitude'
         linestyles_spec = ['-','-','-','-']
-        colors_spec = ['#f5793a','#a95aa1','#85c0f9','#0f2080']
-        legend = ['Resonant Frequency','paretic-0%','paretic-35%','nonparetic-0%','nonparetic-35%']
+        colors_spec = ['#85c0f9','#0f2080','#f5793a','#a95aa1']
+        legend = ['Resonant Frequency','nonparetic-0%','nonparetic-35%','paretic-0%','paretic-35%']
         ymin = 0
-        ymax = 1
-        ymax_pend = 1
+        ymax = 1.25
+        ymax_pend = 1.25
         for freq in range(len(frequencylabels)):
             mag_list = []
-            for arm in range(0,len(arms)):
+            for arm in [1,0]:
                 for SL in range(0,len(support_levels)):
                     A_agg = np.zeros(w_len)
                     for subject_num in range(0,len(subjects)): #iterate though subjects
                         A_agg += A_Fmag[arm,SL,freq,subject_num,:]
+                        print(subject_num,A_Fmag[arm,SL,freq,subject_num,:])
                     A_agg /= len(subjects)
-                    cutoff = 5  # desired cutoff frequency of the filter, Hz
                     A_agg = butter_lowpass_filter(A_agg, cutoff, Fs)
                     A_agg = normalize_spectrum(A_agg,dw)
                     mag_list.append(A_agg)
             freq_plot = [freq_pendulum[freq]]
             title = 'Force Frequency Spectrum for the '+frequencylabels[freq]+' Ball'
             [fig_spec,ax_spec] = mag_spectrum(w,mag_list,freq_plot,title,xlabel,ylabel,legend,linestyles_spec,colors_spec,ymin,ymax,ymax_pend)
-            fig_spec.savefig('Plots/agg_spectrum_'+frequencylabels[freq]+'_'+group+'.pdf')
+            fig_spec.savefig('Plots_stroke/'+folder_name+'/agg_spectrum_'+frequencylabels[freq]+'_'+group+'.pdf')
+            fig_spec.savefig('Plots_stroke/'+folder_name+'/agg_spectrum_'+frequencylabels[freq]+'_'+group+'.png')
+            ax_spec.set_xscale('log')
+            fig_spec.savefig('Plots_stroke/'+folder_name+'/agg_spectrum_log_'+frequencylabels[freq]+'_'+group+'.pdf')
+            fig_spec.savefig('Plots_stroke/'+folder_name+'/agg_spectrum_log_'+frequencylabels[freq]+'_'+group+'.png')
             plt.close(fig_spec)
 
 
-    # Line plots for raw data
+        # Line plots for raw data
         figure_size = (6,3.55)
         fig_scat, ax_scat = plt.subplots(figsize=figure_size,dpi=300)
         xlabel = 'Resonant Frequency of Ball'
         ylabel = 'Fraction of Total Energy'
         title = 'Energy Content of Movement at Different Frequencies'
-
         # place grid in back
         ax_scat.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
                        alpha=0.5)
         ax_scat.set_axisbelow(True)
-
         # Add titles and labels
-        plt.xlabel(xlabel,fontname="sans-serif", fontsize=11)
-        plt.ylabel(ylabel,fontname="sans-serif", fontsize=11)
-        plt.title(title,fontname="sans-serif", fontsize=11,fontweight='bold')
+        plt.xlabel(xlabel,fontname="sans-serif", fontsize=9)
+        plt.ylabel(ylabel,fontname="sans-serif", fontsize=9)
+        plt.title(title,fontname="sans-serif", fontsize=9,fontweight='bold')
         for label in (ax_scat.get_yticklabels()):
             label.set_fontsize(8)
-
         # x-ticks x-axis
-        plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
+        plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=9)
         for tick in ax_scat.get_xticklabels():
             tick.set_rotation(0)
-
         p = np.zeros(len(arms)+len(support_levels), dtype=object)
-
         mean_energy /= num_energy
         for arm in range(0,len(arms)):
             for SL in range(0,len(support_levels)):
@@ -534,408 +476,74 @@ for sub_plot in range(0,num_sub_plots):
                 for freq in range(0,4):
                     data_mean.append(np.mean(mean_energy[arm,SL,freq,:]))
                     data_std.append(np.std(mean_energy[arm,SL,freq,:])/np.sqrt(len(mean_energy[arm,SL,freq,:])))
-
-
                 i = arm *2 + SL
                 print(arm,SL,data_mean)
                 p[i] = ax_scat.errorbar(ind,data_mean,yerr=data_std,color=colors[arm],ls=linestyles[SL],marker="o",ecolor=colors[arm],capsize=5)
 
-        L = ax_scat.legend(p, conditions, fontsize=10,loc='upper right')
-        # L = fig.legend(p, conditions, fontsize=10,loc='upper left',bbox_to_anchor=(0,0.35),bbox_transform=ax.transAxes)#'upper right')
+        L = ax_scat.legend(p, conditions, fontsize=9,loc='upper right')
+        # L = fig.legend(p, conditions, fontsize=9,loc='upper left',bbox_to_anchor=(0,0.35),bbox_transform=ax.transAxes)#'upper right')
         plt.setp(L.texts, family='sans-serif')
         fig_scat.subplots_adjust(bottom=0.15)
-        fig_scat.savefig('Plots/e_at_res_raw_'+group+'.pdf')
+        fig_scat.savefig('Plots_stroke/'+folder_name+'/e_at_res_raw_'+group+'.pdf')
+        fig_scat.savefig('Plots_stroke/'+folder_name+'/e_at_res_raw_'+group+'.png')
         plt.close(fig_scat)
 
 
-        outlier = 3000000.
-        # Make boxplot for SL1
-        figure_size = (6,3.55) # sets the size of the figure in inches
+
+        # Make boxplot for A_com
+        figure_size = (3,3) # sets the size of the figure in inches
         xlabel = 'Resonant Frequency of Ball'
-        ylabel = 'Percentage Decrease in Energy (NP-P)/NP'
-        title = 'Percentage Loss in Function in Paretic Arm With 35%Loading'
-        box_colors = ['#FFFFFF','#FFFFFF','#FFFFFF','#FFFFFF']
-        box_alpha = [1,1,1,1]
-        labels = frequencylabels
+        ylabel = 'Percentage Decrease in Energy'
+        title = 'Percentage Loss in Function\nin Paretic Arm'
+        box_colors = ['#FFFFFF','#FFFFFF','#FFFFFF']
+        box_alpha = [1,1,1]
+        labels = frequencylabels[1:]
         data = []
-        for freq in range(0,len(frequencylabels)):
+        for freq in range(1,len(frequencylabels)): # skip 0.5Hz
             freq_list = []
             for subject_num in range(0,len(subjects)):
-                if abs(SL1[freq,subject_num])>0.00001 and abs(SL1[freq,subject_num])<outlier:
-                    freq_list.append(SL1[freq,subject_num])
+                # if abs(A_com[freq,subject_num])>0.00001 and abs(A_com[freq,subject_num])<outlier:
+                freq_list.append(A_com[freq,subject_num])
             data.append(np.array(freq_list))
-        [fig,ax]=make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_size)
-        if make_plot_each_sub:
-            fig.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[sub_plot])+'/'+'S'+str(subjects[sub_plot])+'_pl_SL1.pdf')
-        else:
-            fig.savefig('Plots/pl_SL1_'+group+'.pdf')
+        [fig,ax] = make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_size)
+        fig.subplots_adjust(left=0.25)
+        if group=='ms' and make_plot_each_sub==0:
+            # Add stastical signicant marking #########################################
+            sig_matrix = np.array([[1,2,.003],[0,2,0.017]])
+            add_stats(data,sig_matrix,ax,spread_factor=20)
+        fig.savefig('Plots_stroke/'+folder_name+'/pl_A_com_'+group+'.pdf')
+        fig.savefig('Plots_stroke/'+folder_name+'/pl_A_com_'+group+'.png')
         plt.close(fig)
         if make_line_plot:
-            # Line plot for SL1
-            figure_size = (6,3.55) # sets the size of the figure in inches
+            figure_size = (5,3) # sets the size of the figure in inches
             fig, ax = plt.subplots(figsize=figure_size,dpi=300)
             # place grid in back
             ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
                            alpha=0.5)
             ax.set_axisbelow(True)
             # Add titles and labels
-            plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
-            plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
-            plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
+            plt.xlabel(xlabel,fontname="sans-serif", fontsize=9)
+            plt.ylabel(ylabel,fontname="sans-serif", fontsize=9)
+            plt.title(title,fontname="sans-serif", fontsize=9,fontweight='bold')
             for label in (ax_scat.get_yticklabels()):
                 label.set_fontsize(8)
             # x-ticks x-axis
-            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
+            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=9)
             for tick in ax_scat.get_xticklabels():
+                tick.set_fontsize(8)
                 tick.set_rotation(0)
-
             p = np.zeros(len(subjects), dtype=object)
-
             for subject_num in range(0,len(subjects)):
                 freq_list = []
                 for freq in range(starting_i,len(frequencylabels)):
-                    freq_list.append(SL1[freq,subject_num])
+                    freq_list.append(A_com[freq,subject_num])
                 p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
-
-            # sub_names = []
-            # for i in range(len(subjects)):
-            #     sub_names.append(subjects[i]+', FMA-'+str(FMA_list))
             fig.subplots_adjust(right=0.75)
             L = fig.legend(p, sub_names, loc='center right', fontsize=9)
             plt.setp(L.texts, family='sans-serif')
-            # if group=='all':
-            #     sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13','S214, FMA-32']
-            # if group=='ms':
-            #     sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13','S214, FMA-32']
-            #     fig.subplots_adjust(right=0.75)
-            #     L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            #     plt.setp(L.texts, family='sans-serif')
-            fig.savefig('Plots/pl_SL1_indiv_'+group+'.pdf')
+            fig.subplots_adjust(left=0.2,right=.75,bottom=0.2)
+            fig.savefig('Plots_stroke/'+folder_name+'/pl_A_com_indiv_'+group+'.pdf')
+            fig.savefig('Plots_stroke/'+folder_name+'/pl_A_com_indiv_'+group+'.png')
             plt.close(fig)
-        # Make boxplot for A0
-        figure_size = (6,3.55) # sets the size of the figure in inches
-        xlabel = 'Resonant Frequency of Ball'
-        ylabel = 'Percentage Decrease in Energy (NL-L)/NL'
-        title = 'Percentage Loss in Function From Loading in Paretic Arm'
-        box_colors = ['#FFFFFF','#FFFFFF','#FFFFFF','#FFFFFF']
-        box_alpha = [1,1,1,1]
-        labels = frequencylabels
-        data = []
-        for freq in range(0,len(frequencylabels)):
-            freq_list = []
-            for subject_num in range(0,len(subjects)):
-                if abs(A0[freq,subject_num])>0.00001 and abs(A0[freq,subject_num])<outlier:
-                    freq_list.append(A0[freq,subject_num])
-            data.append(np.array(freq_list))
-        [fig,ax]=make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_size)
-        if make_plot_each_sub:
-            fig.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[sub_plot])+'/'+'S'+str(subjects[sub_plot])+'_pl_A0.pdf')
-        else:
-            fig.savefig('Plots/pl_A0_'+group+'.pdf')
-        plt.close(fig)
-
-
-        if make_line_plot:
-            # Line plot for A0
-            figure_size = (6,3.55) # sets the size of the figure in inches
-            fig, ax = plt.subplots(figsize=figure_size,dpi=300)
-            # place grid in back
-            ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
-                           alpha=0.5)
-            ax.set_axisbelow(True)
-            # Add titles and labels
-            plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
-            plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
-            plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
-            for label in (ax_scat.get_yticklabels()):
-                label.set_fontsize(8)
-            # x-ticks x-axis
-            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
-            for tick in ax_scat.get_xticklabels():
-                tick.set_rotation(0)
-
-            p = np.zeros(len(subjects), dtype=object)
-
-            for subject_num in range(0,len(subjects)):
-                freq_list = []
-                for freq in range(starting_i,len(frequencylabels)):
-                    freq_list.append(A0[freq,subject_num])
-                p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
-
-            # if group=='all':
-            #     sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13','S214, FMA-32']
-            fig.subplots_adjust(right=0.75)
-            L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            plt.setp(L.texts, family='sans-serif')
-            # if group=='ms':
-            #     sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13','S214, FMA-32']
-            #     fig.subplots_adjust(right=0.75)
-            #     L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            #     plt.setp(L.texts, family='sans-serif')
-            fig.savefig('Plots/pl_A0_indiv_'+group+'.pdf')
-            plt.close(fig)
-
-
-
-        # Make boxplot for SL0
-        figure_size = (6,3.55) # sets the size of the figure in inches
-        xlabel = 'Resonant Frequency of Ball'
-        ylabel = 'Percentage Decrease in Energy (NP-P)/NP'
-        title = 'Percentage Loss in Function in Paretic Arm With 0%Loading'
-        box_colors = ['#FFFFFF','#FFFFFF','#FFFFFF','#FFFFFF']
-        box_alpha = [1,1,1,1]
-        labels = frequencylabels
-        data = []
-        for freq in range(0,len(frequencylabels)):
-            freq_list = []
-            for subject_num in range(0,len(subjects)):
-                if abs(SL0[freq,subject_num])>0.00001 and abs(SL0[freq,subject_num])<outlier:
-                    freq_list.append(SL0[freq,subject_num])
-            data.append(np.array(freq_list))
-        [fig,ax]=make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_size)
-        if make_plot_each_sub:
-            fig.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[sub_plot])+'/'+'S'+str(subjects[sub_plot])+'_pl_SL0.pdf')
-        else:
-            fig.savefig('Plots/pl_SL0_'+group+'.pdf')
-        plt.close(fig)
-
-
-
-        if make_line_plot:
-            # Line plot for SL0
-            figure_size = (6,3.55) # sets the size of the figure in inches
-            fig, ax = plt.subplots(figsize=figure_size,dpi=300)
-            # place grid in back
-            ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
-                           alpha=0.5)
-            ax.set_axisbelow(True)
-            # Add titles and labels
-            plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
-            plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
-            plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
-            for label in (ax_scat.get_yticklabels()):
-                label.set_fontsize(8)
-            # x-ticks x-axis
-            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
-            for tick in ax_scat.get_xticklabels():
-                tick.set_rotation(0)
-
-            p = np.zeros(len(subjects), dtype=object)
-
-            for subject_num in range(0,len(subjects)):
-                freq_list = []
-                for freq in range(starting_i,len(frequencylabels)):
-                    freq_list.append(SL0[freq,subject_num])
-                p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
-
-            # if group=='all':
-            #     sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13','S214, FMA-32']
-            fig.subplots_adjust(right=0.75)
-            L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            plt.setp(L.texts, family='sans-serif')
-            #     sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13','S214, FMA-32']
-            # if group=='ms':
-            #     fig.subplots_adjust(right=0.75)
-            #     L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            #     plt.setp(L.texts, family='sans-serif')
-            fig.savefig('Plots/pl_SL0_indiv_'+group+'.pdf')
-            plt.close(fig)
-
-
-        # Make boxplot for A1
-        figure_size = (6,3.55) # sets the size of the figure in inches
-        xlabel = 'Resonant Frequency of Ball'
-        ylabel = 'Percentage Decrease in Energy (NL-L)/NL'
-        title = 'Percentage Loss in Function From Loading in Non-Paretic Arm'
-        box_colors = ['#FFFFFF','#FFFFFF','#FFFFFF','#FFFFFF']
-        box_alpha = [1,1,1,1]
-        labels = frequencylabels
-        data = []
-        for freq in range(0,len(frequencylabels)):
-            freq_list = []
-            for subject_num in range(0,len(subjects)):
-                if abs(A1[freq,subject_num])>0.00001 and abs(A1[freq,subject_num])<outlier:
-                    freq_list.append(A1[freq,subject_num])
-            data.append(np.array(freq_list))
-        [fig,ax]=make_boxplot(data,title,xlabel,ylabel,labels,box_colors,box_alpha,figure_size)
-        if make_plot_each_sub:
-            fig.savefig('Plots/IndividualSubjectPlots/'+'S'+str(subjects[sub_plot])+'/'+'S'+str(subjects[sub_plot])+'_pl_A1.pdf')
-        else:
-            fig.savefig('Plots/pl_A1_'+group+'.pdf')
-        plt.close(fig)
-
-        if make_line_plot:
-            # Line plot for A1
-            figure_size = (6,3.55) # sets the size of the figure in inches
-            fig, ax = plt.subplots(figsize=figure_size,dpi=300)
-            # place grid in back
-            ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
-                           alpha=0.5)
-            ax.set_axisbelow(True)
-            # Add titles and labels
-            plt.xlabel(xlabel,fontname="sans-serif", fontsize=10)
-            plt.ylabel(ylabel,fontname="sans-serif", fontsize=10)
-            plt.title(title,fontname="sans-serif", fontsize=10,fontweight='bold')
-            for label in (ax_scat.get_yticklabels()):
-                label.set_fontsize(8)
-            # x-ticks x-axis
-            plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=10)
-            for tick in ax_scat.get_xticklabels():
-                tick.set_rotation(0)
-
-            p = np.zeros(len(subjects), dtype=object)
-
-            for subject_num in range(0,len(subjects)):
-                freq_list = []
-                for freq in range(starting_i,len(frequencylabels)):
-                    freq_list.append(A1[freq,subject_num])
-                p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
-
-            # if group=='all':
-            #     sub_names = ['S202, FMA-51','S203, FMA-49','S208, FMA-37','S209, FMA-49','S211, FMA-17','S212, FMA-13','S214, FMA-32']
-            fig.subplots_adjust(right=0.75)
-            L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            plt.setp(L.texts, family='sans-serif')
-            # if group=='ms':
-            #     sub_names = ['S208, FMA-37','S211, FMA-17','S212, FMA-13','S214, FMA-32']
-            #     fig.subplots_adjust(right=0.75)
-            #     L = fig.legend(p, sub_names, loc='center right', fontsize=9)
-            #     plt.setp(L.texts, family='sans-serif')
-            fig.savefig('Plots/pl_A1_indiv_'+group+'.pdf')
-            plt.close(fig)
-
-
-            #####################################################################################
-            #####################################################################################
-            ################## Methods paper frequency plot                    ##################
-            #####################################################################################
-            #####################################################################################
-
-            if group == 'all':
-                figure_size = (7.5,2.75) # inches
-                # plt.figure(1, figsize=figure_size, dpi=150)
-                fig, ax =plt.subplots(nrows=1, ncols=3, sharey='row', squeeze=True, figsize=figure_size, dpi=150)
-                fig.subplots_adjust(hspace=0.05)
-                fig.subplots_adjust(wspace=0.05)
-                legend_lines = []
-
-                title = 'Stroke Impairs High-Frequency Motion Bandwidth'
-                xlabel = 'Frequency (Hz)'
-                ylabel = 'Normalized Frequency Amplitude'
-                colors = ['#601A4A','#EE442F','#63ACBE']
-                legend = ['Task Frequency','Nonparetic Arm\n(N=10)','Mild Stroke\n(N=3)','Moderate-Severe\nStroke\n(N=7)']
-                ymin = 0
-                ymax = 1.3
-                ymax_pend = 1.17
-                cutoff = 5  # desired cutoff frequency of the filter, Hz
-
-                for plot_num in range(len(ax)):
-
-                    # plot resonance line
-                    l = ax[plot_num].plot([freq_pendulum[plot_num+1], freq_pendulum[plot_num+1]],[ymin, ymax_pend],linestyle=':',color='k')
-                    if plot_num==0:
-                        legend_lines.append(l)
-
-
-                    # all nonparetic arm combine
-                    A_nonparetic = np.zeros((w_len,len(subjects)*len(support_levels)))
-                    num_A = 0
-                    for subject_num in range(len(subjects)):
-                        for SL in range(0,len(support_levels)):
-                            A_nonparetic[:,num_A] += A_Fmag[1,SL,plot_num+1,subject_num,:]
-                            num_A += 1
-                    A_mean = np.mean(A_nonparetic, axis=1)
-                    A_std = np.std(A_nonparetic, axis=1)/np.sqrt(len(subjects))
-                    A_std = butter_lowpass_filter(A_std, cutoff, Fs)
-                    A_mean = butter_lowpass_filter(A_mean, cutoff, Fs)
-                    A_mean = normalize_spectrum(A_mean,dw)
-                    A_upper = A_mean + A_std
-                    A_lower = A_mean - A_std
-                    l = ax[plot_num].plot(w,A_mean,linestyle='-',color=colors[0])
-                    ax[plot_num].fill_between(w,A_upper,y2=A_lower,alpha=0.5,color=colors[0],linewidth=0.0)
-                    if plot_num==0:
-                        legend_lines.append(l)
-
-
-                    # all mild stroke combine
-                    count_mild = 0
-                    for subject_num in range(len(subjects)):
-                        if FMA_list[subject_num]>=40:
-                            count_mild+=1
-                    A_mild= np.zeros((w_len,count_mild*len(support_levels)))
-                    num_A = 0
-                    for subject_num in range(len(subjects)):
-                        if FMA_list[subject_num]>=40:
-                            for SL in range(0,len(support_levels)):
-                                A_mild[:,num_A] += A_Fmag[0,SL,plot_num+1,subject_num,:]
-                                num_A += 1
-                    A_mean = np.mean(A_mild, axis=1)
-                    A_std = np.std(A_mild, axis=1)/np.sqrt(count_mild)
-                    A_std = butter_lowpass_filter(A_std, cutoff, Fs)
-                    A_mean = butter_lowpass_filter(A_mean, cutoff, Fs)
-                    A_mean = normalize_spectrum(A_mean,dw)
-                    A_upper = A_mean + A_std
-                    A_lower = A_mean - A_std
-                    l = ax[plot_num].plot(w,A_mean,linestyle='-',color=colors[1])
-                    ax[plot_num].fill_between(w,A_upper,y2=A_lower,alpha=0.5,color=colors[1],linewidth=0.0)
-                    if plot_num==0:
-                        legend_lines.append(l)
-
-                    # all mod-severe stroke combine
-                    count_ms = 0
-                    for subject_num in range(len(subjects)):
-                        if FMA_list[subject_num]<40:
-                            count_ms+=1
-                    A_ms= np.zeros((w_len,count_ms*len(support_levels)))
-                    num_A = 0
-                    for subject_num in range(len(subjects)):
-                        if FMA_list[subject_num]<40:
-                            for SL in range(0,len(support_levels)):
-                                A_ms[:,num_A] += A_Fmag[0,SL,plot_num+1,subject_num,:]
-                                num_A += 1
-                    A_mean = np.mean(A_ms, axis=1)
-                    A_std = np.std(A_ms, axis=1)/np.sqrt(count_mild)
-                    A_std = butter_lowpass_filter(A_std, cutoff, Fs)
-                    A_mean = butter_lowpass_filter(A_mean, cutoff, Fs)
-                    A_mean = normalize_spectrum(A_mean,dw)
-                    A_upper = A_mean + A_std
-                    A_lower = A_mean - A_std
-                    l = ax[plot_num].plot(w,A_mean,linestyle='-',color=colors[2])
-                    ax[plot_num].fill_between(w,A_upper,y2=A_lower,alpha=0.5,color=colors[2],linewidth=0.0)
-                    if plot_num==0:
-                        legend_lines.append(l)
-                        fig.legend(legend,loc="center right", fontsize=9,frameon=False)
-                        fig.subplots_adjust(right=0.78)
-
-                    # ax[plot_num].set_xscale('log')
-                    # ax[plot_num].set_yscale('log')
-                    ax[plot_num].set_xlim((w[1],w[len(w)-1]))
-                    ax[plot_num].set_ylim(ymin,ymax)
-                    # ax[plot_num].grid(True, color="#E0E0E0")
-                    for label in (ax[plot_num].get_xticklabels() + ax[plot_num].get_yticklabels()):
-                        label.set_fontsize(8)
-
-                # create titles
-                ax[0].text(.17,.93,'1 Hz Task',horizontalalignment='left',transform=ax[0].transAxes, fontsize=10)
-                ax[0].text(.05,.93,'A.',horizontalalignment='left',transform=ax[0].transAxes, fontsize=10, fontweight='bold')
-                ax[1].text(.17,.93,'1.5 Hz Task',horizontalalignment='left',transform=ax[1].transAxes, fontsize=10)
-                ax[1].text(.05,.93,'B.',horizontalalignment='left',transform=ax[1].transAxes, fontsize=10, fontweight='bold')
-                ax[2].text(.17,.93,'2.5 Hz Task',horizontalalignment='left',transform=ax[2].transAxes, fontsize=10)
-                ax[2].text(.05,.93,'C.',horizontalalignment='left',transform=ax[2].transAxes, fontsize=10, fontweight='bold')
-                fig.text(0.5, 0.91,title, ha='center', fontsize=10, fontweight='bold')
-                fig.subplots_adjust(bottom=0.13)
-                fig.text(0.5, 0.02,xlabel, ha='center', fontsize=10)
-                fig.text(0.06, 0.5,ylabel, va='center', rotation='vertical', fontsize=10)
-                fig.subplots_adjust(top=0.85)
-
-                fig.savefig('Plots/plots_combined.pdf')
-                plt.show()
-                plt.close(fig)
-
-# print(SL1)
-# print(A0)
-# print(SL0)
-# print(A1)
-
 
 # plt.show()

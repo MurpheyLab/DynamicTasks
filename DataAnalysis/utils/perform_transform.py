@@ -32,6 +32,7 @@ def find_energy_at_resonance(w,A,resonant_freq,window):
     freq_list = []
     dw = w[1]-w[0]
     for w_i in range(0,len(w)):
+        # if (w[w_i] < resonant_freq+(.4)) and (w[w_i] > resonant_freq+.1):
         if (w[w_i] < resonant_freq+window) and (w[w_i] > resonant_freq-window):
             freq_list.append(A[w_i])
     # return np.sum(freq_list)*dw
