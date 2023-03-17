@@ -1,0 +1,111 @@
+
+################################################################################ 
+###############            Energy at Resonance Metric            ############### 
+################################################################################ 
+
+################################################################################ 
+Test for normality: Shapiro test
+################################################################################ 
+# A tibble: 16 × 6
+   Arm        Loading BallFreq variable   statistic         p
+   <fct>      <fct>   <fct>    <chr>          <dbl>     <dbl>
+ 1 nonparetic 0%      0.5Hz    EResonance     0.986 0.446    
+ 2 nonparetic 0%      1.5Hz    EResonance     0.965 0.0169   
+ 3 nonparetic 0%      1Hz      EResonance     0.976 0.0946   
+ 4 nonparetic 0%      2.5Hz    EResonance     0.958 0.00562  
+ 5 nonparetic 35%     0.5Hz    EResonance     0.982 0.271    
+ 6 nonparetic 35%     1.5Hz    EResonance     0.983 0.325    
+ 7 nonparetic 35%     1Hz      EResonance     0.981 0.219    
+ 8 nonparetic 35%     2.5Hz    EResonance     0.946 0.00121  
+ 9 paretic    0%      0.5Hz    EResonance     0.986 0.488    
+10 paretic    0%      1.5Hz    EResonance     0.990 0.759    
+11 paretic    0%      1Hz      EResonance     0.986 0.463    
+12 paretic    0%      2.5Hz    EResonance     0.907 0.0000123
+13 paretic    35%     0.5Hz    EResonance     0.982 0.263    
+14 paretic    35%     1.5Hz    EResonance     0.986 0.465    
+15 paretic    35%     1Hz      EResonance     0.946 0.00115  
+16 paretic    35%     2.5Hz    EResonance     0.934 0.000253 
+
+###############            All Experimental Factors            ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                                 Chisq Df Pr(>Chisq)    
+Severity                        3.8079  1  0.0510114 .  
+Arm                             0.4472  1  0.5036849    
+Loading                         0.1804  1  0.6710391    
+BallFreq                      184.8050  3  < 2.2e-16 ***
+Severity:Arm                    0.6513  1  0.4196655    
+Severity:Loading                0.6410  1  0.4233548    
+Arm:Loading                     0.2507  1  0.6165580    
+Severity:BallFreq              17.2845  3  0.0006176 ***
+Arm:BallFreq                    8.2397  3  0.0413098 *  
+Loading:BallFreq                2.7931  3  0.4246326    
+Severity:Arm:Loading            3.2965  1  0.0694279 .  
+Severity:Arm:BallFreq           5.5891  3  0.1334055    
+Severity:Loading:BallFreq       0.5779  3  0.9014775    
+Arm:Loading:BallFreq            0.3736  3  0.9456403    
+Severity:Arm:Loading:BallFreq   1.0734  3  0.7834984    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+                          Effect DFn DFd          SSn        SSd            F            p p<.05
+1                    (Intercept)   1   8 2.296556e+01 0.20201850 9.094438e+02 1.586429e-09     *
+2                       Severity   1   8 5.597285e-03 0.20201850 2.216544e-01 6.503523e-01      
+3                            Arm   1   8 2.345230e-02 0.05314867 3.530067e+00 9.707747e-02      
+5                        Loading   1   8 6.355167e-05 0.01675391 3.034596e-02 8.660352e-01      
+7                       BallFreq   3  24 1.398198e+00 0.45218586 2.473669e+01 1.608334e-07     *
+4                   Severity:Arm   1   8 1.747290e-05 0.05314867 2.630042e-03 9.603567e-01      
+6               Severity:Loading   1   8 3.442880e-03 0.01675391 1.643977e+00 2.356854e-01      
+8              Severity:BallFreq   3  24 7.325045e-02 0.45218586 1.295935e+00 2.986292e-01      
+9                    Arm:Loading   1   8 1.328026e-03 0.01657417 6.410099e-01 4.464683e-01      
+11                  Arm:BallFreq   3  24 5.639922e-02 0.16671638 2.706355e+00 6.777146e-02      
+13              Loading:BallFreq   3  24 9.010136e-03 0.06029689 1.195436e+00 3.326211e-01      
+10          Severity:Arm:Loading   1   8 1.098244e-02 0.01657417 5.300990e+00 5.028305e-02      
+12         Severity:Arm:BallFreq   3  24 4.890752e-02 0.16671638 2.346861e+00 9.800080e-02      
+14     Severity:Loading:BallFreq   3  24 2.383660e-03 0.06029689 3.162565e-01 8.134714e-01      
+15          Arm:Loading:BallFreq   3  24 1.139162e-03 0.08518789 1.069788e-01 9.551961e-01      
+16 Severity:Arm:Loading:BallFreq   3  24 3.002196e-03 0.08518789 2.819364e-01 8.379021e-01      
+            ges
+1  9.561636e-01
+2  5.288043e-03
+3  2.178904e-02
+5  6.035606e-05
+7  5.704415e-01
+4  1.659503e-05
+6  3.259299e-03
+8  6.504602e-02
+9  1.259735e-03
+11 5.084302e-02
+13 8.484980e-03
+10 1.032315e-02
+12 4.438915e-02
+14 2.258824e-03
+15 1.080777e-03
+16 2.843300e-03
+
+$`Mauchly's Test for Sphericity`
+                          Effect         W          p p<.05
+7                       BallFreq 0.2425001 0.09396462      
+8              Severity:BallFreq 0.2425001 0.09396462      
+11                  Arm:BallFreq 0.8214413 0.93351347      
+12         Severity:Arm:BallFreq 0.8214413 0.93351347      
+13              Loading:BallFreq 0.7589664 0.87063998      
+14     Severity:Loading:BallFreq 0.7589664 0.87063998      
+15          Arm:Loading:BallFreq 0.1030803 0.01025526     *
+16 Severity:Arm:Loading:BallFreq 0.1030803 0.01025526     *
+
+$`Sphericity Corrections`
+                          Effect       GGe        p[GG] p[GG]<.05       HFe        p[HF] p[HF]<.05
+7                       BallFreq 0.6715348 1.192716e-05         * 0.8983779 6.063192e-07         *
+8              Severity:BallFreq 0.6715348 3.008933e-01           0.8983779 2.999552e-01          
+11                  Arm:BallFreq 0.8836281 7.679872e-02           1.3620917 6.777146e-02          
+12         Severity:Arm:BallFreq 0.8836281 1.074714e-01           1.3620917 9.800080e-02          
+13              Loading:BallFreq 0.8496208 3.316300e-01           1.2804520 3.326211e-01          
+14     Severity:Loading:BallFreq 0.8496208 7.820630e-01           1.2804520 8.134714e-01          
+15          Arm:Loading:BallFreq 0.5512378 8.642886e-01           0.6766908 9.017014e-01          
+16 Severity:Arm:Loading:BallFreq 0.5512378 7.180457e-01           0.6766908 7.610786e-01          
+

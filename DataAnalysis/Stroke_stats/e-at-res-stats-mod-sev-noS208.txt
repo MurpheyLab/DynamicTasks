@@ -1,0 +1,366 @@
+
+################################################################################ 
+###############            Energy at Resonance Metric            ############### 
+################################################################################ 
+
+################################################################################ 
+Test for normality: Shapiro test
+################################################################################ 
+# A tibble: 16 × 6
+   Arm        Loading BallFreq variable   statistic         p
+   <fct>      <fct>   <fct>    <chr>          <dbl>     <dbl>
+ 1 nonparetic 0%      0.5Hz    EResonance     0.993 0.988    
+ 2 nonparetic 0%      1.5Hz    EResonance     0.922 0.00186  
+ 3 nonparetic 0%      1Hz      EResonance     0.964 0.101    
+ 4 nonparetic 0%      2.5Hz    EResonance     0.943 0.0139   
+ 5 nonparetic 35%     0.5Hz    EResonance     0.988 0.867    
+ 6 nonparetic 35%     1.5Hz    EResonance     0.978 0.420    
+ 7 nonparetic 35%     1Hz      EResonance     0.960 0.0691   
+ 8 nonparetic 35%     2.5Hz    EResonance     0.932 0.00452  
+ 9 paretic    0%      0.5Hz    EResonance     0.967 0.146    
+10 paretic    0%      1.5Hz    EResonance     0.967 0.164    
+11 paretic    0%      1Hz      EResonance     0.968 0.164    
+12 paretic    0%      2.5Hz    EResonance     0.856 0.0000224
+13 paretic    35%     0.5Hz    EResonance     0.965 0.115    
+14 paretic    35%     1.5Hz    EResonance     0.976 0.399    
+15 paretic    35%     1Hz      EResonance     0.974 0.301    
+16 paretic    35%     2.5Hz    EResonance     0.888 0.000150 
+
+###############            All Experimental Factors            ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                        Chisq Df Pr(>Chisq)    
+Arm                    0.4786  1    0.48907    
+Loading                0.0416  1    0.83833    
+BallFreq             379.8236  3    < 2e-16 ***
+Arm:Loading            0.5059  1    0.47692    
+Arm:BallFreq          10.7630  3    0.01308 *  
+Loading:BallFreq       1.4906  3    0.68445    
+Arm:Loading:BallFreq   1.4865  3    0.68540    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+                Effect DFn DFd          SSn         SSd            F            p p<.05          ges
+1          (Intercept)   1   5 1.325661e+01 0.062078027 1067.7375097 5.044226e-07     * 0.9653276143
+2                  Arm   1   5 1.996874e-02 0.049103657    2.0333251 2.132138e-01       0.0402501327
+3              Loading   1   5 4.380312e-04 0.003533789    0.6197755 4.667907e-01       0.0009191032
+4             BallFreq   3  15 1.194993e+00 0.181796959   32.8661330 7.749295e-07     * 0.7150763073
+5          Arm:Loading   1   5 2.760647e-04 0.004410019    0.3129971 5.999799e-01       0.0005794523
+6         Arm:BallFreq   3  15 6.225563e-02 0.084048836    3.7035391 3.556765e-02     * 0.1156301695
+7     Loading:BallFreq   3  15 1.050711e-02 0.049498873    1.0613479 3.947911e-01       0.0215904827
+8 Arm:Loading:BallFreq   3  15 6.117521e-03 0.041677214    0.7339167 5.478220e-01       0.0126849803
+
+$`Mauchly's Test for Sphericity`
+                Effect          W          p p<.05
+4             BallFreq 0.14670952 0.22827029      
+6         Arm:BallFreq 0.86846181 0.99156751      
+7     Loading:BallFreq 0.81336851 0.97989098      
+8 Arm:Loading:BallFreq 0.07462476 0.09835661      
+
+$`Sphericity Corrections`
+                Effect       GGe        p[GG] p[GG]<.05       HFe        p[HF] p[HF]<.05
+4             BallFreq 0.4865426 0.0003490935         * 0.6362576 5.772389e-05         *
+6         Arm:BallFreq 0.9251390 0.0403092772         * 2.1955428 3.556765e-02         *
+7     Loading:BallFreq 0.8807021 0.3912304367           1.9583352 3.947911e-01          
+8 Arm:Loading:BallFreq 0.5480358 0.4833492380           0.7811776 5.211383e-01          
+
+
+
+
+###############            0.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+             Chisq Df Pr(>Chisq)  
+Arm         4.4987  1    0.03392 *
+Loading     2.8911  1    0.08907 .
+Arm:Loading 0.0083  1    0.92759  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd          SSn        SSd            F            p p<.05         ges
+1 (Intercept)   1   5 3.272397e+00 0.06513242 2.512111e+02 1.819115e-05     * 0.964895348
+2         Arm   1   5 9.231644e-03 0.01221084 3.780103e+00 1.094735e-01       0.071960637
+3     Loading   1   5 7.776407e-03 0.02295308 1.693979e+00 2.498163e-01       0.061312574
+4 Arm:Loading   1   5 2.807294e-05 0.01875944 7.482351e-03 9.344257e-01       0.000235741
+
+
+
+
+###############            1Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+             Chisq Df Pr(>Chisq)
+Arm         0.3470  1     0.5558
+Loading     0.1483  1     0.7002
+Arm:Loading 0.2939  1     0.5877
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd          SSn         SSd           F            p p<.05         ges
+1 (Intercept)   1   5 6.1799228074 0.055576892 555.9795294 2.554605e-06     * 0.983582033
+2         Arm   1   5 0.0015402629 0.034451406   0.2235414 6.562736e-01       0.014711816
+3     Loading   1   5 0.0003800313 0.008065559   0.2355889 6.479303e-01       0.003670544
+4 Arm:Loading   1   5 0.0005802923 0.005061514   0.5732398 4.831063e-01       0.005593951
+
+
+
+
+###############            1.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+             Chisq Df Pr(>Chisq)
+Arm         2.4158  1     0.1201
+Loading     1.2015  1     0.2730
+Arm:Loading 1.5425  1     0.2142
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd          SSn        SSd           F            p p<.05         ges
+1 (Intercept)   1   5 4.0491242349 0.04493273 450.5762575 4.301412e-06     * 0.970381360
+2         Arm   1   5 0.0074910640 0.05197650   0.7206203 4.346894e-01       0.057148276
+3     Loading   1   5 0.0004593412 0.01022242   0.2246735 6.554777e-01       0.003702887
+4 Arm:Loading   1   5 0.0053415116 0.01645848   1.6227234 2.587124e-01       0.041429022
+
+
+
+
+###############            2.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+              Chisq Df Pr(>Chisq)   
+Arm         10.5208  1    0.00118 **
+Loading      0.9270  1    0.33564   
+Arm:Loading  0.1931  1    0.66035   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd          SSn         SSd          F            p p<.05         ges
+1 (Intercept)   1   5 0.9501559572 0.078232949 60.7260731 0.0005573641     * 0.879365240
+2         Arm   1   5 0.0639613989 0.034513749  9.2660752 0.0286189389     * 0.329176161
+3     Loading   1   5 0.0023293565 0.011791606  0.9877181 0.3659322277       0.017556799
+4 Arm:Loading   1   5 0.0004437086 0.005807804  0.3819935 0.5636003641       0.003392532
+
+
+################################################################################ 
+##########    Energy at Resonance Metric Within the Paretic Arm      ########### 
+################################################################################ 
+
+###############            All Experimental Factors            ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                    Chisq Df Pr(>Chisq)    
+Loading            0.6519  1     0.4194    
+BallFreq         243.2523  3     <2e-16 ***
+Loading:BallFreq   2.9956  3     0.3923    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+            Effect DFn DFd         SSn         SSd            F            p p<.05         ges
+1      (Intercept)   1   5 6.652631748 0.029921946 1111.6642748 4.562397e-07     * 0.977916278
+2          Loading   1   5 0.000286934 0.001356273    1.0578035 3.508754e-01       0.001906291
+3         BallFreq   3  15 0.595969559 0.092545806   32.1986260 8.844588e-07     * 0.798670414
+4 Loading:BallFreq   3  15 0.005235715 0.026408539    0.9912921 4.235521e-01       0.033677064
+
+$`Mauchly's Test for Sphericity`
+            Effect         W         p p<.05
+3         BallFreq 0.1482549 0.2283627      
+4 Loading:BallFreq 0.7677711 0.9652022      
+
+$`Sphericity Corrections`
+            Effect       GGe        p[GG] p[GG]<.05       HFe        p[HF] p[HF]<.05
+3         BallFreq 0.4890217 0.0003618213         * 0.6418074 5.885154e-05         *
+4 Loading:BallFreq 0.8472269 0.4162751739           1.7966318 4.235521e-01          
+
+
+
+
+###############            0.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)  
+Loading 3.5006  1    0.06135 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd         SSn         SSd          F            p p<.05        ges
+1 (Intercept)   1   5 1.814623475 0.054593202 166.195004 5.002196e-05     * 0.96798641
+2     Loading   1   5 0.004369473 0.005420662   4.030387 1.009574e-01       0.06786652
+
+
+
+
+###############            1Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.4941  1     0.4821
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd          SSn         SSd        F            p p<.05        ges
+1 (Intercept)   1   5 1.5443084905 0.009551241 808.4334 1.007986e-06     * 0.99317206
+2     Loading   1   5 0.0004039201 0.001065696   1.8951 2.270765e-01       0.03665052
+
+
+
+
+###############            1.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 2.6476  1     0.1037
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd         SSn         SSd          F            p p<.05       ges
+1 (Intercept)   1   5 1.854146089 0.016164784 573.514033 2.365181e-06     * 0.9891630
+2     Loading   1   5 0.004466816 0.004148688   5.383408 6.803516e-02       0.1802568
+
+
+
+
+###############            2.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 1.2353  1     0.2664
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd         SSn         SSd         F           p p<.05        ges
+1 (Intercept)   1   5 0.260536257 0.046605306 27.951351 0.003226575     * 0.82393584
+2     Loading   1   5 0.002403172 0.009067834  1.325108 0.301733516       0.04137955
+
+
+################################################################################ 
+##########   Energy at Resonance Metric Within the Non-Paretic Arm   ########### 
+################################################################################ 
+
+###############            All Experimental Factors            ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+                   Chisq Df Pr(>Chisq)    
+Loading           0.1512  1     0.6974    
+BallFreq         44.3104  3  1.297e-09 ***
+Loading:BallFreq  0.7969  3     0.8502    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+            Effect DFn DFd         SSn         SSd            F            p p<.05         ges
+1      (Intercept)   1   5 6.652631748 0.029921946 1111.6642748 4.562397e-07     * 0.977916278
+2          Loading   1   5 0.000286934 0.001356273    1.0578035 3.508754e-01       0.001906291
+3         BallFreq   3  15 0.595969559 0.092545806   32.1986260 8.844588e-07     * 0.798670414
+4 Loading:BallFreq   3  15 0.005235715 0.026408539    0.9912921 4.235521e-01       0.033677064
+
+$`Mauchly's Test for Sphericity`
+            Effect         W         p p<.05
+3         BallFreq 0.1482549 0.2283627      
+4 Loading:BallFreq 0.7677711 0.9652022      
+
+$`Sphericity Corrections`
+            Effect       GGe        p[GG] p[GG]<.05       HFe        p[HF] p[HF]<.05
+3         BallFreq 0.4890217 0.0003618213         * 0.6418074 5.885154e-05         *
+4 Loading:BallFreq 0.8472269 0.4162751739           1.7966318 4.235521e-01          
+
+
+
+
+###############            0.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.4612  1     0.4971
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd         SSn        SSd           F            p p<.05        ges
+1 (Intercept)   1   5 1.467005262 0.02275005 322.4180148 9.838544e-06     * 0.96131056
+2     Loading   1   5 0.003435007 0.03629186   0.4732477 5.221034e-01       0.05498042
+
+
+
+
+###############            1Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.0062  1     0.9374
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd          SSn         SSd            F            p p<.05          ges
+1 (Intercept)   1   5 3.188295e+00 0.072520427 2.198205e+02 2.524614e-05     * 0.9757286513
+2     Loading   1   5 1.055639e-05 0.006788743 7.774926e-03 9.331599e-01       0.0001330866
+
+
+
+
+###############            1.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+        Chisq Df Pr(>Chisq)
+Loading 0.296  1     0.5864
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd         SSn        SSd           F            p p<.05        ges
+1 (Intercept)   1   5 2.202469209 0.08074445 136.3851831 8.088341e-05     * 0.95520900
+2     Loading   1   5 0.001334037 0.02253221   0.2960289 6.097566e-01       0.01275239
+
+
+
+
+###############            2.5Hz Trials           ############### 
+Linear Mixed Model 
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: EResonance
+         Chisq Df Pr(>Chisq)
+Loading 0.2059  1       0.65
+
+ANOVA (although ~23 trials are missing) 
+$ANOVA
+       Effect DFn DFd          SSn         SSd         F            p p<.05         ges
+1 (Intercept)   1   5 0.7535810995 0.066141392 56.967436 0.0006469025     * 0.909842921
+2     Loading   1   5 0.0003698932 0.008531575  0.216779 0.6610813165       0.004929093
+
