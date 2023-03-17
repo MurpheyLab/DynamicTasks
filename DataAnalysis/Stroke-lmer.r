@@ -40,7 +40,7 @@ data_modsev = subset(data_all, FMA<40)
 # data_modsev = data_all
 
 # define file to save data to
-sink(paste(DIR,"Stroke_Stats",paste("e-at-res-stats-mod-sev.txt",sep="-"),sep="/"))
+sink(paste(DIR,"Stroke_stats",paste("e-at-res-stats-sev.txt",sep="-"),sep="/"))
 
 cat("\n")
 cat("################################################################################ \n")
