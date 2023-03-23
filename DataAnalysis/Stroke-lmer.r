@@ -36,11 +36,11 @@ library(rstatix)
 ################################################################################
 data_all = read.csv(paste(DIR,paste("stroke-freq",".csv",sep=""),sep="/"))
 data_all = subset(data_all, EResonance!=0)
-data_modsev = subset(data_all, FMA<40)
+data_modsev = subset(data_all, FMA<30)
 # data_modsev = data_all
 
 # define file to save data to
-sink(paste(DIR,"Stroke_stats",paste("e-at-res-stats-sev.txt",sep="-"),sep="/"))
+sink(paste(DIR,"Stroke_stats",paste("e-at-res-stats-sev-test.txt",sep="-"),sep="/"))
 
 cat("\n")
 cat("################################################################################ \n")
@@ -59,11 +59,11 @@ print(normality)
 
 cat("\n")
 cat("###############            All Experimental Factors            ############### \n")
-cat("Linear Mixed Model \n")
-lmer_model = lmer(EResonance ~  Arm*Loading*BallFreq + (1+Arm*Loading*BallFreq|Subject),
-                  data = data_modsev)
-anov = Anova(lmer_model,type="II")
-print(anov)
+# cat("Linear Mixed Model \n")
+# lmer_model = lmer(EResonance ~  Arm*Loading*BallFreq + (1+Arm*Loading*BallFreq|Subject),
+#                   data = data_modsev)
+# anov = Anova(lmer_model,type="II")
+# print(anov)
 cat("\nANOVA (although ~23 trials are missing) \n")
 mod.ez<-ezANOVA(data_modsev,EResonance,
                 wid = .(Subject),
@@ -204,6 +204,12 @@ mod.ez<-ezANOVA(data_freq,EResonance,
                 within = .(Loading),
                 between = NULL, type = 2, detailed = TRUE)
 print(mod.ez)
+
+data_SL0 = subset(data_freq, Loading=="0%")
+data_SL1 = subset(data_freq, Loading=="35%")
+posthoc<-t.test(data_SL0$EResonance,data_SL1$EResonance,
+               detailed = TRUE)
+print(posthoc)
 
 cat("\n\n\n")
 cat("###############            2.5Hz Trials           ############### \n")

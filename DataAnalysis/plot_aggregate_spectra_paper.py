@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from utils.plot_freq_utils import *
 from utils.perform_transform import *
+from utils.plot_utils import *
 
 
 file_spectrum = "stroke-freq-spectrum.csv"
@@ -20,11 +21,11 @@ ylabel = 'Normalized Frequency Amplitude'
 colors = ['#601a4aff', '#ee442fff','#63acbeff']
 alphas = [.5,.5,.5]
 
-cutoff = 5  # desired cutoff frequency of the filter, Hz
+cutoff = 7  # desired cutoff frequency of the filter, Hz
 DT = 0.05
 Fs = 1/DT
 window = .3000000000001
-FMA_cutoff = 35
+FMA_cutoff = 40
 
 # create plot
 figure_size = (6,2.55) # inches
@@ -168,6 +169,126 @@ fig_scat.savefig('Plots_stroke/paper_e_at_res.png')
 # plt.close(fig_scat)
 
 
+# 1.5Hz plots
+
+title = 'Loading May Exacerbate Loss in Motion Bandwidth\nat 1.5Hz for Severely Impaired'
+xlabel = 'Frequency (Hz)'
+ylabel = 'Normalized Frequency Amplitude'
+legend = ['Resonant Frequency','nonparetic-0%','nonparetic-35%','paretic-0%','paretic-35%']
+legend = ['Resonant\nFrequency','NP-0%','NP-35%','P-0%','P-35%']
+colors = ['#601A4A','#FA7D97','#165FAD','#63ACBE']
+alphas = [.5,.5,.5,.5]
+
+# create plot
+figure_size = (4,2.5) # inches
+fig, ax =plt.subplots(nrows=1, ncols=1, figsize=figure_size, dpi=300)
+freq = 1
+ymin = .2
+ymax = 1.2
+ymax_pend = 1.2
+ax.plot([freq_pendulum[freq], freq_pendulum[freq]],[ymin, ymax_pend],linestyle=':',color='k')
+legend_lines = []
+
+df_severe = df[(df['BallFreq']==frequencylabels[1]) & (df['FMA']<25)]
+data_boxplot = []
+for group in range(len(colors)):
+    if group==0:
+        df_group = df_severe[(df_severe['Arm']=='nonparetic') & (df_severe['Loading']=='0%')]
+    elif group==1:
+        df_group = df_severe[(df_severe['Arm']=='nonparetic') & (df_severe['Loading']=='35%')]
+    elif group==2:
+        df_group = df_severe[(df_severe['Arm']=='paretic') & (df_severe['Loading']=='0%')]
+    elif group==3:
+        df_group = df_severe[(df_severe['Arm']=='paretic') & (df_severe['Loading']=='35%')]
+
+    list = []
+    list_ee = []
+    subjects = df_group.Subject.unique()
+    dw = w[1] - w[0]
+    for sub in subjects:
+        df_sub = df_group[df_group['Subject']==sub].to_numpy()[:,5:]
+        A_mag = np.mean(df_sub,axis=0)
+        # A_mag = normalize_spectrum(A_mag,dw)
+        list.append(A_mag)
+        list_ee.append(find_energy_at_resonance(w,A_mag,freq_pendulum[freq],window))
+    list = np.array(list,dtype=float)
+    data_boxplot.append(list_ee)
+    y = np.mean(list,axis=0)
+    error = np.std(list,axis=0)/np.sqrt(list.shape[0])
+    cutoff = 5
+    y = butter_lowpass_filter(y,cutoff,Fs)
+    error = butter_lowpass_filter(error,cutoff,Fs)
+    ax.plot(w[0:], y, color=colors[group])
+    # ax.fill_between(w[0:].tolist(), y-error, y+error, color=colors[group],alpha=alphas[group],lw=0)
+
+ax.set_xlim((w[1],w[len(w)-1]))
+ax.set_ylim(ymin,ymax)
+for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+    label.set_fontsize(8)
+
+# create titles
+fig.text(0.5, 0.91,title, ha='center', fontsize=9, fontweight='bold')
+fig.text(0.5, 0.01,xlabel, ha='center', fontsize=9)
+fig.text(0.01, 0.5,ylabel, va='center', rotation='vertical', fontsize=9)
+if len(legend)>0:
+    fig.legend(legend_lines,labels=legend,loc="center right", fontsize=9)
+    fig.subplots_adjust(right=0.5)
+
+fig.savefig('Plots_stroke/paper_spectrum_1.5_severe.pdf')
+fig.savefig('Plots_stroke/paper_spectrum_1.5_severe.png')
+
+
+# Make boxplot
+figure_size = (2.5,2.5) # sets the size of the figure in inches
+xlabel = ''
+ylabel = 'Fraction of Total Energy'
+title = ''
+labels = legend[1:]
+[fig,ax] = make_boxplot(data_boxplot,title,xlabel,ylabel,labels,colors,alphas,figure_size)
+fig.subplots_adjust(left=0.25)
+# Add FAKE stastical signicant marking #########################################
+sig_matrix = np.array([[0,1,.04],[2,3,0.04]])
+add_stats(data_boxplot,sig_matrix,ax,spread_factor=20)
+ax.set_ylim(.28,.73)
+fig.savefig('Plots_stroke/paper_boxplot_1.5_severe.pdf')
+fig.savefig('Plots_stroke/paper_boxplot_1.5_severe.png')
+
+
+# figure_size = (5,3) # sets the size of the figure in inches
+# fig, ax = plt.subplots(figsize=figure_size,dpi=300)
+# # place grid in back
+# ax.grid(True, linestyle='-', which='major', axis='y', color='lightgrey',
+#                alpha=0.5)
+# ax.set_axisbelow(True)
+# # Add titles and labels
+# plt.xlabel(xlabel,fontname="sans-serif", fontsize=9)
+# plt.ylabel(ylabel,fontname="sans-serif", fontsize=9)
+# plt.title(title,fontname="sans-serif", fontsize=9,fontweight='bold')
+# for label in (ax_scat.get_yticklabels()):
+#     label.set_fontsize(8)
+# # x-ticks x-axis
+# # plt.xticks(ind, frequencylabels, fontname="sans-serif", fontsize=9)
+# # for tick in ax_scat.get_xticklabels():
+# #     tick.set_fontsize(8)
+# #     tick.set_rotation(0)
+# p = np.zeros(len(subjects), dtype=object)
+# data_boxplot = np.array(data_boxplot)
+# for subject_num in range(0,data_boxplot.shape[1]):
+#     # freq_list = []
+#     # for freq in range(starting_i,len(frequencylabels)):
+#     #     freq_list.append(A_com[freq,subject_num])
+#     x = [0,1,2,3]
+#     y = data_boxplot[:,subject_num]
+#     print(y)
+#     # p[subject_num] = ax.errorbar(ind[starting_i:4],freq_list)
+#     p[subject_num] = ax.plot(x,y)
+# fig.subplots_adjust(right=0.75)
+# L = fig.legend(p, sub_names, loc='center right', fontsize=9)
+# plt.setp(L.texts, family='sans-serif')
+# fig.subplots_adjust(left=0.2,right=.75,bottom=0.2)
+# fig.savefig('Plots_stroke/'+folder_name+'/pl_A_com_indiv_'+group+'.pdf')
+# fig.savefig('Plots_stroke/'+folder_name+'/pl_A_com_indiv_'+group+'.png')
+# plt.close(fig)
 
 
 plt.show()
