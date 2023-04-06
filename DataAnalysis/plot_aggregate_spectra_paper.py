@@ -180,12 +180,12 @@ colors = ['#601A4A','#FA7D97','#165FAD','#63ACBE']
 alphas = [.5,.5,.5,.5]
 
 # create plot
-figure_size = (4,2.5) # inches
+figure_size = (5,2) # inches
 fig, ax =plt.subplots(nrows=1, ncols=1, figsize=figure_size, dpi=300)
 freq = 1
 ymin = .2
-ymax = 1.2
-ymax_pend = 1.2
+ymax = 1.1
+ymax_pend = 1.1
 ax.plot([freq_pendulum[freq], freq_pendulum[freq]],[ymin, ymax_pend],linestyle=':',color='k')
 legend_lines = []
 
@@ -216,8 +216,8 @@ for group in range(len(colors)):
     y = np.mean(list,axis=0)
     error = np.std(list,axis=0)/np.sqrt(list.shape[0])
     cutoff = 5
-    y = butter_lowpass_filter(y,cutoff,Fs)
-    error = butter_lowpass_filter(error,cutoff,Fs)
+    # y = butter_lowpass_filter(y,cutoff,Fs)
+    # error = butter_lowpass_filter(error,cutoff,Fs)
     ax.plot(w[0:], y, color=colors[group])
     # ax.fill_between(w[0:].tolist(), y-error, y+error, color=colors[group],alpha=alphas[group],lw=0)
 
@@ -232,14 +232,14 @@ fig.text(0.5, 0.01,xlabel, ha='center', fontsize=9)
 fig.text(0.01, 0.5,ylabel, va='center', rotation='vertical', fontsize=9)
 if len(legend)>0:
     fig.legend(legend_lines,labels=legend,loc="center right", fontsize=9)
-    fig.subplots_adjust(right=0.5)
+    fig.subplots_adjust(right=0.7)
 
 fig.savefig('Plots_stroke/paper_spectrum_1.5_severe.pdf')
 fig.savefig('Plots_stroke/paper_spectrum_1.5_severe.png')
 
 
 # Make boxplot
-figure_size = (2.5,2.5) # sets the size of the figure in inches
+figure_size = (3,2) # sets the size of the figure in inches
 xlabel = ''
 ylabel = 'Fraction of Total Energy'
 title = ''
